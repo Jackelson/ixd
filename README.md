@@ -1,4 +1,4 @@
-# ixd-pc-vue
+# smm-vue
 
 
 
@@ -15,14 +15,14 @@ Already a pro? Just edit this README.md and make it your own. Want to make it ea
 
 ```
 cd existing_repo
-git remote add origin http://192.168.50.237:9980/ixd-vue-develop-group/ixd-pc-vue.git
+git remote add origin http://192.168.50.237:9980/smm-vue-develop-group/smm-vue.git
 git branch -M main
 git push -uf origin main
 ```
 
 ## Integrate with your tools
 
-- [ ] [Set up project integrations](http://192.168.50.237:9980/ixd-vue-develop-group/ixd-pc-vue/-/settings/integrations)
+- [ ] [Set up project integrations](http://192.168.50.237:9980/smm-vue-develop-group/smm-vue/-/settings/integrations)
 
 ## Collaborate with your team
 
