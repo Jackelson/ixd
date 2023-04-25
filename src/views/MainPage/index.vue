@@ -1,0 +1,285 @@
+<template>
+  <section class="T-container T-framework is-vertical">
+    <header class="T-header">
+      <div class="T-framework-logo-title">
+        <svg-icon icon="gw_logo" class="T-framework-logo"></svg-icon>
+        <span class="T-framework-title">变电检修综合管理应用</span>
+      </div>
+      <div class="right-pannel">
+        <div class="user-info-container">
+          <div class="user-action">
+            <div>
+              <svg-icon icon="电力公司" class="user-logo"></svg-icon>国网无锡电力
+            </div>
+            <div>
+              <svg-icon icon="江苏电力公司" class="user-logo"></svg-icon>专责人员
+            </div>
+            <div>
+              <svg-icon icon="退出" class="user-logo"></svg-icon>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+    <main class="T-main">
+      <el-container class="T-main-container">
+        <el-aside :width="isCollapse? '64px' : '200px'" class="T-aSide">
+          <div class="T-side-container">
+            <el-menu
+              :default-active="'1-1'"
+              class="T-menu"
+              :collapse="isCollapse"
+              router
+              @open="handleOpen"
+              @close="handleClose"
+            >
+              <el-sub-menu :index="item.path" v-for="item in menus" :key="item.id">
+                <template #title>
+                  <!-- <el-icon><setting /></el-icon> -->
+                  <svg-icon :icon="item.icon" class="svgIcon"></svg-icon>
+                  <span>{{item.name}}</span>
+                </template>
+                <el-menu-item
+                  v-for="subItem in item.children"
+                  :key="subItem.id"
+                  :index="subItem.path"
+                >{{ subItem.name }}</el-menu-item>
+              </el-sub-menu>
+            </el-menu>
+            <div class="collapse-icon" @click="handleMenu">&lt;</div>
+          </div>
+        </el-aside>
+        <el-main class="mainBox">
+          <router-view></router-view>
+        </el-main>
+      </el-container>
+    </main>
+    <footer class="T-footer"></footer>
+  </section>
+</template>
+
+<script>
+// import MenuPart from './MenuPart.vue';
+import { defineComponent, ref } from 'vue';
+export default defineComponent({
+  name: 'MainPage',
+  setup() {
+    const isCollapse = ref(false);
+    const menus = [
+      {
+        id: '0',
+        name: '首页',
+        icon: 'bg-security',
+        path: '/dashBoard',
+        children: [
+          {
+            id: '0-1',
+            name: '首页',
+            path: '/dashBoard'
+          },
+        ]
+      },
+      {
+        id: '1',
+        name: '应用管理',
+        icon: 'bg-security',
+        path: '/application',
+        children: [
+          {
+            id: '1-1',
+            name: '应用管理',
+            path: '/application'
+          },
+        ]
+      },
+      {
+        id: '2',
+        name: '系统管理',
+        icon: 'bg-security',
+        path: '/userManagement',
+        children: [
+          {
+            id: '2-1',
+            name: '用户管理',
+            path: '/userManagement'
+          },
+          {
+            id: '2-2',
+            name: '角色管理',
+            path: '/roleManagement'
+          },
+          {
+            id: '2-3',
+            name: '菜单管理',
+            path: '/menuManagement'
+          },
+          {
+            id: '2-4',
+            name: '轮播图管理',
+            path: '/rotationManagement'
+          }
+        ]
+      },
+    ]
+    const handleMenu = () => {
+      isCollapse.value = !isCollapse.value
+    }
+    return {
+      isCollapse,
+      menus,
+      handleMenu
+    }
+  }
+})
+</script>
+
+<style lang="scss">
+::v-deep {
+  .el-menu {
+    border-right: none;
+  }
+}
+.T-container {
+  display: flex;
+  box-sizing: border-box;
+  .T-header {
+    height: 66px;
+    background: #526ade;
+    position: relative;
+    padding: 0 15px;
+    box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
+    .T-framework-logo-title {
+      height: 60px;
+      padding: 0 16px;
+      text-align: center;
+      position: absolute;
+      width: auto;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      margin: auto 0;
+      z-index: 2;
+      .T-framework-logo {
+        width: 50px !important;
+        height: 50px !important;
+        vertical-align: middle;
+        line-height: 60px;
+        margin-right: 15px;
+      }
+      .T-framework-title {
+        color: #fff;
+        font-weight: 700;
+        white-space: nowrap;
+        font-size: 24px;
+        display: inline-block;
+        vertical-align: middle;
+        line-height: 60px;
+      }
+    }
+    .right-pannel {
+      display: flex;
+      align-content: center;
+      align-items: center;
+      justify-content: flex-end;
+      height: 100%;
+      white-space: nowrap;
+      .user-info-container {
+        padding-left: 50px;
+        position: relative;
+        &::before {
+          content: '';
+          display: block;
+          position: absolute;
+          width: 0;
+          height: 0;
+          bottom: 0;
+          left: 0;
+          border: 50px solid transparent;
+          border-bottom-color: #fff;
+        }
+        .user-action {
+          display: flex;
+          align-items: center;
+          border-radius: 0 4px 4px 0;
+          height: 50px;
+          background: #fff;
+          > div {
+            position: relative;
+            font-size: 16px;
+            padding: 0 8px;
+            margin: 0 7px;
+            border-bottom-width: 2px;
+            border-bottom-style: solid;
+            border-bottom-color: transparent;
+            .user-logo {
+              width: 24px;
+              height: 24px;
+              margin-right: 8px;
+            }
+          }
+        }
+      }
+    }
+  }
+  .T-main {
+    box-sizing: border-box;
+    flex: 1;
+    flex-basis: auto;
+    padding: 12px 12px 12px 0;
+    overflow: hidden;
+    &-container {
+      height: 100%;
+      .mainBox {
+        padding: 0 !important;
+        padding-left: 12px !important;
+      }
+      .T-aSide {
+        transition: all 0.2s ease 0s;
+        box-shadow: 0 0 6px rgba(82, 106, 222, 0.4);
+        border-top-right-radius: 4px;
+        border-bottom-right-radius: 4px;
+        overflow: inherit;
+        .T-side-container {
+          height: 100%;
+          background: #fff;
+          position: relative;
+          overflow: visible;
+          .T-menu {
+          }
+          .collapse-icon {
+            width: 12px;
+            height: 102px;
+            line-height: 102px;
+            position: absolute;
+            z-index: 9;
+            top: 50%;
+            transform: translateY(-25px);
+            right: -12px;
+            cursor: pointer;
+            text-align: center;
+            border-top-right-radius: 10px;
+            border-bottom-right-radius: 10px;
+            background: linear-gradient(90deg, #f0f2fc, #fff);
+            color: #666;
+          }
+        }
+      }
+    }
+  }
+  .T-footer {
+    box-sizing: border-box;
+    height: 40px;
+    background: #fff;
+    padding: 0 20px;
+    flex-shrink: 0;
+  }
+}
+.T-framework {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+.is-vertical {
+  flex-direction: column;
+}
+</style>
