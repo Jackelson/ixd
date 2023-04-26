@@ -131,9 +131,9 @@ export default {
       dialogTableVisible: false,
       tableData: {},
       tableList: [
-        { appId: '11', status: '已上架', address: '无', leader: 'user4', phone: '', operate: '测试链接 用户配置' },
-        { appId: '12', status: '已上架', address: '无', leader: 'user2', phone: '', operate: '测试链接 用户配置' },
-        { appId: '13', status: '已上架', address: '无', leader: 'user1', phone: '', operate: '测试链接 用户配置' },
+        // { appId: '11', status: '已上架', address: '无', leader: 'user4', phone: '', operate: '测试链接 用户配置' },
+        // { appId: '12', status: '已上架', address: '无', leader: 'user2', phone: '', operate: '测试链接 用户配置' },
+        // { appId: '13', status: '已上架', address: '无', leader: 'user1', phone: '', operate: '测试链接 用户配置' },
       ],
       serviceTotal: 0,
       page: 1,

@@ -248,6 +248,9 @@ export default defineComponent({
         border-bottom-right-radius: 4px;
         overflow: inherit;
         .T-side-container {
+          .el-menu-item.is-active {
+            color: #11ac9b;
+          }
           height: 100%;
           background: #fff;
           position: relative;

@@ -219,10 +219,10 @@ export default {
       page: 1,
       pageSize: 10,
       list: [
-        { sn: '002', name: '张三', sort: '1', create_ts: '2022-12-33' },
-        { sn: '002', name: '张三', sort: '1', create_ts: '2022-12-33' },
-        { sn: '002', name: '张三', sort: '1', create_ts: '2022-12-33' },
-        { sn: '002', name: '张三', sort: '1', create_ts: '2022-12-33' },
+        // { sn: '002', name: '张三', sort: '1', create_ts: '2022-12-33' },
+        // { sn: '002', name: '张三', sort: '1', create_ts: '2022-12-33' },
+        // { sn: '002', name: '张三', sort: '1', create_ts: '2022-12-33' },
+        // { sn: '002', name: '张三', sort: '1', create_ts: '2022-12-33' },
       ],
       tableHeader: [
         { label: '角色编号', key: 'roleId' },
