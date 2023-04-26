@@ -3,9 +3,12 @@
     <el-row style="width: 99%; margin-left: 0.5%; height: calc(100% - 0vh)" class="switch-search">
       <el-card class="role-card">
         <el-row class="formRow">
-          <el-col :span="6" class="formSty">
+          <el-col :span="24" class="formSty">
             <span>用户名：</span>
 						<el-input v-model="filterData.appName" style="width:200px"></el-input>
+            <span style="font-size: calc(100vw / 1920 * 14);">角色：</span>
+						<el-input v-model="filterData.appStatus" style="width:200px"></el-input>
+            <el-button @click="searchList">查询</el-button>
             <!-- <el-select
               v-model="filterData.appName"
               filterable
@@ -22,32 +25,9 @@
               ></el-option>
             </el-select> -->
           </el-col>
-          <el-col :span="6" class="formSty">
-            <span>角色：</span>
-						<el-input v-model="filterData.appStatus" style="width:200px"></el-input>
-            <!-- <el-select
-              v-model="filterData.appStatus"
-              filterable
-              clearable
-              placeholder="--所有角色--"
-              @change="filterChange(2)"
-              class="search-select"
-            >
-              <el-option
-                v-for="(item, index) in filterSelection.appStatusList"
-                :key="index"
-                :label="item"
-                :value="item"
-              ></el-option>
-            </el-select> -->
-          </el-col>
-          <el-col :span="8" class="formSty">
-            <el-button @click="searchList">查询</el-button>
-          </el-col>
         </el-row>
         <el-row class="formRow">
           <el-col :span="8" class="formSty">
-            <el-button @click="searchList">查询</el-button>
             <el-button @click="addDialog">新增用户</el-button>
             <el-button @click="handleUpdate">修改用户</el-button>
             <el-button @click="handleStop">删除用户</el-button>
@@ -528,6 +508,9 @@ export default {
       span:nth-child(1) {
         font-size: calc(100vw / 1920 * 14);
       }
+			.el-input {
+				margin-right: 20px
+			}
     }
   }
 }
