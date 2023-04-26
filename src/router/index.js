@@ -8,16 +8,6 @@ const routes = [
     component: () => import('@/views/MainPage/index'),
     children: [
       {
-        path: '/SecurityManagement/supervision',
-        name: 'SecurityManagementSupervision',
-        component: () => import('@/views/SecurityManagement/SupervisionManagement'),
-      },
-      {
-        path: '/SecurityManagement/analysis',
-        name: 'SecurityManagementAnalysis',
-        component: () => import('@/views/SecurityManagement/AnalysisStatistics'),
-      },
-      {
         path: '/dashBoard',
         name: 'DashBoard',
         component: () => import('@/views/dashBoard.vue'),

@@ -9,7 +9,7 @@
               v-model="filterData.appName"
               filterable
               clearable
-              placeholder="--所有系统--"
+              placeholder="--所有用户名--"
               @change="filterChange(1)"
               class="search-select"
             >
@@ -27,7 +27,7 @@
               v-model="filterData.appStatus"
               filterable
               clearable
-              placeholder="--所有安全区--"
+              placeholder="--所有角色--"
               @change="filterChange(2)"
               class="search-select"
             >
@@ -40,7 +40,7 @@
             </el-select>
           </el-col>
           <el-col :span="8" class="formSty">
-            <el-button>查询</el-button>
+            <el-button @click="requestData">查询</el-button>
             <el-button @click="openShareDialog">修改用户</el-button>
           </el-col>
         </el-row>
@@ -51,7 +51,7 @@
           style="width: 100%"
           ref="table"
           @selection-change="handleSelectionChange"
-					class="userTableSty"
+          class="userTableSty"
         >
           <el-table-column type="selection" width="55"></el-table-column>
           <el-table-column
@@ -107,6 +107,7 @@
             placeholder="--所有安全区--"
             @change="filterChange(2)"
             class="search-select"
+            style="width:200px"
           >
             <el-option
               v-for="(item, index) in userTypeList"
@@ -115,7 +116,7 @@
               :value="item.label"
             ></el-option>
           </el-select>
-          <el-input v-else v-model="formList[item.key]"></el-input>
+          <el-input v-else v-model="formList[item.key]" style="width:200px"></el-input>
         </el-form-item>
       </el-form>
       <el-row style="display: flex; justify-content: flex-end;">
@@ -495,10 +496,17 @@ export default {
       this.requestData();
     },
     openShareDialog() {
-      let { userName, userType } = JSON.parse(JSON.stringify(this.multipleSelection))[0]
-      this.formList = { userName, userType }
-      console.log(JSON.parse(JSON.stringify(this.multipleSelection)), this.formList, 'ssss');
-      this.dialogTableVisible = true
+      if (Object.keys(this.multipleSelection).length > 0) {
+        let { userName, userType } = JSON.parse(JSON.stringify(this.multipleSelection))[0]
+        this.formList = { userName, userType }
+        this.dialogTableVisible = true
+      } else {
+        this.$message({
+          message: '请选择要删除的角色！',
+          type: 'warning'
+        })
+      }
+
     },
     closeDialog2() {
       // this.$refs.hostDetailPage.reloadDate()
@@ -516,9 +524,9 @@ export default {
 </script>
 <style lang="scss">
 .userTableSty {
-	.el-table__inner-wrapper{
-		height: 100% !important;
-	}
+  .el-table__inner-wrapper {
+    height: 100% !important;
+  }
 }
 .role-card {
   width: 100%;
@@ -651,7 +659,7 @@ export default {
 .table_class {
   overflow: scroll;
   background: #ffffff;
-  box-shadow: 0px 0px 8px 0px rgba(0, 0, 0, 0.1);
+  // box-shadow: 0px 0px 8px 0px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
   height: calc(100% - 0vh);
 }

@@ -3,7 +3,7 @@
     <header class="T-header">
       <div class="T-framework-logo-title">
         <svg-icon icon="gw_logo" class="T-framework-logo"></svg-icon>
-        <span class="T-framework-title">变电检修综合管理应用</span>
+        <span class="T-framework-title">i锡电综合管理应用</span>
       </div>
       <div class="right-pannel">
         <div class="user-info-container">

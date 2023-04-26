@@ -1,99 +1,104 @@
 <template>
   <div class="applicationStyle">
-    <el-row style="width: 99%; margin-left: 0.5%; height: calc(100% - 8vh)" class="switch-search">
-      <el-row class="formRow">
-        <el-col :span="8" class="formSty">
-          <span>应用名称：</span>
-          <el-select
-            v-model="filterData.appName"
-            filterable
-            clearable
-            placeholder="--所有应用名称--"
-            @change="filterChange(1)"
-            class="search-select"
-          >
-            <el-option
-              v-for="(item, index) in filterSelection.appNameList"
-              :key="index"
-              :label="item"
-              :value="item"
-            ></el-option>
-          </el-select>
-        </el-col>
-        <el-col :span="8" class="formSty">
-          <span>应用状态：</span>
-          <el-select
-            v-model="filterData.appStatus"
-            filterable
-            clearable
-            placeholder="--所有应用状态--"
-            @change="filterChange(2)"
-            class="search-select"
-          >
-            <el-option
-              v-for="(item, index) in filterSelection.appStatusList"
-              :key="index"
-              :label="item"
-              :value="item"
-            ></el-option>
-          </el-select>
-        </el-col>
-      </el-row>
-      <el-table
-        :data="tableList"
-        height="calc(100% - 2vh)"
-        :header-cell-style="{ background: '#11ac9b !important', color: '#ffffff', }"
-        :row-class-name="tableRowClassName"
-        style="width: 100%"
-        size="mini"
-        ref="table"
-      >
-        <el-table-column
-          label="序号"
-          align="center"
-          type="index"
-          :index="recordFormat"
-          width="80px"
-          min-width="80px"
-        />
-        <el-table-column
-          v-for="item in tableHeader"
-          :key="item.key"
-          :prop="item.key"
-          :label="item.label"
-          show-overflow-tooltip
-          align="center"
-          :min-width="item.minWidth"
-          :width="item.width"
+    <el-row style="width: 99%; margin-left: 0.5%; height: calc(100% - 0vh)" class="switch-search">
+      <el-card class="app-card">
+        <el-row class="formRow">
+          <el-col :span="8" class="formSty">
+            <span>应用名称：</span>
+            <el-select
+              v-model="filterData.appName"
+              filterable
+              clearable
+              placeholder="--所有应用名称--"
+              @change="filterChange(1)"
+              class="search-select"
+            >
+              <el-option
+                v-for="(item, index) in filterSelection.appNameList"
+                :key="index"
+                :label="item"
+                :value="item"
+              ></el-option>
+            </el-select>
+          </el-col>
+          <el-col :span="8" class="formSty">
+            <span>应用状态：</span>
+            <el-select
+              v-model="filterData.appStatus"
+              filterable
+              clearable
+              placeholder="--所有应用状态--"
+              @change="filterChange(2)"
+              class="search-select"
+            >
+              <el-option
+                v-for="(item, index) in filterSelection.appStatusList"
+                :key="index"
+                :label="item"
+                :value="item"
+              ></el-option>
+            </el-select>
+          </el-col>
+        </el-row>
+        <el-table
+          :data="tableList"
+          height="calc(100% - 12vh)"
+          :header-cell-style="{ background: '#11ac9b !important', color: '#ffffff', }"
+          :row-class-name="tableRowClassName"
+          style="width: 100%"
+          size="mini"
+          ref="table"
+          class="userTableSty"
         >
-          <template v-slot="scope">
-            <span v-if="item.key === 'operate'">
-              <el-button type="text" @click="openShareDialog(scope.row)">
-                <el-icon>
-                  <Share />
-                </el-icon>
-                <span>测试链接</span>
-              </el-button>
-              <el-button type="text">
-                <el-icon>
-                  <Tools />
-                </el-icon>
-                <span>用户配置</span>
-              </el-button>
-            </span>
-            <span v-else>{{ scope.row[item.key] }}</span>
-          </template>
-        </el-table-column>
-      </el-table>
-      <el-pagination
-        :current-page="page"
-        :page-sizes="[10, 20, 50, 100]"
-        :page-size="pageSize"
-        layout="total, sizes, prev, pager, next, jumper"
-        :total="serviceTotal"
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-      />
+          <el-table-column
+            label="序号"
+            align="center"
+            type="index"
+            :index="recordFormat"
+            width="80px"
+            min-width="80px"
+          />
+          <el-table-column
+            v-for="item in tableHeader"
+            :key="item.key"
+            :prop="item.key"
+            :label="item.label"
+            show-overflow-tooltip
+            align="center"
+            :min-width="item.minWidth"
+            :width="item.width"
+          >
+            <template v-slot="scope">
+              <span v-if="item.key === 'operate'">
+                <el-button type="text" @click="openShareDialog(scope.row)">
+                  <el-icon>
+                    <Share />
+                  </el-icon>
+                  <span>测试链接</span>
+                </el-button>
+                <el-button type="text">
+                  <el-icon>
+                    <Tools />
+                  </el-icon>
+                  <span>用户配置</span>
+                </el-button>
+              </span>
+              <span v-else>{{ scope.row[item.key] }}</span>
+            </template>
+          </el-table-column>
+        </el-table>
+        <el-row style="width: 100%; display: flex; justify-content: flex-end;line-height: 44px">
+          <el-pagination
+            :current-page="page"
+            :page-sizes="[10, 20, 50, 100]"
+            :page-size="pageSize"
+            layout="total, sizes, prev, pager, next, jumper"
+            :total="serviceTotal"
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+          />
+        </el-row>
+      </el-card>
     </el-row>
 
     <el-dialog
@@ -203,9 +208,15 @@ export default {
 }
 </script>
 <style lang="scss">
-.box-card {
+.userTableSty {
+  .el-table__inner-wrapper {
+    height: 100% !important;
+  }
+}
+.app-card {
+  width: 100%;
   .el-card__body {
-    padding: 0;
+    padding: 5px;
     height: 100%;
   }
 }

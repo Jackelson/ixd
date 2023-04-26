@@ -3,16 +3,28 @@
     <el-row style=" height: calc(100% - 0vh)">
       <!--左侧栏-->
       <el-col :xl="5" :lg="5">
-        <el-row type="flex" align="middle">
+        <el-row type="flex" align="middle" style="height:40px;line-height:40px;margin-left: 0.5%">
           <el-col
             class="title_table"
             :span="5"
-            style="font-size:16px;color:#666;font-family: Microsoft YaHei;font-weight: bold;margin:20px 0"
+            style="font-size:1.5vh;color:#666;font-family: Microsoft YaHei;font-weight: bold;"
           >部门分组</el-col>
-          <el-col class="edit" :span="14">
-            <el-button :disabled="btnStatus || createNodeStatus" @click="handleCreateNode">添加</el-button>
-            <el-button :disabled="btnStatus || updataNodeStatus" @click="handleUpdateNode">编辑</el-button>
-            <el-button :disabled="btnStatus || deleteNodeStatus" @click="handleDeleteNode">删除</el-button>
+          <el-col class="edit" :span="18">
+            <el-button
+              class="smallBtn"
+              :disabled="btnStatus || createNodeStatus"
+              @click="handleCreateNode"
+            >添加</el-button>
+            <el-button
+              class="smallBtn"
+              :disabled="btnStatus || updataNodeStatus"
+              @click="handleUpdateNode"
+            >编辑</el-button>
+            <el-button
+              class="smallBtn"
+              :disabled="btnStatus || deleteNodeStatus"
+              @click="handleDeleteNode"
+            >删除</el-button>
           </el-col>
         </el-row>
 
@@ -35,7 +47,7 @@
       </el-col>
       <!--右侧栏-->
       <el-col :xl="19" :lg="19">
-        <el-row style="height:40px;line-height:40px;" type="flex">
+        <el-row style="height:40px;line-height:40px;margin-left: 0.5%" type="flex">
           <el-col class="edit" :span="16">
             <el-button @click="addDialog">新增角色</el-button>
             <el-button @click="handleUpdate">修改角色</el-button>
@@ -43,7 +55,7 @@
           </el-col>
         </el-row>
         <!-- 表格 -->
-        <el-row style="height: calc(100% - 40px)">
+        <el-row style="width: 99%;margin-left: 0.5%; height: calc(100% - 40px)">
           <el-card class="role-card">
             <el-table
               ref="multipleTable"
@@ -235,7 +247,7 @@ export default {
       dialogStatus: '',
       dialogAdd: false,
       dialogStop: false,
-			dialogDelRole: false,
+      dialogDelRole: false,
       changeTxt: '是否修改该任务状态？',
       adjustVisible: false, // 侧拉弹窗
       height: document.documentElement.clientHeight,
@@ -489,8 +501,8 @@ export default {
     },
     // 删除角色
     deleteDataRole() {
-			let params = this.selectRows.map(item => item.roleId)
-			console.log(params, 'params');
+      let params = this.selectRows.map(item => item.roleId)
+      console.log(params, 'params');
       roleApi.deleteRoleData(params).then(res => {
         console.log(res, 'deleteData');
         this.dialogDelRole = false
@@ -542,7 +554,7 @@ export default {
       // 如果是选中
       if (this.selected === true) {
         this.selectRows = rows
-				console.log(this.selectRows, 'sssssssssssssssssss');
+        console.log(this.selectRows, 'sssssssssssssssssss');
         setTimeout(() => {
           domes[index].classList.add('isactive')
         }, 100)
@@ -613,6 +625,14 @@ export default {
 <style lang="scss" scoped>
 .app-container {
   height: 100%;
+  background-color: #f0f8f8;
+
+}
+
+.smallBtn {
+  font-size: calc(100vw / 1920 * 16);
+  padding: 5px 10px;
+  height: auto;
 }
 .select {
   color: #909399;
@@ -670,11 +690,11 @@ export default {
   }
 }
 .table_class {
-  overflow: scroll;
+  // overflow: scroll;
   background: #ffffff;
-  box-shadow: 0px 0px 8px 0px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
-  height: calc(100% - 5.9vh);
+  height: calc(100% - 3.9vh);
+	box-shadow: 0px 0px 12px rgba(0, 0, 0, 0.12);;
 }
 </style>
 
