@@ -119,24 +119,6 @@
       source="task"
     />
 
-    <!--删除角色-->
-    <el-dialog
-      title="删除角色"
-      v-model="dialogStop"
-      class="confirmDialog"
-      :close-on-click-modal="false"
-    >
-      <el-row type="flex" justify="center">
-        <div class="img-tip" />
-      </el-row>
-      <el-row type="flex" justify="center" style="margin:20px 0">
-        <span class="message">{{ changeTxt }}</span>
-      </el-row>
-      <div class="dialog-footer">
-        <el-button @click="dialogStop = false">取 消</el-button>
-        <el-button type="primary" @click="deleteDataRole">确 认</el-button>
-      </div>
-    </el-dialog>
     <!-- 组织新增/编辑弹窗 -->
     <el-dialog
       :title="groupText[groupDialogStatus]"
@@ -240,6 +222,7 @@ export default {
         { label: '创建时间', key: 'createTime' },
       ],
       multipleSelection: [],
+      selectRows: [],
       statusOptions: [],
       temp: {},
       highlight: true,
@@ -570,6 +553,7 @@ export default {
     addDialog() {
       this.highlight = false
       this.temp = {}
+      this.resetSelect()
       this.dialogTitle = '新增角色'
       this.dialogStatus = 'create'
       this.dialogAdd = true
@@ -581,6 +565,9 @@ export default {
         this.dialogTitle = '修改角色'
         this.dialogStatus = 'update'
         this.dialogAdd = true
+				// 重置表格勾选
+        this.selectRows = []
+        this.$refs.multipleTable.clearSelection()
 
       } else {
         this.$message({
@@ -596,7 +583,7 @@ export default {
         this.dialogDelRole = true
       } else {
         this.$message({
-          message: '请选择要删除的角色！',
+          message: '请勾选要删除的角色！',
           type: 'warning'
         })
       }
@@ -626,7 +613,6 @@ export default {
 .app-container {
   height: 100%;
   background-color: #f0f8f8;
-
 }
 
 .smallBtn {
@@ -694,7 +680,7 @@ export default {
   background: #ffffff;
   border-radius: 8px;
   height: calc(100% - 3.9vh);
-	box-shadow: 0px 0px 12px rgba(0, 0, 0, 0.12);;
+  box-shadow: 0px 0px 12px rgba(0, 0, 0, 0.12);
 }
 </style>
 

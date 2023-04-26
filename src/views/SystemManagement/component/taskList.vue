@@ -18,6 +18,14 @@
       <div v-for="(item,index) in formHeader" :key="index">
         <el-form-item :label="item.label" :prop="item.key">
           <el-input v-if="item.key === 'menu'" v-model="temp[item.key]" style="width:90%" />
+          <el-radio-group v-else-if="item.key === 'menuCheckStrictly'" v-model="temp[item.key]">
+            <el-radio :label= true>选择</el-radio>
+            <el-radio :label=false>不选择</el-radio>
+          </el-radio-group>
+          <el-radio-group v-else-if="item.key === 'deptCheckStrictly'" v-model="temp[item.key]">
+            <el-radio :label= true>选择</el-radio>
+            <el-radio :label=false>不选择</el-radio>
+          </el-radio-group>
           <el-input v-else v-model="temp[item.key]" style="width:90%" />
         </el-form-item>
       </div>
@@ -67,13 +75,13 @@ export default {
         { label: '角色名称', key: 'roleName' },
         { label: '角色排序', key: 'roleSort' },
         { label: '菜单权限', key: 'menuIds' },
-        { label: '更新方式', key: 'updateBy' },
-        { label: '更新时间', key: 'updateTime' },
-        { label: '备注', key: 'remark' },
+        // { label: '更新方式', key: 'updateBy' },
+        // { label: '更新时间', key: 'updateTime' },
         { label: '数据分数', key: 'dataScope' },
         { label: '菜单选中', key: 'menuCheckStrictly' },
         { label: '组织选中', key: 'deptCheckStrictly' },
         { label: '组织ID', key: 'deptIds' },
+        { label: '备注', key: 'remark' },
       ],
       rules: {
       },
@@ -171,7 +179,7 @@ export default {
           //   ]
           // }
           roleApi.insertRoleData(data).then(res => {
-						this.$parent.getList()
+            this.$parent.getList()
             console.log(res, 'res');
             this.groupVisible = false
             this.$message({
@@ -188,11 +196,11 @@ export default {
       this.$refs['dataform'].validate((valid) => {
         if (valid) {
           const data = Object.assign({}, this.temp)
-          let { roleId, remark, roleName, roleKey, status, delFlag, update_by} = data
-					let params = { roleId, remark, roleName, roleKey, status, delFlag, update_by}
+          let { roleId, remark, roleName, roleKey, status, delFlag, update_by } = data
+          let params = { roleId, remark, roleName, roleKey, status, delFlag, update_by }
           console.log(data, 'data')
           roleApi.updateRoleData(params).then(res => {
-						this.$parent.getList()
+            this.$parent.getList()
             console.log(res, 'res');
             this.groupVisible = false
             this.$message({
@@ -203,9 +211,6 @@ export default {
         }
       })
     },
-    applicantChange(id) {
-      this.temp.org_id = this._.find(this.userOptions, { id }).org_id
-    }
   }
 }
 </script>

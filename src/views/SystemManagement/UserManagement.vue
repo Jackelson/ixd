@@ -3,9 +3,10 @@
     <el-row style="width: 99%; margin-left: 0.5%; height: calc(100% - 0vh)" class="switch-search">
       <el-card class="role-card">
         <el-row class="formRow">
-          <el-col :span="8" class="formSty">
+          <el-col :span="6" class="formSty">
             <span>用户名：</span>
-            <el-select
+						<el-input v-model="filterData.appName" style="width:200px"></el-input>
+            <!-- <el-select
               v-model="filterData.appName"
               filterable
               clearable
@@ -19,11 +20,12 @@
                 :label="item"
                 :value="item"
               ></el-option>
-            </el-select>
+            </el-select> -->
           </el-col>
-          <el-col :span="8" class="formSty">
+          <el-col :span="6" class="formSty">
             <span>角色：</span>
-            <el-select
+						<el-input v-model="filterData.appStatus" style="width:200px"></el-input>
+            <!-- <el-select
               v-model="filterData.appStatus"
               filterable
               clearable
@@ -37,21 +39,30 @@
                 :label="item"
                 :value="item"
               ></el-option>
-            </el-select>
+            </el-select> -->
           </el-col>
           <el-col :span="8" class="formSty">
-            <el-button @click="requestData">查询</el-button>
-            <el-button @click="openShareDialog">修改用户</el-button>
+            <el-button @click="searchList">查询</el-button>
+          </el-col>
+        </el-row>
+        <el-row class="formRow">
+          <el-col :span="8" class="formSty">
+            <el-button @click="searchList">查询</el-button>
+            <el-button @click="addDialog">新增用户</el-button>
+            <el-button @click="handleUpdate">修改用户</el-button>
+            <el-button @click="handleStop">删除用户</el-button>
           </el-col>
         </el-row>
         <el-table
           :data="tableList"
-          height="calc(100% - 12vh)"
+          height="calc(100% - 17vh)"
           :header-cell-style="{ background: '#11ac9b !important', color: '#ffffff', }"
           style="width: 100%"
-          ref="table"
-          @selection-change="handleSelectionChange"
+          ref="multipleTable"
           class="userTableSty"
+          :highlight-current-row="highlight"
+          @row-click="rowClick"
+          @selection-change="handleSelectionChange"
         >
           <el-table-column type="selection" width="55"></el-table-column>
           <el-table-column
@@ -90,83 +101,55 @@
       </el-card>
     </el-row>
     <el-dialog
-      title="应用节点信息"
+      :title="dialogTitle"
       class="aboutDialog"
       v-model="dialogTableVisible"
-      width="45%"
-      height="400px"
-      @close="closeDialog2"
+      @close="dialogTableVisible = false"
     >
-      <el-form class="aboutForm">
-        <el-form-item v-for="(item, index) in formLabel" :key="index" :label="item.label">
+      <el-form ref="dataform" :rules="rules" :model="temp" label-width="120px">
+        <el-form-item
+          v-for="(item, index) in formLabel"
+          :key="index"
+          :label="item.label"
+          :prop="item.key"
+        >
           <el-select
-            v-model="formList[item.key]"
+            v-model="temp[item.key]"
             v-if="item.key === 'userType'"
             filterable
             clearable
-            placeholder="--所有安全区--"
+            placeholder="--请选择用户角色--"
             @change="filterChange(2)"
             class="search-select"
-            style="width:200px"
           >
             <el-option
               v-for="(item, index) in userTypeList"
               :key="index"
               :label="item.label"
-              :value="item.label"
+              :value="item.key"
             ></el-option>
           </el-select>
-          <el-input v-else v-model="formList[item.key]" style="width:200px"></el-input>
+          <el-radio-group v-else-if="item.key === 'sex'" v-model="temp[item.key]">
+            <el-radio :label="0">男</el-radio>
+            <el-radio :label="1">女</el-radio>
+          </el-radio-group>
+          <el-radio-group v-else-if="item.key === 'admin'" v-model="temp[item.key]">
+            <el-radio :label="true">是</el-radio>
+            <el-radio :label="false">否</el-radio>
+          </el-radio-group>
+          <el-input v-else v-model="temp[item.key]" style="width:200px"></el-input>
         </el-form-item>
       </el-form>
       <el-row style="display: flex; justify-content: flex-end;">
-        <el-button @click="cancelForm">取消</el-button>
-        <el-button @click="confirmForm">确定</el-button>
+        <el-button @click="dialogTableVisible = false">取消</el-button>
+        <el-button v-if="dialogStatus==='create'" type="primary" @click="createData">确定</el-button>
+        <el-button v-else-if="dialogStatus==='update'" type="primary" @click="updateData">确定</el-button>
       </el-row>
     </el-dialog>
-
-    <!-- 组织新增/编辑弹窗 -->
+    <!--删除 角色 弹框部分-->
     <el-dialog
-      :title="groupText[groupDialogStatus]"
-      class="aboutDialog"
-      width="45%"
-      height="400px"
-      v-model="dialogVisible"
-      :close-on-click-modal="false"
-    >
-      <el-form
-        ref="groupform"
-        :model="groupTemp"
-        label-position="right"
-        label-width="100px"
-        :rules="groupRule"
-        class="editForm"
-      >
-        <el-form-item
-          v-for="item in groupFormHeader"
-          :key="item.key"
-          :label="item.label"
-          :prop="item.key"
-        >
-          <el-input
-            v-if="item.key === 'deptId' && groupDialogStatus==='create'"
-            disabled
-            v-model="groupTemp[item.key]"
-            style="width:90%;"
-          />
-          <el-input v-else v-model="groupTemp[item.key]" style="width:90%;" />
-        </el-form-item>
-      </el-form>
-      <div class="dialog-footer">
-        <el-button @click="dialogVisible = false">取消</el-button>
-        <el-button v-if="groupDialogStatus==='create'" type="primary" @click="createGroup">提交</el-button>
-        <el-button v-else-if="groupDialogStatus==='update'" type="primary" @click="updateGroup">提交</el-button>
-      </div>
-    </el-dialog>
-    <!--删除 部门分组 弹框部分-->
-    <el-dialog
-      title="删除部门"
-      v-model="dialogDelNode"
+      title="删除角色"
+      v-model="dialogDelRole"
       class="confirmDialog"
       :close-on-click-modal="false"
     >
@@ -174,36 +157,37 @@
         <div class="img-tip" />
       </el-row>
       <el-row type="flex" justify="center" style="margin:20px 0">
-        <span class="message">是否删除所选部门</span>
+        <span class="message">是否删除所选用户</span>
       </el-row>
-      <div class="dialog-footer">
-        <el-button @click="dialogDelNode=false">取 消</el-button>
-        <el-button type="primary" @click="deleteDataNode">确 认</el-button>
-      </div>
+      <el-row style="display: flex; justify-content: flex-end;">
+        <el-button @click="dialogDelRole=false">取 消</el-button>
+        <el-button type="primary" @click="deleteDataRole">确 认</el-button>
+      </el-row>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import { transTree } from '@/api/transTree_.js'
-import * as api from "@/api/system"
-// import { Share, Tools } from '@element-plus/icons-vue'
+import * as api from "@/api/user"
 export default {
-  // eslint-disable-next-line vue/multi-word-component-names
-  name: 'Application',
   components: {
   },
   data() {
     return {
       dialogTableVisible: false,
+      dialogTitle: '',
+      dialogStatus: 'create',
+      dialogDelRole: false,
       tableData: {},
       multipleSelection: [],
+      highlight: true,
+      temp: {},
       tableList: [
-        { userName: '张三', userType: '管理员', address: '无', email: 'user4', phone: '', remark: '测试链接 用户配置' },
-        { userName: '张三', userType: '管理员', address: '无', email: 'user4', phone: '', remark: '测试链接 用户配置' },
-        { userName: '张三', userType: '管理员', address: '无', email: 'user4', phone: '', remark: '测试链接 用户配置' },
-        { userName: '张三', userType: '管理员', address: '无', email: 'user4', phone: '', remark: '测试链接 用户配置' },
-        { userName: '张三', userType: '管理员', address: '无', email: 'user4', phone: '', remark: '测试链接 用户配置' },
+        { userName: '张三', userType: '管理员', address: '无', email: 'user4', phone: '', remark: '' },
+        { userName: '张三', userType: '管理员', address: '无', email: 'user4', phone: '', remark: '' },
+        { userName: '张三', userType: '管理员', address: '无', email: 'user4', phone: '', remark: '' },
+        { userName: '张三', userType: '管理员', address: '无', email: 'user4', phone: '', remark: '' },
+        { userName: '张三', userType: '管理员', address: '无', email: 'user4', phone: '', remark: '' },
       ],
       serviceTotal: 0,
       page: 1,
@@ -212,7 +196,7 @@ export default {
         { label: '用户名', key: 'userName' },
         { label: '用户角色', key: 'userType' },
         { label: '单位信息', key: 'address' },
-        { label: '手机号码', key: 'phone' },
+        { label: '手机号码', key: 'phonenumber' },
         { label: '电子邮箱', key: 'email' },
         { label: '备注', key: 'remark' },
       ],
@@ -227,62 +211,27 @@ export default {
       formLabel: [
         { label: '用户名', key: 'userName' },
         { label: '用户角色', key: 'userType' },
+        { label: '电子邮箱', key: 'email' },
+        { label: '手机号码', key: 'phonenumber' },
+        { label: '性别', key: 'sex' },
+        { label: '管理员', key: 'admin' },
+        { label: '密码', key: 'password' },
+        // { label: '状态', key: 'status' },
+        { label: '备注', key: 'remark' },
       ],
+      rules: {},
       formList: {
         userName: '',
         userType: '',
       },
       userTypeList: [
-        { label: '管理员', key: 'admin' },
-        { label: '运维专责', key: 'admin1' },
-        { label: '业务部门主任', key: 'admin2' },
-        { label: '业务部门管理专责', key: 'admin3' },
-        { label: '子应用管理员', key: 'admin4' },
-        { label: '子应用业务专责', key: 'admin5' },
+        { label: '管理员', key: '00' },
+        { label: '运维专责', key: '11' },
+        { label: '业务部门主任', key: '22' },
+        { label: '业务部门管理专责', key: '33' },
+        { label: '子应用管理员', key: '44' },
+        { label: '子应用业务专责', key: '55' },
       ],
-      dialogVisible: false, // 往下是组织架构的相关数据
-      dialogDelNode: false,
-      groupOptions: [], // 获取组织
-      groupList: [],
-      groupChildren: 0,
-      selectGroupId: null, // 选中的部门
-      selectGroup: {}, // 选中的部门的信息
-      selectGroup_path: null, // 选中的部门的group_path
-      createNodeStatus: true,
-      updataNodeStatus: true,
-      deleteNodeStatus: true,
-      groupText: {
-        create: '新增部门',
-        update: '编辑部门'
-      },
-      groupDialogStatus: null,
-      resetStatus: null,
-      defaultProps: {
-        children: 'children',
-        label: 'label'
-      },
-      groupFormHeader: [
-        { label: 'ID', key: 'deptId' },
-        { label: '节点', key: 'parentId' },
-        { label: '名称', key: 'deptName' },
-        { label: '次序', key: 'orderNum' },
-        { label: '领导', key: 'leader' },
-        { label: '手机号码', key: 'phone' },
-        { label: '电子邮箱', key: 'email' },
-        { label: '状态', key: 'status' },
-        { label: '创建方式', key: 'createBy' },
-      ],
-      groupTemp: {
-        deptId: '',
-        parentId: 102,
-        deptName: "运维部门",
-        orderNum: 3,
-        leader: "若依",
-        phone: "15888888888",
-        email: "ry@qq.com",
-        status: "0",
-        createBy: "akjjsdkadkasjdksa"
-      },
     }
   },
   watch: {
@@ -294,192 +243,40 @@ export default {
     }
   },
   created() {
-    this.getGroup()
+    this.getList()
   },
   mounted() {
 
   },
   methods: {
-    // 左侧tree结构
-    getGroup() {
-      let param = {}
-      api.selectData(param).then(res => {
+		searchList() {
+			let param = {
+				appName: this.filterData.appName,
+				appStatus: this.filterData.appStatus,
+			}
+			this.getList(param)
+		},
+    // 查询表单
+    getList(val) {
+      let params = val || {}
+      api.selectUserData(params).then(res => {
         console.log(res, 'res');
-        this.sqGroupOptions = res.data
-        const groupsData = res.data
-        // this.groupsData = res.data
-        for (let n = 0; n < groupsData.length; n++) {
-          groupsData[n].label = groupsData[n].deptName
-        }
-        const jsonDataTree = transTree(groupsData, 'deptId', 'parentId', 'children')
-        this.groupList = this.dg(jsonDataTree)
-        console.log(groupsData, this.groupList, '8888');
-        this.groupChildren = groupsData.children ? groupsData.children.length : 0
+        this.tableList = res.data
       })
-    },
-    // 根据树结构节点id从树结构数据中获取节点数据
-    dg(data) {
-      let arr = []
-      let _this = this
-      if (data) {
-        data.forEach(item => {
-          item.label = item.deptName
-          if (item.children || item.children === null) {
-            item.children.label = item.children.deptName
-            _this.dg(item.children)
-          }
-          arr.push(item)
-        });
-        return arr
-      } else {
-        return null
-      }
-
-    },
-    // 组织架构的相关信息
-    handleNodeClick(data, node) {
-      this.selectGroupId = data.deptId
-      this.selectGroup = data
-      console.log(data, node, 'datatreezzzzzz')
-      this.resetSelect()
-      this.groupChildren = data.children ? data.children.length : 0
-      // 获取节点
-      this.level = node.level
-
-      if (this.btnStatus === false) {
-        this.updataNodeStatus = false
-      } else {
-        this.updataNodeStatus = true
-      }
-
-      if (this.btnStatus === false) {
-        this.createNodeStatus = false
-      } else {
-        this.createNodeStatus = true
-      }
-      if (this.groupChildren > 0) {
-        this.deleteNodeStatus = true
-      } else {
-        if (this.btnStatus === false) {
-          this.deleteNodeStatus = false
-        } else {
-          this.deleteNodeStatus = true
-        }
-      }
-    },
-    handleCreateNode() {
-      // this.kindOptions = this.getGroupKindOptions(this.level + 1)
-      // console.log(this.kindOptions, 'kindOption')
-      // this.resetTemp()
-      const { parentId, deptName, orderNum, leader, phone, email, status, createBy } = this.selectGroup
-      this.groupTemp = { parentId, deptName, orderNum, leader, phone, email, status, createBy }
-      this.dialogVisible = true
-      this.groupDialogStatus = 'create'
-      console.log(this.dialogVisible);
-    },
-    handleUpdateNode() {
-      if (this.selectGroupId === null) {
-        this.$message({
-          message: '请选择要编辑的部门！',
-          type: 'warning'
-        })
-      } else {
-        console.log(this.selectGroup, 'selectGroup')
-        const { deptId, parentId, deptName, orderNum, leader, phone, email, status, createBy } = this.selectGroup
-        this.groupTemp = { deptId, parentId, deptName, orderNum, leader, phone, email, status, createBy }
-        this.groupDialogStatus = 'update'
-        this.dialogVisible = true
-        this.$nextTick(() => {
-          this.$refs['groupform'].clearValidate()
-        })
-      }
-    },
-    handleDeleteNode() {
-      if (this.selectGroupId === null) {
-        this.$message({
-          type: 'warning',
-          message: '请选择要删除的部门！'
-        })
-      } else {
-        this.dialogDelNode = true
-      }
-    },
-    // 提交部门
-    createGroup() {
-      this.$refs['groupform'].validate((valid) => {
-        if (valid) {
-          // this.groupTemp.parent_id = this.selectGroupId
-          api.insertData(this.groupTemp).then(res => {
-            console.log(res);
-            this.dialogVisible = false
-            // this.selectGroupId = null
-            this.groupList = []
-            this.searchValue = ''
-            this.getGroup()
-            this.resetTemp()
-            this.$message({
-              message: '新增成功！',
-              type: 'success'
-            })
-          })
-        }
-      })
-    },
-    // 编辑部门
-    updateGroup() {
-      this.$refs['groupform'].validate((valid) => {
-        if (valid) {
-          api.updateData(this.groupTemp).then((res) => {
-            console.log(res);
-            this.dialogVisible = false
-            this.groupList = []
-            this.searchValue = ''
-            this.selectGroupId = null
-            this.getGroup()
-            this.resetTemp()
-            this.$message({
-              message: '更新成功！',
-              type: 'success'
-            })
-          })
-        }
-      })
-    },
-    // 删除部门
-    deleteDataNode() {
-      api.deleteData({ deptId: this.selectGroupId }).then(res => {
-        console.log(res, 'deleteData');
-        this.dialogDelNode = false
-        this.groupList = []
-        this.searchValue = ''
-        this.selectGroupId = null
-        this.getGroup()
-        this.resetTemp()
-        this.$message({
-          message: '删除成功！',
-          type: 'success'
-        })
-      })
-    },
-    // 重置数据
-    resetTemp() {
-      this.temp = {}
-      this.groupTemp = {
-
-      }
-    },
-    resetSelect() {
-
-    },
-    requestData() {
-
     },
     filterChange(val) {
       console.log(val);
     },
     handleSelectionChange(val) {
-      this.multipleSelection = JSON.parse(JSON.stringify(val));
+      this.multipleSelection = val
+      // this.multipleSelection = JSON.parse(JSON.stringify(val));
       console.log(this.multipleSelection, this.tableList, 'val');
+    },
+    // 选中某行
+    rowClick(row) {
+      this.highlight = true
+      this.temp = Object.assign({}, row)
+      console.log(this.temp, 'sssss');
     },
     recordFormat(index) {
       const page = this.page;
@@ -488,37 +285,112 @@ export default {
     },
     handleCurrentChange(page) {
       this.page = page;
-      this.requestData();
+      this.getList();
     },
     handleSizeChange(pageSize) {
       this.page = 1;
       this.pageSize = pageSize;
-      this.requestData();
+      this.getList();
     },
-    openShareDialog() {
-      if (Object.keys(this.multipleSelection).length > 0) {
-        let { userName, userType } = JSON.parse(JSON.stringify(this.multipleSelection))[0]
-        this.formList = { userName, userType }
+    // 清空已选项数组，且置空所有选择
+    resetSelect() {
+      this.selectRows = []
+      this.temp = {}
+      this.$refs.multipleTable.clearSelection()
+    },
+    // 新增角色
+    addDialog() {
+      this.highlight = false
+      this.resetSelect()
+      this.dialogTitle = '新增用户'
+      this.dialogStatus = 'create'
+      this.dialogTableVisible = true
+      console.log(this.dialogTableVisible,);
+    },
+    // 编辑
+    handleUpdate() {
+      if (Object.keys(this.temp).length > 0) {
+        this.dialogTitle = '修改用户'
+        this.dialogStatus = 'update'
         this.dialogTableVisible = true
+        this.$refs.multipleTable.clearSelection()
+
       } else {
         this.$message({
-          message: '请选择要删除的角色！',
+          message: '请选择要修改的用户！',
           type: 'warning'
         })
       }
+    },
+    // 删除角色
+    handleStop() {
+      if (Object.keys(this.multipleSelection).length > 0) {
+        // this.changeTxt = '是否删除用户'
+        this.dialogDelRole = true
+      } else {
+        this.$message({
+          message: '请勾选要删除的用户！',
+          type: 'warning'
+        })
+      }
+    },
+    // 新增提交
+    createData() {
+      this.$refs['dataform'].validate((valid) => {
+        if (valid) {
+          const data = Object.assign({}, this.temp)
+          data.delFlag = "0"
+          data.status = "0"
+          data.nickName = data.userName
 
+          api.insertUserData(data).then(res => {
+            this.getList()
+            console.log(res, 'res');
+            this.dialogTableVisible = false
+            this.$message({
+              message: '更新成功！',
+              type: 'success'
+            })
+          })
+          console.log(data);
+        }
+      })
     },
-    closeDialog2() {
-      // this.$refs.hostDetailPage.reloadDate()
-      this.dialogTableVisible = false
+    // 编辑提交
+    updateData() {
+      this.$refs['dataform'].validate((valid) => {
+        if (valid) {
+          const data = Object.assign({}, this.temp)
+          console.log(this.temp, 44444444444);
+          let { userId,userType, remark, userName, nickName, email, phonenumber, sex,status } = data
+          let params = { userId, remark, userName, nickName, email, phonenumber, sex,status,userType }
+          console.log(data, 'data')
+          api.updateUserData(params).then(res => {
+            this.getList()
+            console.log(res, 'res');
+            this.dialogTableVisible = false
+            this.$message({
+              message: '更新成功！',
+              type: 'success'
+            })
+          })
+        }
+      })
     },
-    cancelForm() {
-      this.dialogTableVisible = false
+    // 删除用户
+    deleteDataRole() {
+      let params = this.multipleSelection.map(item => item.userId)
+      console.log(params, 'params');
+      api.deleteUserData(params).then(res => {
+        console.log(res, 'deleteData');
+        this.dialogDelRole = false
+        this.getList()
+        this.$message({
+          message: '删除成功！',
+          type: 'success'
+        })
+      })
     },
-    confirmForm() {
-      console.log("提交完成，关闭弹框");
-      this.dialogTableVisible = false
-    }
   }
 }
 </script>
@@ -623,6 +495,9 @@ export default {
 </style>
 
 <style lang='scss' scoped>
+.search-select {
+  width: 200px;
+}
 .applicationStyle {
   width: 100%;
   height: 100%;

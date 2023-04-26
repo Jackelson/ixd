@@ -33,18 +33,27 @@
               @open="handleOpen"
               @close="handleClose"
             >
-              <el-sub-menu :index="item.path" v-for="item in menus" :key="item.id">
-                <template #title>
-                  <!-- <el-icon><setting /></el-icon> -->
+              <template v-for="item in menus" :key="item.id">
+                <el-sub-menu v-if="item.children" :index="item.path">
+                  <template #title>
+                    <!-- <el-icon><setting /></el-icon> -->
+                    <svg-icon :icon="item.icon" class="svgIcon"></svg-icon>
+                    <span style="margin-left: 5px;">{{item.name}}</span>
+                  </template>
+                  <el-menu-item
+                    v-for="subItem in item.children"
+                    :key="subItem.id"
+                    :index="subItem.path"
+                  >
+                    <svg-icon :icon="subItem.icon" class="svgIcon"></svg-icon>
+                    <span style="margin-left: 5px;">{{subItem.name}}</span>
+                  </el-menu-item>
+                </el-sub-menu>
+                <el-menu-item v-if="!item.children" :key="item.id" :index="item.path">
                   <svg-icon :icon="item.icon" class="svgIcon"></svg-icon>
-                  <span>{{item.name}}</span>
-                </template>
-                <el-menu-item
-                  v-for="subItem in item.children"
-                  :key="subItem.id"
-                  :index="subItem.path"
-                >{{ subItem.name }}</el-menu-item>
-              </el-sub-menu>
+                  <span style="margin-left: 5px;">{{item.name}}</span>
+                </el-menu-item>
+              </template>
             </el-menu>
             <div class="collapse-icon" @click="handleMenu">&lt;</div>
           </div>
@@ -69,53 +78,50 @@ export default defineComponent({
       {
         id: '0',
         name: '首页',
-        icon: 'bg-security',
+        icon: '首页',
         path: '/dashBoard',
-        children: [
-          {
-            id: '0-1',
-            name: '首页',
-            path: '/dashBoard'
-          },
-        ]
       },
       {
         id: '1',
         name: '应用管理',
-        icon: 'bg-security',
+        icon: '应用管理',
         path: '/application',
-        children: [
-          {
-            id: '1-1',
-            name: '应用管理',
-            path: '/application'
-          },
-        ]
+        // children: [
+        //   {
+        //     id: '1-1',
+        //     name: '应用管理',
+        //     path: '/application'
+        //   },
+        // ]
       },
       {
         id: '2',
         name: '系统管理',
-        icon: 'bg-security',
+        icon: '系统管理',
         path: '/userManagement',
         children: [
           {
             id: '2-1',
             name: '用户管理',
+            icon: '用户管理',
             path: '/userManagement'
           },
           {
             id: '2-2',
             name: '角色管理',
+            icon: '角色管理',
             path: '/roleManagement'
           },
           {
             id: '2-3',
             name: '菜单管理',
+            icon: '菜单管理',
             path: '/menuManagement'
           },
           {
             id: '2-4',
             name: '轮播图管理',
+            icon: '轮播图管理',
             path: '/rotationManagement'
           }
         ]
@@ -149,6 +155,8 @@ export default defineComponent({
     padding: 0 15px;
     box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
     .T-framework-logo-title {
+      display: flex;
+      align-items: center;
       height: 60px;
       padding: 0 16px;
       text-align: center;
@@ -164,9 +172,9 @@ export default defineComponent({
         height: 50px !important;
         vertical-align: middle;
         line-height: 60px;
-        margin-right: 15px;
       }
       .T-framework-title {
+        margin-left: 15px !important;
         color: #000;
         font-weight: 700;
         white-space: nowrap;
