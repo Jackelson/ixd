@@ -5,6 +5,18 @@ html,body{
   margin: 0;
   overflow: hidden;
   background: #f5f6fa;
+
+	.el-button {
+		background-color: rgba(0, 128, 128, 1);
+		border-color: rgba(0, 128, 128, 1);
+		color: #FFFFFF;
+		&:focus, &:hover {
+			color: #FFFFFF;
+			border-color:  #00d1b2;
+			background-color:  #00d1b2;
+	}
+
+}
 }
 .svgIcon{
   margin: 0 8px;
@@ -38,3 +50,4 @@ html,body{
     height: calc(100% - 56px);
   }
 }
+

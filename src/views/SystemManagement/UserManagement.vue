@@ -496,7 +496,6 @@ export default {
   .formRow {
     height: 5.5vh;
     width: 98%;
-    margin-left: 1%;
     display: flex;
     align-items: center;
 

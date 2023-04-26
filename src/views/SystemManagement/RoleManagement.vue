@@ -1,113 +1,122 @@
 <template>
   <div class="app-container">
     <el-row style=" height: calc(100% - 0vh)">
-      <!--左侧栏-->
-      <el-col :xl="5" :lg="5">
-        <el-row type="flex" align="middle" style="height:40px;line-height:40px;margin-left: 0.5%">
-          <el-col
-            class="title_table"
-            :span="5"
-            style="font-size:1.5vh;color:#666;font-family: Microsoft YaHei;font-weight: bold;"
-          >部门分组</el-col>
-          <el-col class="edit" :span="18">
-            <el-button
-              class="smallBtn"
-              :disabled="btnStatus || createNodeStatus"
-              @click="handleCreateNode"
-            >添加</el-button>
-            <el-button
-              class="smallBtn"
-              :disabled="btnStatus || updataNodeStatus"
-              @click="handleUpdateNode"
-            >编辑</el-button>
-            <el-button
-              class="smallBtn"
-              :disabled="btnStatus || deleteNodeStatus"
-              @click="handleDeleteNode"
-            >删除</el-button>
-          </el-col>
-        </el-row>
-
-        <el-card class="table_class">
-          <el-tree
-            ref="tree"
-            draggable
-            :data="groupList"
-            :props="defaultProps"
-            :accordion="false"
-            :auto-expand-parent="false"
-            :highlight-current="true"
-            :default-expand-all="true"
-            :expand-on-click-node="false"
-            :filter-node-method="filterNode"
-            style="color:#666;font-family: Microsoft YaHei;"
-            @node-click="handleNodeClick"
-          />
-        </el-card>
-      </el-col>
-      <!--右侧栏-->
-      <el-col :xl="19" :lg="19">
-        <el-row style="height:40px;line-height:40px;margin-left: 0.5%" type="flex">
-          <el-col class="edit" :span="16">
-            <el-button @click="addDialog">新增角色</el-button>
-            <el-button @click="handleUpdate">修改角色</el-button>
-            <el-button @click="handleStop">删除角色</el-button>
-          </el-col>
-        </el-row>
-        <!-- 表格 -->
-        <el-row style="width: 99%;margin-left: 0.5%; height: calc(100% - 40px)">
-          <el-card class="role-card">
-            <el-table
-              ref="multipleTable"
-              :data="list"
-              height="calc(100% - 5vh)"
-              :header-cell-style="{ background: '#11ac9b !important', color: '#ffffff', }"
-              :highlight-current-row="highlight"
-              style="width: 100%"
-              :row-style="rowStyle"
-              @row-click="rowClick"
-              @selection-change="handleSelectionChange"
-              @select="onTableSelect"
+      <el-card class="role-card">
+        <el-row style=" height: calc(100% - 0vh)">
+          <!--左侧栏-->
+          <el-col :xl="4" :lg="5">
+            <el-row
+              type="flex"
+              align="middle"
+              style="height:40px;line-height:40px;margin-left: 0.5%"
             >
-              <el-table-column type="selection" width="55"></el-table-column>
-              <el-table-column
-                label="序号"
-                align="center"
-                type="index"
-                :index="recordFormat"
-                width="80px"
-                min-width="80px"
-              />
-              <el-table-column
-                v-for="item in tableHeader"
-                :key="item.key"
-                :label="item.label"
-                show-overflow-tooltip
-                align="center"
-                :min-width="item.minWidth"
-                :width="item.width"
-              >
-                <template v-slot="scope">
-                  <span>{{ scope.row[item.key] }}</span>
-                </template>
-              </el-table-column>
-            </el-table>
-
-            <!--分页查询-->
-            <el-row style="width: 100%; display: flex; justify-content: flex-end;">
-              <el-pagination
-                :current-page="page"
-                :page-sizes="[10, 20, 50, 100]"
-                :page-size="pageSize"
-                layout="total, sizes, prev, pager, next, jumper"
-                :total="serviceTotal"
-                @size-change="handleSizeChange"
-                @current-change="handleCurrentChange"
-              />
+              <el-col
+                class="title_table"
+                :span="5"
+                style="font-size:1.5vh;color:#666;font-family: Microsoft YaHei;font-weight: bold;"
+              >部门分组</el-col>
+              <el-col class="edit" :span="18">
+                <el-button
+                  class="smallBtn"
+                  :disabled="btnStatus || createNodeStatus"
+                  @click="handleCreateNode"
+                >添加</el-button>
+                <el-button
+                  class="smallBtn"
+                  :disabled="btnStatus || updataNodeStatus"
+                  @click="handleUpdateNode"
+                >编辑</el-button>
+                <el-button
+                  class="smallBtn"
+                  :disabled="btnStatus || deleteNodeStatus"
+                  @click="handleDeleteNode"
+                >删除</el-button>
+              </el-col>
             </el-row>
-          </el-card>
+
+            <!-- <el-card class="table_class"> -->
+            <el-tree
+              ref="tree"
+              draggable
+              :data="groupList"
+              :props="defaultProps"
+              :accordion="false"
+              :auto-expand-parent="false"
+              :highlight-current="true"
+              :default-expand-all="true"
+              :expand-on-click-node="false"
+              :filter-node-method="filterNode"
+              style="color:#666;font-family: Microsoft YaHei;"
+              @node-click="handleNodeClick"
+            />
+            <!-- </el-card> -->
+          </el-col>
+          <!--右侧栏-->
+          <el-col :xl="19" :lg="19" style="border-left: 1px solid #ebeef5;">
+            <el-row style="height:40px;line-height:40px;margin-left: 0.5%;" type="flex">
+              <el-col class="edit" :span="16">
+                <el-button @click="addDialog">新增角色</el-button>
+                <el-button @click="handleUpdate">修改角色</el-button>
+                <el-button @click="handleStop">删除角色</el-button>
+              </el-col>
+            </el-row>
+            <!-- 表格 -->
+            <el-row style="width: 99%;margin-left: 0.5%; height: calc(100% - 40px)">
+              <!-- <el-card class="role-card"> -->
+              <el-table
+                ref="multipleTable"
+                :data="list"
+                height="calc(100% - 8vh)"
+                :header-cell-style="{ background: '#11ac9b !important', color: '#ffffff', }"
+                :highlight-current-row="highlight"
+                style="width: 100%"
+								class="userTableSty"
+                :row-style="rowStyle"
+                @row-click="rowClick"
+                @selection-change="handleSelectionChange"
+                @select="onTableSelect"
+              >
+                <el-table-column type="selection" width="55"></el-table-column>
+                <el-table-column
+                  label="序号"
+                  align="center"
+                  type="index"
+                  :index="recordFormat"
+                  width="80px"
+                  min-width="80px"
+                />
+                <el-table-column
+                  v-for="item in tableHeader"
+                  :key="item.key"
+                  :label="item.label"
+                  show-overflow-tooltip
+                  align="center"
+                  :min-width="item.minWidth"
+                  :width="item.width"
+                >
+                  <template v-slot="scope">
+                    <span>{{ scope.row[item.key] }}</span>
+                  </template>
+                </el-table-column>
+              </el-table>
+
+              <!--分页查询-->
+              <el-row style="width: 100%; display: flex; justify-content: flex-end;">
+                <el-pagination
+                  :current-page="page"
+                  :page-sizes="[10, 20, 50, 100]"
+                  :page-size="pageSize"
+                  layout="total, sizes, prev, pager, next, jumper"
+                  :total="serviceTotal"
+                  @size-change="handleSizeChange"
+                  @current-change="handleCurrentChange"
+                />
+              </el-row>
+              <!-- </el-card> -->
+            </el-row>
+          </el-col>
         </el-row>
-      </el-col>
+      </el-card>
     </el-row>
 
     <!--弹框部分-->
@@ -565,7 +574,7 @@ export default {
         this.dialogTitle = '修改角色'
         this.dialogStatus = 'update'
         this.dialogAdd = true
-				// 重置表格勾选
+        // 重置表格勾选
         this.selectRows = []
         this.$refs.multipleTable.clearSelection()
 
@@ -593,6 +602,11 @@ export default {
 }
 </script>
 <style lang="scss">
+.userTableSty {
+  .el-table__inner-wrapper {
+    height: 100% !important;
+  }
+}
 .role-card {
   width: 100%;
   .el-card__body {
