@@ -144,7 +144,7 @@ export default defineComponent({
   box-sizing: border-box;
   .T-header {
     height: 66px;
-    background: #526ade;
+    background: #fff;
     position: relative;
     padding: 0 15px;
     box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
@@ -167,7 +167,7 @@ export default defineComponent({
         margin-right: 15px;
       }
       .T-framework-title {
-        color: #fff;
+        color: #000;
         font-weight: 700;
         white-space: nowrap;
         font-size: 24px;
@@ -195,14 +195,14 @@ export default defineComponent({
           bottom: 0;
           left: 0;
           border: 50px solid transparent;
-          border-bottom-color: #fff;
+          border-bottom-color: #d4f0ee;
         }
         .user-action {
           display: flex;
           align-items: center;
           border-radius: 0 4px 4px 0;
           height: 50px;
-          background: #fff;
+          background: #d4f0ee;
           > div {
             position: relative;
             font-size: 16px;
