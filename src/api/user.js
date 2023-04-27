@@ -20,3 +20,8 @@ export function deleteUserData(params) {
 export function getUserInfo(params) {
 	return post('/SysUser/getUserInfo',params)
 }
+
+export function selectUserByRoleId(params) {
+	return post('/SysUser/selectUserByRoleId',params)
+}
+

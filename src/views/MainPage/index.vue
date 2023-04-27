@@ -26,7 +26,7 @@
         <el-aside :width="isCollapse? '64px' : '200px'" class="T-aSide">
           <div class="T-side-container">
             <el-menu
-              :default-active="'1-1'"
+              :default-active="'1-4-1'"
               class="T-menu"
               :collapse="isCollapse"
               router
@@ -49,7 +49,7 @@
                     <span style="margin-left: 5px;">{{subItem.name}}</span>
                   </el-menu-item>
                 </el-sub-menu>
-                <el-menu-item v-if="!item.children" :key="item.id" :index="item.path">
+                <el-menu-item v-if="!item.children" :index="item.path">
                   <svg-icon :icon="item.icon" class="svgIcon"></svg-icon>
                   <span style="margin-left: 5px;">{{item.name}}</span>
                 </el-menu-item>
@@ -272,6 +272,9 @@ export default defineComponent({
             border-bottom-right-radius: 10px;
             background: linear-gradient(90deg, #f0f2fc, #fff);
             color: #666;
+          }
+          .el-sub-menu {
+            display: grid;
           }
         }
       }

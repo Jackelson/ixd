@@ -4,7 +4,7 @@
       <el-card class="role-card">
         <el-row style=" height: calc(100% - 0vh)">
           <!--左侧栏-->
-          <el-col :xl="4" :lg="5">
+          <el-col :span="5">
             <el-row
               type="flex"
               align="middle"
@@ -12,7 +12,7 @@
             >
               <el-col
                 class="title_table"
-                :span="5"
+                :span="6"
                 style="font-size:1.5vh;color:#666;font-family: Microsoft YaHei;font-weight: bold;"
               >部门分组</el-col>
               <el-col class="edit" :span="18">
@@ -52,7 +52,7 @@
             <!-- </el-card> -->
           </el-col>
           <!--右侧栏-->
-          <el-col :xl="19" :lg="19" style="border-left: 1px solid #ebeef5;">
+          <el-col :span="19" style="border-left: 1px solid #ebeef5;">
             <el-row style="height:40px;line-height:40px;margin-left: 0.5%;" type="flex">
               <el-col class="edit" :span="16">
                 <el-button @click="addDialog">新增角色</el-button>
@@ -66,11 +66,11 @@
               <el-table
                 ref="multipleTable"
                 :data="list"
-                height="calc(100% - 8vh)"
+                height="calc(100% - 7vh)"
                 :header-cell-style="{ background: '#11ac9b !important', color: '#ffffff', }"
                 :highlight-current-row="highlight"
                 style="width: 100%"
-								class="userTableSty"
+                class="roleTableSty"
                 :row-style="rowStyle"
                 @row-click="rowClick"
                 @selection-change="handleSelectionChange"
@@ -95,13 +95,18 @@
                   :width="item.width"
                 >
                   <template v-slot="scope">
-                    <span>{{ scope.row[item.key] }}</span>
+                    <span v-if="item.key === 'operation'">
+                      <el-button @click="searchUserList(scope.row)">查看用户</el-button>
+                    </span>
+                    <span v-else>{{ scope.row[item.key] }}</span>
                   </template>
                 </el-table-column>
               </el-table>
 
               <!--分页查询-->
-              <el-row style="width: 100%; display: flex; justify-content: flex-end;">
+              <el-row
+                style="width: 100%; display: flex; justify-content: flex-end;align-items: flex-start;"
+              >
                 <el-pagination
                   :current-page="page"
                   :page-sizes="[10, 20, 50, 100]"
@@ -125,6 +130,8 @@
       :dialog-status="dialogStatus"
       v-model:show="dialogAdd"
       :temp1="temp"
+      :groupList="groupList"
+      :menuList="menuList"
       source="task"
     />
 
@@ -155,6 +162,11 @@
             v-if="item.key === 'deptId' && groupDialogStatus==='create'"
             disabled
             v-model="groupTemp[item.key]"
+            style="width:90%;"
+          />
+          <el-input
+            v-else-if="item.key === 'orderNum'"
+            v-model.number="groupTemp[item.key]"
             style="width:90%;"
           />
           <el-input v-else v-model="groupTemp[item.key]" style="width:90%;" />
@@ -202,16 +214,20 @@
         <el-button type="primary" @click="deleteDataRole">确 认</el-button>
       </div>
     </el-dialog>
+    <!-- 用户弹框 -->
+    <UserList title="用户信息" v-model:show="dialogUser" :temp1="temp" :userList="userList" />
   </div>
 </template>
 <script>
 import { transTree } from '@/api/transTree_.js'
 import * as api from "@/api/system"
 import * as roleApi from "@/api/role"
+import * as userApi from "@/api/user"
 import TaskList from "./component/taskList.vue";
+import UserList from "./component/userList.vue";
 export default {
   name: 'TaskDistribute',
-  components: { TaskList },
+  components: { TaskList, UserList },
   data() {
     return {
       tableLoading: true,
@@ -219,17 +235,27 @@ export default {
       page: 1,
       pageSize: 10,
       list: [
-        // { sn: '002', name: '张三', sort: '1', create_ts: '2022-12-33' },
-        // { sn: '002', name: '张三', sort: '1', create_ts: '2022-12-33' },
-        // { sn: '002', name: '张三', sort: '1', create_ts: '2022-12-33' },
-        // { sn: '002', name: '张三', sort: '1', create_ts: '2022-12-33' },
+        { roleId: '002', roleName: '张三', roleSort: '1', createTime: '2022-12-33' },
+        { roleId: '002', roleName: '张三', roleSort: '1', createTime: '2022-12-33' },
+        { roleId: '002', roleName: '张三', roleSort: '1', createTime: '2022-12-33' },
+        { roleId: '002', roleName: '张三', roleSort: '1', createTime: '2022-12-33' },
+        { roleId: '002', roleName: '张三', roleSort: '1', createTime: '2022-12-33' },
       ],
       tableHeader: [
         { label: '角色编号', key: 'roleId' },
         { label: '角色名称', key: 'roleName' },
         { label: '角色排序', key: 'roleSort' },
         { label: '创建时间', key: 'createTime' },
+        { label: '操作', key: 'operation' },
       ],
+      userList: [
+        { roleId: '002', roleName: '张三', roleSort: '1', createTime: '2022-12-33' },
+        { roleId: '002', roleName: '张三', roleSort: '1', createTime: '2022-12-33' },
+        { roleId: '002', roleName: '张三', roleSort: '1', createTime: '2022-12-33' },
+        { roleId: '002', roleName: '张三', roleSort: '1', createTime: '2022-12-33' },
+        { roleId: '002', roleName: '张三', roleSort: '1', createTime: '2022-12-33' },
+      ],
+      dialogUser: false, // 用户信息弹框
       multipleSelection: [],
       selectRows: [],
       statusOptions: [],
@@ -246,7 +272,44 @@ export default {
       dialogVisible: false, // 往下是组织架构的相关数据
       dialogDelNode: false,
       groupOptions: [], // 获取组织
-      groupList: [],
+      groupList: [
+        {
+          label: '一级 1',
+          children: [{
+            label: '二级 1-1',
+            children: [{
+              label: '三级 1-1-1'
+            }]
+          }]
+        }, {
+          label: '一级 2',
+          children: [{
+            label: '二级 2-1',
+            children: [{
+              label: '三级 2-1-1'
+            }]
+          }, {
+            label: '二级 2-2',
+            children: [{
+              label: '三级 2-2-1'
+            }]
+          }]
+        }, {
+          label: '一级 3',
+          children: [{
+            label: '二级 3-1',
+            children: [{
+              label: '三级 3-1-1'
+            }]
+          }, {
+            label: '二级 3-2',
+            children: [{
+              label: '三级 3-2-1'
+            }]
+          }]
+        }
+      ],
+      menuList: [],
       groupChildren: 0,
       selectGroupId: null, // 选中的部门
       selectGroup: {}, // 选中的部门的信息
@@ -268,7 +331,7 @@ export default {
         { label: 'ID', key: 'deptId' },
         { label: '节点', key: 'parentId' },
         { label: '名称', key: 'deptName' },
-        { label: '次序', key: 'orderNum' },
+        // { label: '次序', key: 'orderNum' },
         { label: '领导', key: 'leader' },
         { label: '手机号码', key: 'phone' },
         { label: '电子邮箱', key: 'email' },
@@ -276,15 +339,7 @@ export default {
         { label: '创建方式', key: 'createBy' },
       ],
       groupTemp: {
-        deptId: '',
-        parentId: 102,
-        deptName: "运维部门",
-        orderNum: 3,
-        leader: "若依",
-        phone: "15888888888",
-        email: "ry@qq.com",
-        status: "0",
-        createBy: "akjjsdkadkasjdksa"
+
       },
     }
   },
@@ -296,10 +351,49 @@ export default {
   created() {
     this.getGroup()
     this.getList()
+    // 获取菜单tree
+    this.selectMenuTree()
   },
   mounted() {
   },
   methods: {
+    getList() {
+      let params = {
+        // "createBy": "123131313131",
+        // "createTime": "2023-04-12 10:53:10",
+        // "updateBy": "",
+        // "updateTime": null,
+        // "remark": "系统管理员",
+        // "roleName": "应用申请人员11",
+        // "roleKey": "ba66588b61496e2dee2dc7ee2629c68c",
+        // "roleSort": 1,
+        // "dataScope": "1",
+        // "menuCheckStrictly": true,
+        // "deptCheckStrictly": true,
+        // "menuIds": null,
+        // "deptIds": [1]
+      }
+      roleApi.selectAllRole(params).then(res => {
+        console.log(res, 'res');
+        this.list = res.data
+      })
+    },
+    selectRoleByDeptId(val) {
+      let param = { deptIds: [val] }
+      roleApi.selectRoleByDeptId(param).then(res => {
+        console.log(res, 'res');
+        this.list = res.data
+      })
+    },
+    // 
+    selectMenuTree() {
+      let param = { "params": { "userId": "1" } }
+      roleApi.selectMenuTree(param).then(res => {
+        console.log(res, 'res');
+        this.menuList = res.data
+        console.log(this.menuList, '8888777777777');
+      })
+    },
     // 左侧tree结构
     getGroup() {
       let param = {}
@@ -340,12 +434,11 @@ export default {
     handleNodeClick(data, node) {
       this.selectGroupId = data.deptId
       this.selectGroup = data
-      console.log(data, node, 'datatreezzzzzz')
       this.resetSelect()
       this.groupChildren = data.children ? data.children.length : 0
       // 获取节点
       this.level = node.level
-
+      console.log(data, node, this.level, 'datatreezzzzzz')
       if (this.btnStatus === false) {
         this.updataNodeStatus = false
       } else {
@@ -366,13 +459,19 @@ export default {
           this.deleteNodeStatus = true
         }
       }
+      if (this.level === 1) {
+        this.getList()
+      } else {
+        this.selectRoleByDeptId(this.selectGroupId)
+
+      }
     },
     handleCreateNode() {
       // this.kindOptions = this.getGroupKindOptions(this.level + 1)
       // console.log(this.kindOptions, 'kindOption')
       // this.resetTemp()
-      const { parentId, deptName, orderNum, leader, phone, email, status, createBy } = this.selectGroup
-      this.groupTemp = { parentId, deptName, orderNum, leader, phone, email, status, createBy }
+      // const { parentId, deptName, orderNum, leader, phone, email, status, createBy } = this.selectGroup
+      this.groupTemp = {}
       this.dialogVisible = true
       this.groupDialogStatus = 'create'
       console.log(this.dialogVisible);
@@ -408,7 +507,8 @@ export default {
     createGroup() {
       this.$refs['groupform'].validate((valid) => {
         if (valid) {
-          // this.groupTemp.parent_id = this.selectGroupId
+          this.groupTemp.parentId = this.selectGroupId
+          console.log(this.groupTemp, 'groupTemp');
           api.insertData(this.groupTemp).then(res => {
             console.log(res);
             this.dialogVisible = false
@@ -468,29 +568,7 @@ export default {
 
       }
     },
-    getList() {
-      let params = {
-        "createBy": "123131313131",
-        "createTime": "2023-04-12 10:53:10",
-        "updateBy": "",
-        "updateTime": null,
-        "remark": "系统管理员",
-        "roleName": "应用申请人员11",
-        "roleKey": "ba66588b61496e2dee2dc7ee2629c68c",
-        "roleSort": 1,
-        "dataScope": "1",
-        "menuCheckStrictly": true,
-        "deptCheckStrictly": true,
-        "menuIds": null,
-        "deptIds": [
-          1
-        ]
-      }
-      roleApi.selectAllRole(params).then(res => {
-        console.log(res, 'res');
-        this.list = res.data
-      })
-    },
+
     // 删除角色
     deleteDataRole() {
       let params = this.selectRows.map(item => item.roleId)
@@ -504,6 +582,15 @@ export default {
           type: 'success'
         })
       })
+    },
+    searchUserList(row) {
+      console.log(row, 'rowssssss');
+      let param = { roleId: row.roleId }
+      userApi.selectUserByRoleId(param).then(res => {
+        console.log(res);
+        this.userList = res.data
+      })
+      this.dialogUser = true
     },
     // 分页查询
     handleCurrentChange(val) {
@@ -567,6 +654,7 @@ export default {
       this.dialogStatus = 'create'
       this.dialogAdd = true
       console.log(this.dialogAdd,);
+
     },
     // 编辑
     handleUpdate() {
@@ -602,7 +690,7 @@ export default {
 }
 </script>
 <style lang="scss">
-.userTableSty {
+.roleTableSty {
   .el-table__inner-wrapper {
     height: 100% !important;
   }

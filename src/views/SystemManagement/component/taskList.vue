@@ -19,13 +19,67 @@
         <el-form-item :label="item.label" :prop="item.key">
           <el-input v-if="item.key === 'menu'" v-model="temp[item.key]" style="width:90%" />
           <el-radio-group v-else-if="item.key === 'menuCheckStrictly'" v-model="temp[item.key]">
-            <el-radio :label= true>选择</el-radio>
-            <el-radio :label=false>不选择</el-radio>
+            <el-radio :label="true">选择</el-radio>
+            <el-radio :label="false">不选择</el-radio>
           </el-radio-group>
           <el-radio-group v-else-if="item.key === 'deptCheckStrictly'" v-model="temp[item.key]">
-            <el-radio :label= true>选择</el-radio>
-            <el-radio :label=false>不选择</el-radio>
+            <el-radio :label="true">选择</el-radio>
+            <el-radio :label="false">不选择</el-radio>
           </el-radio-group>
+          <el-select
+            v-else-if="item.key === 'deptIds'"
+            v-model="form.treeData"
+            placeholder="请选择"
+            multiple
+						style="width: 90%;"
+            collapse-tags
+            @change="selectChange"
+          >
+            <el-option :value="treeDataValue" style="height: auto;">
+              <el-tree
+                ref="tree"
+                draggable
+                :data="groupList"
+                :props="defaultProps"
+                :accordion="false"
+                node-key="id"
+                @node-click="handleNodeClick"
+                :auto-expand-parent="false"
+                :highlight-current="true"
+                :default-expand-all="true"
+                :expand-on-click-node="false"
+                :filter-node-method="filterNode"
+                style="color:#666;font-family: Microsoft YaHei;"
+              />
+            </el-option>
+          </el-select>
+          <el-select
+            v-else-if="item.key === 'menuIds'"
+            v-model="form.menuTreeData"
+            placeholder="请选择"
+            multiple
+						style="width: 90%;"
+            collapse-tags
+            @change="selectChange"
+          >
+            <el-option :value="menuDataValue" style="height: auto;">
+              <el-tree
+                ref="tree"
+                draggable
+                :data="menuList"
+                :props="defaultProps"
+                :accordion="false"
+                node-key="id"
+                @node-click="handleMenuClick"
+                :auto-expand-parent="false"
+                :highlight-current="true"
+                :default-expand-all="true"
+                :expand-on-click-node="false"
+                :filter-node-method="filterNode"
+                style="color:#666;font-family: Microsoft YaHei;"
+              />
+            </el-option>
+          </el-select>
           <el-input v-else v-model="temp[item.key]" style="width:90%" />
         </el-form-item>
       </div>
@@ -46,6 +100,16 @@ export default {
     temp1: {
       require: true,
       type: Object,
+      default: null
+    },
+    groupList: {
+      require: true,
+      type: Array,
+      default: null
+    },
+		menuList: {
+      require: true,
+      type: Array,
       default: null
     },
     show: {
@@ -74,33 +138,31 @@ export default {
         { label: '角色编号', key: 'roleKey' },
         { label: '角色名称', key: 'roleName' },
         { label: '角色排序', key: 'roleSort' },
+        { label: '组织', key: 'deptIds' },
         { label: '菜单权限', key: 'menuIds' },
-        // { label: '更新方式', key: 'updateBy' },
-        // { label: '更新时间', key: 'updateTime' },
-        { label: '数据分数', key: 'dataScope' },
-        { label: '菜单选中', key: 'menuCheckStrictly' },
-        { label: '组织选中', key: 'deptCheckStrictly' },
-        { label: '组织ID', key: 'deptIds' },
+        // { label: '数据分数', key: 'dataScope' },
+        // { label: '菜单选中', key: 'menuCheckStrictly' },
+        // { label: '组织选中', key: 'deptCheckStrictly' },
         { label: '备注', key: 'remark' },
       ],
       rules: {
       },
       temp: {
-        createBy: "123131313131",
-        createTime: "2023-04-12 10:53:10",
-        updateBy: "",
-        updateTime: null,
-        remark: "系统管理员",
-        roleName: "应用申请人员11",
-        roleKey: "ba66588b61496e2dee2dc7ee2629c68c",
-        roleSort: 1,
-        dataScope: "1",
-        menuCheckStrictly: true,
-        deptCheckStrictly: true,
-        menuIds: null,
-        deptIds: [
-          1
-        ]
+        // createBy: "123131313131",
+        // createTime: "2023-04-12 10:53:10",
+        // updateBy: "",
+        // updateTime: null,
+        // remark: "系统管理员",
+        // roleName: "应用申请人员11",
+        // roleKey: "ba66588b61496e2dee2dc7ee2629c68c",
+        // roleSort: 1,
+        // dataScope: "1",
+        // menuCheckStrictly: true,
+        // deptCheckStrictly: true,
+        // menuIds: null,
+        // deptIds: [
+        //   1
+        // ]
       },
       listQuery: {
         _page: 0,
@@ -108,12 +170,19 @@ export default {
       },
       dialogTitle: '', // 弹框标题
       // dialogStatus: '',
-      userOptions: [], // 人员下拉选择
-      stationOptions: [], // 集输站下拉选择
-      wellOptions: [], // 油井下拉选择
-      truckOptions: [], // 车辆下拉选择
-      driverOptions: [], // 司机下拉选择
-      keyOptions: [] // 钥匙下拉选择
+      defaultProps: {
+        children: "children",
+        label: "label",
+				id: 'id'
+      },
+      treeDataValue: "",
+			menuDataValue: '',
+      form: {
+        treeData: [], // 多选
+        treeId: [],
+        menuTreeData: [], // 多选
+        menuTreeId: []
+      },
     }
   },
   watch: {
@@ -121,9 +190,7 @@ export default {
       handler(newValue) {
         this.groupVisible = newValue
         console.log(newValue, 'sdfsdddddd');
-        if (Object.keys(this.temp1).length > 0) {
           this.temp = this.temp1
-        }
       },
       deep: true
     }
@@ -132,6 +199,43 @@ export default {
   },
   mounted() { },
   methods: {
+
+    // 点击树节点
+    handleNodeClick(data, node, nodeData) {
+      // select 多选（判重后添加到选择结果数组中）
+      this.treeDataValue = data
+      let num = 0;
+      this.form.treeData.forEach(item => {
+        item == data.label ? num++ : num;
+      })
+      this.form.treeId.forEach(item => {
+        item == data.deptId ? num++ : num;
+      })
+      if (num == 0) {
+        this.form.treeData.push(data.label)
+        this.form.treeId.push(data.deptId)
+      }
+      console.log(data, node, nodeData,this.form,'sssssssssss');
+
+    },
+		handleMenuClick(data, node, nodeData) {
+      // select 多选（判重后添加到选择结果数组中）
+      this.menuTreeDataValue = data
+      let num = 0;
+      this.form.menuTreeData.forEach(item => {
+        item == data.label ? num++ : num;
+      })
+      this.form.menuTreeId.forEach(item => {
+        item == data.deptId ? num++ : num;
+      })
+      if (num == 0) {
+        this.form.menuTreeData.push(data.label)
+        this.form.menuTreeId.push(data.deptId)
+      }
+      console.log(data, node, nodeData,this.form,'sssssssssss');
+
+    },
+
     closeGroupVisible() {
       this.$emit('update:show', false)
       if (this.dialogStatus === 'create') {
@@ -161,26 +265,20 @@ export default {
       this.$refs['dataform'].validate((valid) => {
         if (valid) {
           const data = Object.assign({}, this.temp)
-          // let params = {
-          //   createBy: "123131313131",
-          //   createTime: "2023-04-12 10:53:10",
-          //   updateBy: "",
-          //   updateTime: null,
-          //   remark: "系统管理员",
-          //   roleName: "应用申请人员11",
-          //   roleKey: "ba66588b61496e2dee2dc7ee2629c68c",
-          //   roleSort: 1,
-          //   dataScope: "1",
-          //   menuCheckStrictly: true,
-          //   deptCheckStrictly: true,
-          //   menuIds: null,
-          //   deptIds: [
-          //     1
-          //   ]
-          // }
+          data.menuCheckStrictly = true
+          data.deptCheckStrictly = true
+					data.deptIds = this.form.treeId
+					data.menuIds = null
+					data.updateTime = null
+					data.updateBy = ''
+					data.dataScope = '1'
           roleApi.insertRoleData(data).then(res => {
             this.$parent.getList()
             console.log(res, 'res');
+						this.form = {
+							treeData: [],
+							treeId: []
+						}
             this.groupVisible = false
             this.$message({
               message: '更新成功！',

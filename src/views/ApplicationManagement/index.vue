@@ -48,7 +48,7 @@
           style="width: 100%"
           size="mini"
           ref="table"
-          class="userTableSty"
+          class="appTableSty"
         >
           <el-table-column
             label="序号"
@@ -208,7 +208,7 @@ export default {
 }
 </script>
 <style lang="scss">
-.userTableSty {
+.appTableSty {
   .el-table__inner-wrapper {
     height: 100% !important;
   }

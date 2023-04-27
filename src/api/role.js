@@ -23,3 +23,10 @@ export function selectAllRole(params) {
 export function updateRoleMenu(params) {
 	return post('/SysRole/updateRoleMenu',params)
 }
+export function selectRoleByDeptId(params) {
+	return post('/SysRole/selectRoleByDeptId',params)
+}
+
+export function selectMenuTree(params) {
+	return post('/SysMenu/selectMenuTree',params)
+}

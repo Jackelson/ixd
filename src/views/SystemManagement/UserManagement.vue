@@ -34,11 +34,11 @@
           </el-col>
         </el-row>
         <el-table
+          ref="multipleTable"
           :data="tableList"
           height="calc(100% - 17vh)"
           :header-cell-style="{ background: '#11ac9b !important', color: '#ffffff', }"
           style="width: 100%"
-          ref="multipleTable"
           class="userTableSty"
           :highlight-current-row="highlight"
           @row-click="rowClick"
@@ -67,7 +67,7 @@
             </template>
           </el-table-column>
         </el-table>
-        <el-row style="width: 100%; display: flex; justify-content: flex-end;line-height: 44px">
+        <el-row style="width: 100%; display: flex; justify-content: flex-end;align-items: flex-start;margin-top: 1vh;">
           <el-pagination
             :current-page="page"
             :page-sizes="[10, 20, 50, 100]"
@@ -163,7 +163,6 @@ export default {
       highlight: true,
       temp: {},
       tableList: [
-        {},
         // { userName: '张三', userType: '管理员', address: '无', email: 'user4', phone: '', remark: '' },
         // { userName: '张三', userType: '管理员', address: '无', email: 'user4', phone: '', remark: '' },
         // { userName: '张三', userType: '管理员', address: '无', email: 'user4', phone: '', remark: '' },
@@ -173,12 +172,12 @@ export default {
       page: 1,
       pageSize: 10,
       tableHeader: [
-        { label: '用户名', key: 'userName' },
-        { label: '用户角色', key: 'userType' },
-        { label: '单位信息', key: 'address' },
-        { label: '手机号码', key: 'phonenumber' },
-        { label: '电子邮箱', key: 'email' },
-        { label: '备注', key: 'remark' },
+        { label: '用户名', key: 'userName', minWidth: '80px'},
+        { label: '用户角色', key: 'userType', minWidth: '80px' },
+        { label: '单位信息', key: 'address', minWidth: '80px' },
+        { label: '手机号码', key: 'phonenumber', minWidth: '80px' },
+        { label: '电子邮箱', key: 'email', minWidth: '80px' },
+        { label: '备注', key: 'remark', minWidth: '80px' },
       ],
       filterData: {
         appName: "",
@@ -481,7 +480,7 @@ export default {
 .applicationStyle {
   width: 100%;
   height: 100%;
-  background-color: #f0f8f8;
+  // background-color: #f0f8f8;
 }
 // 表单及表格部分
 .switch-search {
