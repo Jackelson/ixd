@@ -3,7 +3,7 @@
 </template>
 <script>
 import * as echarts from 'echarts'
-import { provide } from 'vue'
+import { provide, onMounted } from 'vue'
 
 export default {
   name: 'App',
@@ -29,6 +29,9 @@ export default {
         super(callback);
       }
     }
+		onMounted(() => {
+      localStorage.setItem('createById', '1')
+    });
 
   },
   components: {

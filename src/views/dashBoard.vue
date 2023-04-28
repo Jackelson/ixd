@@ -226,15 +226,15 @@ export default {
   methods: {
     getData() {
       let params = {
-        "appName": "测试11",
-        "appDescribe": "1111",
-        "appSecretKey": "123123",
-        "appAffiliatedCompany": "1231231",
-        "contactPerson": "123123",
-        "contactPersonTel": "13951631328",
-        "contactEmail": "123@qq.com",
-        "dateStart": "2023-02-16 02:17:44",
-        "dateEnd": "2023-02-16 02:17:44"
+        // "appName": "测试11",
+        // "appDescribe": "1111",
+        // "appSecretKey": "123123",
+        // "appAffiliatedCompany": "1231231",
+        // "contactPerson": "123123",
+        // "contactPersonTel": "13951631328",
+        // "contactEmail": "123@qq.com",
+        // "dateStart": "2023-02-16 02:17:44",
+        // "dateEnd": "2023-02-16 02:17:44"
       }
       api.getAppInfo(params).then(res => {
         console.log(res, 'res');
