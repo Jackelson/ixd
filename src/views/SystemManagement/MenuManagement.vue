@@ -6,7 +6,7 @@
 				<el-input v-model="menuName" style="width:70%"></el-input>
 			</el-col>
       <el-col class="edit" :span="14">
-        <el-button>查询</el-button>
+        <el-button  @click="queryMenu">查询</el-button>
         <el-button @click="addDialog">新增菜单</el-button>
       </el-col>
     </el-row>
@@ -47,7 +47,7 @@
                 </el-icon>
                 <span>修改</span>
               </el-button>
-              <el-button type="text">
+              <el-button type="text" @click="deleteData(scope.row)">
                 <el-icon>
                   <Tools />
                 </el-icon>
@@ -82,37 +82,64 @@
       :temp1="temp"
       source="task"
     />
+
+        <!--删除 角色 弹框部分-->
+    <el-dialog
+      title="删除角色"
+      v-model="dialogDelRole"
+      class="confirmDialog"
+      :close-on-click-modal="false"
+    >
+      <el-row type="flex" justify="center">
+        <div class="img-tip" />
+      </el-row>
+      <el-row type="flex" justify="center" style="margin:20px 0">
+        <span class="message">是否删除所选角色</span>
+      </el-row>
+      <div class="dialog-footer">
+        <el-button @click="dialogDelRole=false">取 消</el-button>
+        <el-button type="primary" @click="deleteDataRole">确 认</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 <script>
 import { Edit, Tools } from '@element-plus/icons-vue'
 import MenuDialog from "./component/menuDialog.vue";
+import * as menuApi from "@/api/menu"
 export default {
   name: 'TaskDistribute',
   components: { MenuDialog, Edit, Tools },
   data() {
     return {
       menuName:'',
+      menuId:'',
       serviceTotal: 0,
+      filterData: {
+        appName: "",
+        appStatus: "",
+      },
       page: 1,
       pageSize: 10,
+      selectRows: [],//勾选列表数据
       list: [
-        { route: '002', name: '张三', sort: '1', create_ts: '2022-12-33' },
-        { route: '002', name: '张三', sort: '1', create_ts: '2022-12-33' },
-        { route: '002', name: '张三', sort: '1', create_ts: '2022-12-33' },
-        { route: '002', name: '张三', sort: '1', create_ts: '2022-12-33' },
+        // { component: '002', menuName: '张三', orderNum: '1', createTime: '2022-12-33' },
+        // { component: '002', menuName: '李四', orderNum: '1', createTime: '2022-12-33' },
+        // { component: '002', menuName: '张三', orderNum: '1', createTime: '2022-12-33' },
+        // { component: '002', menuName: '张三', orderNum: '1', createTime: '2022-12-33' },
       ],
       tableHeader: [
-        { label: '菜单名称', key: 'name' },
-        { label: '菜单排序', key: 'sort' },
-        { label: '菜单路径', key: 'route' },
-        { label: '创建时间', key: 'creat_ts' },
+        { label: '菜单名称', key: 'menuName' },
+        { label: '菜单排序', key: 'orderNum' },
+        { label: '菜单路径', key: 'component' },
+        { label: '创建时间', key: 'createTime' },
         { label: '操作', key: 'operate' },
       ],
       multipleSelection: [],
       statusOptions: [],
       temp: {},
       highlight: true,
+      dialogDelRole: false,
       dialogTitle: '', // 弹框标题
       dialogStatus: '',
       dialogAdd: false,
@@ -120,17 +147,67 @@ export default {
     }
   },
   created() {
+    this.getList();
   },
   mounted() {
   },
   methods: {
     openShareDialog(val) {
 			console.log(val, 'ssss');
-			this.tableData = val
-      this.dialogAdd = true
+      this.temp = val;
+			this.tableData = val;
+      this.dialogAdd = true;
+      this.dialogStatus = 'update'
     },
     getList() {
-      this.tableLoading = true
+      let params = {
+        params:{
+          "userId":"2"
+        },
+      }
+      menuApi.selectAllMenu(params).then(res => {
+        console.log(res, 'res1111');
+        this.list = res.data.rows
+        this.menuId = res.data.rows.menuId
+      })
+
+    },
+    queryMenu(){
+      let params = {
+        roleId:"",
+        userId:"",
+      }
+    menuApi.queryMenuData(params).then(res => {
+      console.log(res,"查询数据");
+      this.list = res.data.rows;
+      this.menuId = res.data.rows.menuId
+    })
+    },
+
+    //删除
+    deleteData(val){
+      this.dialogDelRole = true
+      this.menuId = val.menuId
+    },
+
+    deleteDataRole(){
+      console.log("222",this.menuId)
+			let params = {
+        menuId:this.menuId
+      }
+      // let params = {
+      //   "menuId":menuId
+      // }
+			// console.log(menuId, 'params');
+      menuApi.deleteMenuData(params).then(res => {
+        console.log(res, 'deleteData');
+        this.dialogDelRole = false
+        this.getList()
+        this.$message({
+          message: '删除成功！',
+          type: 'success'
+        })
+      })
     },
     // 分页查询
     handleCurrentChange(val) {
