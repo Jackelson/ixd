@@ -30,6 +30,7 @@
   </el-dialog>
 </template>
 <script>
+import * as menuApi from "@/api/menu"
 
 export default {
   name: 'TaskList',
@@ -62,9 +63,19 @@ export default {
     return {
       groupVisible: this.show, // 引入页面弹窗的状态值一定要设置
       formHeader: [
-        { label: '菜单名称', key: 'name' },
-        { label: '菜单排序', key: 'sort' },
-        { label: '菜单路径', key: 'route' },
+        { label: '菜单名称', key: 'menuName' },
+        { label: '菜单排序', key: 'orderNum' },
+        { label: '菜单路径', key: 'component' },
+        { label: '创建者', key: 'createBy' },
+        { label: '备注', key: 'remark' },
+        { label: '路由地址', key: 'path' },
+        { label: '是否为外链', key: 'isFrame' },
+        { label: '菜单类型', key: 'menuType' },
+        { label: '是否缓存', key: 'isCache' },
+        { label: '权限标识', key: 'perms' },
+        { label: '菜单图标', key: 'icon' },
+        { label: '父菜单ID', key: 'parentId' },
+        
       ],
       rules: {
       },
@@ -88,6 +99,7 @@ export default {
       handler(newValue) {
         this.groupVisible = newValue
         console.log(newValue, 'sdfsdddddd');
+        console.log("temp1",this.temp1)
         if (Object.keys(this.temp1).length > 0) {
           this.temp = this.temp1
         }
@@ -127,8 +139,32 @@ export default {
     createData() {
       this.$refs['dataform'].validate((valid) => {
         if (valid) {
-          const data = Object.assign({}, this.temp)
-          console.log(data);
+          // const data = Object.assign({}, this.temp)
+          const data = {
+            createBy:"1asd321",
+            remark:"13awda",
+            menuName:"1111",
+            parentId:0,
+            orderNum:1,
+            path:"system",
+            component:null,
+            isFrame:1,
+            isCache:0,
+            menuType:"M",
+            perms:"",
+            icon:"system"
+          }
+          console.log(data,"44444444");
+
+          menuApi.insertMenuData(data).then(res => {
+            this.$parent.getList();
+            console.log(res, 'res');
+            this.groupVisible = false
+            this.$message({
+              message: '更新成功！',
+              type: 'success'
+            })
+          })
         }
       })
     },
@@ -137,7 +173,17 @@ export default {
       this.$refs['dataform'].validate((valid) => {
         if (valid) {
           const data = Object.assign({}, this.temp)
-          console.log(data, 'data')
+          console.log(data,"44444444");
+
+          menuApi.updateMenuData(data).then(res => {
+            this.$parent.getList();
+            console.log(res, 'res');
+            this.groupVisible = false
+            this.$message({
+              message: '更新成功！',
+              type: 'success'
+            })
+          })
         }
       })
     },
