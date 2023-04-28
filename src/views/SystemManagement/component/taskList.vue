@@ -272,6 +272,7 @@ export default {
 					data.updateTime = null
 					data.updateBy = ''
 					data.dataScope = '1'
+					data.createBy = localStorage.getItem('createById')
           roleApi.insertRoleData(data).then(res => {
             this.$parent.getList()
             console.log(res, 'res');

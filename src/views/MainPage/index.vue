@@ -49,7 +49,7 @@
                     <span style="margin-left: 5px;">{{subItem.name}}</span>
                   </el-menu-item>
                 </el-sub-menu>
-                <el-menu-item v-if="!item.children" :index="item.path">
+                <el-menu-item class="firstMenu" v-if="!item.children" :index="item.path">
                   <svg-icon :icon="item.icon" class="svgIcon"></svg-icon>
                   <span style="margin-left: 5px;">{{item.name}}</span>
                 </el-menu-item>
@@ -150,7 +150,7 @@ export default defineComponent({
   box-sizing: border-box;
   .T-header {
     height: 66px;
-    background: #fff;
+    background: #0d8678;
     position: relative;
     padding: 0 15px;
     box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
@@ -168,14 +168,14 @@ export default defineComponent({
       margin: auto 0;
       z-index: 2;
       .T-framework-logo {
-        width: 50px !important;
-        height: 50px !important;
+        width: 60px !important;
+        height: 60px !important;
         vertical-align: middle;
         line-height: 60px;
       }
       .T-framework-title {
         margin-left: 15px !important;
-        color: #000;
+        color: #fff;
         font-weight: 700;
         white-space: nowrap;
         font-size: 24px;
@@ -248,14 +248,30 @@ export default defineComponent({
         border-bottom-right-radius: 4px;
         overflow: inherit;
         .T-side-container {
+          .el-menu-item {
+            color: #fff;
+          }
           .el-menu-item.is-active {
-            color: #11ac9b;
+            color: #0d8678;
+            background: #e2f3f0;
+          }
+          .el-menu-item:hover {
+            color: #0d8678;
+            background: #e2f3f0;
+          }
+          .el-sub-menu__title {
+            color: #fff;
+            &:hover {
+              color: #0d8678;
+              background: #e2f3f0;
+            }
           }
           height: 100%;
-          background: #fff;
+          background: #0d8678;
           position: relative;
           overflow: visible;
           .T-menu {
+            background: #0d8678;
           }
           .collapse-icon {
             width: 12px;
@@ -272,6 +288,9 @@ export default defineComponent({
             border-bottom-right-radius: 10px;
             background: linear-gradient(90deg, #f0f2fc, #fff);
             color: #666;
+          }
+          .el-menu {
+            background: #0d8678;
           }
           .el-sub-menu {
             display: grid;

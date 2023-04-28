@@ -98,8 +98,8 @@
             ></el-option>
           </el-select>
           <el-radio-group v-else-if="item.key === 'sex'" v-model="temp[item.key]">
-            <el-radio :label="0">男</el-radio>
-            <el-radio :label="1">女</el-radio>
+            <el-radio :label="'0'">男</el-radio>
+            <el-radio :label="'1'">女</el-radio>
           </el-radio-group>
           <el-radio-group v-else-if="item.key === 'admin'" v-model="temp[item.key]">
             <el-radio :label="true">是</el-radio>
@@ -137,6 +137,7 @@
 
 <script>
 import * as api from "@/api/user"
+import * as roleApi from "@/api/role"
 export default {
   components: {
   },
@@ -161,12 +162,12 @@ export default {
       page: 1,
       pageSize: 10,
       tableHeader: [
-        { label: '用户名', key: 'userName', minWidth: '80px' },
-        { label: '用户角色', key: 'userType', minWidth: '80px' },
-        { label: '单位信息', key: 'address', minWidth: '80px' },
-        { label: '手机号码', key: 'phonenumber', minWidth: '80px' },
-        { label: '电子邮箱', key: 'email', minWidth: '80px' },
-        { label: '备注', key: 'remark', minWidth: '80px' },
+        { label: '用户名', key: 'userName' },
+        { label: '用户角色', key: 'userType' },
+        { label: '单位信息', key: 'address' },
+        { label: '手机号码', key: 'phonenumber' },
+        { label: '电子邮箱', key: 'email' },
+        { label: '备注', key: 'remark' },
       ],
       filterData: {
         appName: "",
@@ -192,14 +193,7 @@ export default {
         userName: '',
         userType: '',
       },
-      userTypeList: [
-        { label: '管理员', key: '00' },
-        { label: '运维专责', key: '11' },
-        { label: '业务部门主任', key: '22' },
-        { label: '业务部门管理专责', key: '33' },
-        { label: '子应用管理员', key: '44' },
-        { label: '子应用业务专责', key: '55' },
-      ],
+      userTypeList: [],
     }
   },
   watch: {
@@ -212,6 +206,7 @@ export default {
   },
   created() {
     this.getList()
+    this.getRoleList()
   },
   mounted() {
 
@@ -233,6 +228,15 @@ export default {
         this.tableList = res.data.rows
         this.total = res.data.total
         this.tableLoading = false
+      })
+    },
+    // 查询角色
+    getRoleList() {
+      let params = {}
+      roleApi.selectRoleData(params).then(res => {
+        res.data.rows.forEach(ele => {
+          this.userTypeList.push({ label: ele.roleName, key: ele.roleId })
+        })
       })
     },
     filterChange(val) {
@@ -321,6 +325,7 @@ export default {
           data.delFlag = "0"
           data.status = "0"
           data.nickName = data.userName
+					data.createBy = localStorage.getItem('createById')
 
           api.insertUserData(data).then(res => {
             this.getList()
@@ -345,7 +350,7 @@ export default {
           let params = { userId, remark, userName, nickName, email, phonenumber, sex, status, userType }
           console.log(data, 'data')
           api.updateUserData(params).then(res => {
-						this.page = 1
+            this.page = 1
             this.getList()
             console.log(res, 'res');
             this.dialogTableVisible = false
