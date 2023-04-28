@@ -30,7 +30,6 @@ export default {
       }
     }
 		onMounted(() => {
-      localStorage.setItem('createById', '1')
     });
 
   },

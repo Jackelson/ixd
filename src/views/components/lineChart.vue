@@ -35,15 +35,15 @@ export default {
     let chart; // 这里是chart的根
     // 绘制图表
     const chartOption = (param) => chart.setOption({
-			title: {
-          show: true,
-          text: '单位： 个',
-          right: '10%',
-          textStyle: {
-            color: "rgb(43,52,56)",
-            fontSize: "0.75rem",
-          },
+      title: {
+        show: true,
+        text: '单位： 个',
+        right: '10%',
+        textStyle: {
+          color: "rgb(43,52,56)",
+          fontSize: "0.75rem",
         },
+      },
       tooltip: {
         trigger: 'axis',
         axisPointer: {
@@ -53,11 +53,11 @@ export default {
           }
         }
       },
-			formatter: (params) => {
-          return (
-            params[0].data.name + ':' + params[0].data.value
-          );
-        },
+      formatter: (params) => {
+        return (
+          params[0].data.name + ':' + params[0].data.value
+        );
+      },
       legend: {
         data: param.map((item) => item.app_name),
         bottom: 'bottom'
@@ -98,12 +98,12 @@ export default {
               return value + '';
             }
           },
-          data: param.map((item) => ({value:item.requestCount, name: item.app_name}))
+          data: param.map((item) => ({ value: item.requestCount, name: item.app_name }))
         },
         {
           type: 'line',
           yAxisIndex: 1,
-          data: param.map((item) => ({value:item.requestCount, name: item.app_name}))
+          data: param.map((item) => ({ value: item.requestCount, name: item.app_name }))
         }
       ]
     })

@@ -1,6 +1,9 @@
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
+
+// 新增路由监听
+import './router/intRouter';
 import store from './store'
 import './styles/common.scss'
 // 导入 svgIcon

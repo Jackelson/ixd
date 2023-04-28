@@ -1,9 +1,7 @@
 <template>
   <div class="login-container">
     <div class="login_box">
-      <div class="login_title">
-        i锡电综合管理应用
-      </div>
+      <div class="login_title">i锡电综合管理应用</div>
       <el-form
         ref="loginForm"
         :model="loginForm"
@@ -14,7 +12,7 @@
       >
         <el-form-item prop="username">
           <span class="img-container">
-            <img :src="userImg" class="user">
+            <img :src="userImg" class="user" />
           </span>
           <el-input
             ref="username"
@@ -26,15 +24,10 @@
             autocomplete="on"
           />
         </el-form-item>
-        <el-tooltip
-          v-model="capsTooltip"
-          content="Caps lock is On"
-          placement="right"
-          manual
-        >
+        <el-tooltip v-model="capsTooltip" content="Caps lock is On" placement="right" manual>
           <el-form-item prop="password">
             <span class="img-container">
-              <img :src="lockImg" class="lock">
+              <img :src="lockImg" class="lock" />
             </span>
             <el-input
               :key="passwordType"
@@ -58,8 +51,7 @@
           style="width:100%;margin-bottom:30px;background-color:#336699;border:none;font-size:18px;font-weight:500;"
           round
           @click.prevent="handleLogin"
-        >登&emsp;&emsp;录
-        </el-button>
+        >登&emsp;&emsp;录</el-button>
       </el-form>
     </div>
   </div>
@@ -67,8 +59,8 @@
 
 <script>
 // import { parseTime } from '@/utils/index'
+import * as api from "@/api/user";
 export default {
-  // name: 'Login',
   data() {
     const validateUsername = (rule, value, callback) => {
       if (!value) {
@@ -109,16 +101,16 @@ export default {
     }
   },
   watch: {
-    $route: {
-      handler: function(route) {
-        const query = route.query
-        if (query) {
-          this.redirect = query.redirect
-          this.otherQuery = this.getOtherQuery(query)
-        }
-      },
-      immediate: true
-    }
+    // $route: {
+    //   handler: function(route) {
+    //     const query = route.query
+    //     if (query) {
+    //       this.redirect = query.redirect
+    //       this.otherQuery = this.getOtherQuery(query)
+    //     }
+    //   },
+    //   immediate: true
+    // }
   },
   created() {
   },
@@ -148,18 +140,24 @@ export default {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
           this.loading = true
-          this.$store
-            .dispatch('user/login', this.loginForm)
-            .then(() => {
+
+          api.login({ username: this.loginForm.username.trim(), password: this.loginForm.password })
+            .then(res => {
+              localStorage.setItem('createById', res.data.userid)
+							this.$store.commit("setUserDetail", res.data)
+							console.log(this.$store.getters.getUserDetail, 'sddddddddddddddd');
               this.$router.push({
                 path: this.redirect || '/',
-                query: this.otherQuery
               })
               this.loading = false
-              // var dateNow = new Date()
-              // localStorage.setItem('nowTime', parseTime(dateNow.getTime()))
+              // commit('SET_TOKEN', response.access_token)
+              // commit('SET_SN', username.trim())
+              // setToken(response.access_token)
+              // setPage(1)
+              // resolve()
             })
-            .catch(() => {
+            .catch(error => {
+              console.error(error);
               this.loading = false
             })
         } else {
@@ -176,35 +174,14 @@ export default {
         return acc
       }, {})
     }
-    // afterQRScan() {
-    //   if (e.key === 'x-admin-oauth-code') {
-    //     const code = getQueryObject(e.newValue)
-    //     const codeMap = {
-    //       wechat: 'code',
-    //       tencent: 'code'
-    //     }
-    //     const type = codeMap[this.auth_type]
-    //     const codeName = code[type]
-    //     if (codeName) {
-    //       this.$store.dispatch('LoginByThirdparty', codeName).then(() => {
-    //         this.$router.push({ path: this.redirect || '/' })
-    //       })
-    //     } else {
-    //       alert('第三方登录失败')
-    //     }
-    //   }
-    // }
   }
 }
 </script>
 
 <style lang="scss">
-/* 修复input 背景不协调 和光标变色 */
-/* Detail see https://github.com/PanJiaChen/vue-element-admin/pull/927 */
-
 $bg: #283443;
-$light_gray: #fff;
-$cursor: #fff;
+$light_gray: #000;
+$cursor: #000;
 
 @supports (-webkit-mask: none) and (not (cater-color: $cursor)) {
   .login-container .el-input input {
@@ -326,7 +303,7 @@ $light_gray: #eee;
     height: 30px;
     margin-left: 5px;
     position: relative;
-    @mixin imgcenter{
+    @mixin imgcenter {
       position: absolute;
       top: 50%;
       left: 50%;
@@ -335,12 +312,12 @@ $light_gray: #eee;
     .user {
       width: 30px;
       height: 30px;
-      @include imgcenter
+      @include imgcenter;
     }
-    .lock{
+    .lock {
       width: 14px;
       height: 18px;
-      @include imgcenter
+      @include imgcenter;
     }
   }
 

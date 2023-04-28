@@ -1,6 +1,7 @@
 import { 
 	// get, 
-	post 
+	post,
+	uploadFile
 } from '../utils/request';
 
 export function insertUserData(params) {
@@ -23,5 +24,8 @@ export function getUserInfo(params) {
 
 export function selectUserByRoleId(params) {
 	return post('/SysUser/selectUserByRoleId',params)
+}
+export function login(params) {
+	return uploadFile('/SysUser/login',params)
 }
 

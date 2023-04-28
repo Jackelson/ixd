@@ -37,13 +37,14 @@ const routes = [
         name: 'RotationManagement',
         component: () => import('@/views/SystemManagement/RotationManagement.vue'),
       },
-			{
-        path: '/login',
-        name: 'Login',
-        component: () => import('@/views/login/index.vue'),
-      },
+
     ]
   },
+	{
+		path: '/login',
+		name: 'Login',
+		component: () => import('@/views/login/index.vue'),
+	},
 ]
 
 const router = createRouter({

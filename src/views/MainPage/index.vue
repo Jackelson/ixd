@@ -69,7 +69,8 @@
 
 <script>
 // import MenuPart from './MenuPart.vue';
-import { defineComponent, ref } from 'vue';
+import { defineComponent, ref, onMounted } from 'vue';
+import { useRouter } from "vue-router";
 export default defineComponent({
   name: 'MainPage',
   setup() {
@@ -130,6 +131,11 @@ export default defineComponent({
     const handleMenu = () => {
       isCollapse.value = !isCollapse.value
     }
+		const route = useRouter()
+		console.log(route, 'route');
+		onMounted(() => {
+			// console.log(this.$route, 'sssssssssss')
+		})
     return {
       isCollapse,
       menus,
