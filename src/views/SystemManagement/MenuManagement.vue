@@ -167,8 +167,9 @@ export default {
       }
       menuApi.selectAllMenu(params).then(res => {
         console.log(res, 'res1111');
-        this.list = res.data.rows
-        this.menuId = res.data.rows.menuId
+        this.list = res.data.rows;
+        this.menuId = res.data.rows.menuId;
+        this.serviceTotal = res.data.total
       })
 
     },
