@@ -5,9 +5,9 @@
         <el-row class="formRow">
           <el-col :span="24" class="formSty">
             <span>用户名：</span>
-            <el-input v-model="filterData.appName" style="width:200px"></el-input>
+            <el-input v-model="filterData.userName" style="width:200px"></el-input>
             <span style="font-size: calc(100vw / 1920 * 14);">角色：</span>
-            <el-input v-model="filterData.appStatus" style="width:200px"></el-input>
+            <el-input v-model="filterData.userType" style="width:200px"></el-input>
             <el-button @click="searchList">查询</el-button>
           </el-col>
         </el-row>
@@ -170,8 +170,8 @@ export default {
         { label: '备注', key: 'remark' },
       ],
       filterData: {
-        appName: "",
-        appStatus: "",
+        userName: "",
+        userType: "",
       },
       filterSelection: {
         appNameList: [],
@@ -214,8 +214,8 @@ export default {
   methods: {
     searchList() {
       let param = {
-        appName: this.filterData.appName,
-        appStatus: this.filterData.appStatus,
+        userName: this.filterData.userName,
+        userType: this.filterData.userType,
       }
       this.getList(param)
     },

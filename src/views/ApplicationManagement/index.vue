@@ -3,41 +3,12 @@
     <el-row style="width: 99%; margin-left: 0.5%; height: calc(100% - 0vh)" class="switch-search">
       <el-card class="app-card">
         <el-row class="formRow">
-          <el-col :span="8" class="formSty">
+          <el-col :span="24" class="formSty">
             <span>应用名称：</span>
-            <el-select
-              v-model="filterData.appName"
-              filterable
-              clearable
-              placeholder="--所有应用名称--"
-              @change="filterChange(1)"
-              class="search-select"
-            >
-              <el-option
-                v-for="(item, index) in filterSelection.appNameList"
-                :key="index"
-                :label="item"
-                :value="item"
-              ></el-option>
-            </el-select>
-          </el-col>
-          <el-col :span="8" class="formSty">
-            <span>应用状态：</span>
-            <el-select
-              v-model="filterData.appStatus"
-              filterable
-              clearable
-              placeholder="--所有应用状态--"
-              @change="filterChange(2)"
-              class="search-select"
-            >
-              <el-option
-                v-for="(item, index) in filterSelection.appStatusList"
-                :key="index"
-                :label="item"
-                :value="item"
-              ></el-option>
-            </el-select>
+            <el-input v-model="filterData.appName" style="width:200px"></el-input>
+            <span style="font-size: calc(100vw / 1920 * 14);">应用状态：</span>
+            <el-input v-model="filterData.appCheckStatus" style="width:200px"></el-input>
+            <el-button @click="searchList">查询</el-button>
           </el-col>
         </el-row>
         <el-table
@@ -142,6 +113,7 @@ export default {
       pageSize: 10,
       tableHeader: [
         { label: '应用ID', key: 'createId' },
+        { label: '应用名称', key: 'appName' },
         { label: '应用状态', key: 'appCheckStatus' },
         { label: '应用地址', key: 'applicationDownloadAddress' },
         { label: '应用负责人', key: 'contactPerson' },
@@ -150,11 +122,7 @@ export default {
       ],
       filterData: {
         appName: "",
-        appStatus: "",
-      },
-      filterSelection: {
-        appNameList: [],
-        appStatusList: [],
+        appCheckStatus: "",
       },
     }
   },
@@ -168,6 +136,20 @@ export default {
 
   },
   methods: {
+    searchList() {
+      let param = {
+        appName: this.filterData.appName,
+        appCheckStatus: this.filterData.appCheckStatus,
+        pageNum: this.page,
+        pageSize: this.pageSize
+      }
+      this.tableLoading = true
+      api.getAppInfo(param).then(res => {
+        this.tableList = res.data.rows
+        this.total = res.data.total
+        this.tableLoading = false
+      })
+    },
     requestData() {
       let params = {
         // "appName": "测试11",

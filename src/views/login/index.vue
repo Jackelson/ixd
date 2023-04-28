@@ -12,7 +12,7 @@
       >
         <el-form-item prop="username">
           <span class="img-container">
-            <img :src="userImg" class="user" />
+            <svg-icon icon="用户名"></svg-icon>
           </span>
           <el-input
             ref="username"
@@ -27,7 +27,7 @@
         <el-tooltip v-model="capsTooltip" content="Caps lock is On" placement="right" manual>
           <el-form-item prop="password">
             <span class="img-container">
-              <img :src="lockImg" class="lock" />
+              <svg-icon icon="密码"></svg-icon>
             </span>
             <el-input
               :key="passwordType"
@@ -48,7 +48,7 @@
         <el-button
           :loading="loading"
           type="primary"
-          style="width:100%;margin-bottom:30px;background-color:#336699;border:none;font-size:18px;font-weight:500;"
+          style="width:100%;margin-bottom:30px;background-color:#0d8678;border:none;font-size:18px;font-weight:500;"
           round
           @click.prevent="handleLogin"
         >登&emsp;&emsp;录</el-button>
@@ -144,8 +144,8 @@ export default {
           api.login({ username: this.loginForm.username.trim(), password: this.loginForm.password })
             .then(res => {
               localStorage.setItem('createById', res.data.userid)
-							this.$store.commit("setUserDetail", res.data)
-							console.log(this.$store.getters.getUserDetail, 'sddddddddddddddd');
+              this.$store.commit("setUserDetail", res.data)
+              console.log(this.$store.getters.getUserDetail, 'sddddddddddddddd');
               this.$router.push({
                 path: this.redirect || '/',
               })
@@ -179,7 +179,7 @@ export default {
 </script>
 
 <style lang="scss">
-$bg: #283443;
+$bg: #fff;
 $light_gray: #000;
 $cursor: #000;
 
@@ -214,8 +214,8 @@ $cursor: #000;
   }
 
   .el-form-item {
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    background: rgba(0, 0, 0, 0.1);
+    // border: 1px solid rgba(255, 255, 255, 0.1);
+    // background: rgba(0, 0, 0, 0.1);
     border-radius: 5px;
     color: #454545;
   }
@@ -240,7 +240,7 @@ $cursor: #000;
 </style>
 
 <style lang="scss" scoped>
-$bg: #2d3a4b;
+$bg: #fff;
 $dark_gray: #889aa4;
 $light_gray: #eee;
 
@@ -265,7 +265,7 @@ $light_gray: #eee;
     .login_title {
       text-align: center;
       margin-top: 79px;
-      color: #3399ff;
+      color: #0d8678;
       font-size: 32px;
       font-family: FZZZHONGJW;
       font-weight: 500;
