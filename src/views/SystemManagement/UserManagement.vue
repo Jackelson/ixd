@@ -5,25 +5,10 @@
         <el-row class="formRow">
           <el-col :span="24" class="formSty">
             <span>用户名：</span>
-						<el-input v-model="filterData.appName" style="width:200px"></el-input>
+            <el-input v-model="filterData.appName" style="width:200px"></el-input>
             <span style="font-size: calc(100vw / 1920 * 14);">角色：</span>
-						<el-input v-model="filterData.appStatus" style="width:200px"></el-input>
+            <el-input v-model="filterData.appStatus" style="width:200px"></el-input>
             <el-button @click="searchList">查询</el-button>
-            <!-- <el-select
-              v-model="filterData.appName"
-              filterable
-              clearable
-              placeholder="--所有用户名--"
-              @change="filterChange(1)"
-              class="search-select"
-            >
-              <el-option
-                v-for="(item, index) in filterSelection.appNameList"
-                :key="index"
-                :label="item"
-                :value="item"
-              ></el-option>
-            </el-select> -->
           </el-col>
         </el-row>
         <el-row class="formRow">
@@ -35,6 +20,7 @@
         </el-row>
         <el-table
           ref="multipleTable"
+          v-loading="tableLoading"
           :data="tableList"
           height="calc(100% - 17vh)"
           :header-cell-style="{ background: '#11ac9b !important', color: '#ffffff', }"
@@ -67,13 +53,15 @@
             </template>
           </el-table-column>
         </el-table>
-        <el-row style="width: 100%; display: flex; justify-content: flex-end;align-items: flex-start;margin-top: 1vh;">
+        <el-row
+          style="width: 100%; display: flex; justify-content: flex-end;align-items: flex-start;margin-top: 1vh;"
+        >
           <el-pagination
             :current-page="page"
             :page-sizes="[10, 20, 50, 100]"
             :page-size="pageSize"
             layout="total, sizes, prev, pager, next, jumper"
-            :total="serviceTotal"
+            :total="total"
             @size-change="handleSizeChange"
             @current-change="handleCurrentChange"
           />
@@ -155,6 +143,7 @@ export default {
   data() {
     return {
       dialogTableVisible: false,
+      tableLoading: true,
       dialogTitle: '',
       dialogStatus: 'create',
       dialogDelRole: false,
@@ -168,11 +157,11 @@ export default {
         // { userName: '张三', userType: '管理员', address: '无', email: 'user4', phone: '', remark: '' },
         // { userName: '张三', userType: '管理员', address: '无', email: 'user4', phone: '', remark: '' },
       ],
-      serviceTotal: 0,
+      total: 0,
       page: 1,
       pageSize: 10,
       tableHeader: [
-        { label: '用户名', key: 'userName', minWidth: '80px'},
+        { label: '用户名', key: 'userName', minWidth: '80px' },
         { label: '用户角色', key: 'userType', minWidth: '80px' },
         { label: '单位信息', key: 'address', minWidth: '80px' },
         { label: '手机号码', key: 'phonenumber', minWidth: '80px' },
@@ -228,19 +217,22 @@ export default {
 
   },
   methods: {
-		searchList() {
-			let param = {
-				appName: this.filterData.appName,
-				appStatus: this.filterData.appStatus,
-			}
-			this.getList(param)
-		},
+    searchList() {
+      let param = {
+        appName: this.filterData.appName,
+        appStatus: this.filterData.appStatus,
+      }
+      this.getList(param)
+    },
     // 查询表单
     getList(val) {
       let params = val || {}
+      this.tableLoading = true
       api.selectUserData(params).then(res => {
         console.log(res, 'res');
-        this.tableList = res.data
+        this.tableList = res.data.rows
+        this.total = res.data.total
+        this.tableLoading = false
       })
     },
     filterChange(val) {
@@ -264,12 +256,20 @@ export default {
     },
     handleCurrentChange(page) {
       this.page = page;
-      this.getList();
+      let param = {
+        pageNum: this.page,
+        pageSize: this.pageSize
+      }
+      this.getList(param);
     },
     handleSizeChange(pageSize) {
       this.page = 1;
       this.pageSize = pageSize;
-      this.getList();
+      let param = {
+        pageNum: this.page,
+        pageSize: this.pageSize
+      }
+      this.getList(param);
     },
     // 清空已选项数组，且置空所有选择
     resetSelect() {
@@ -341,10 +341,11 @@ export default {
         if (valid) {
           const data = Object.assign({}, this.temp)
           console.log(this.temp, 44444444444);
-          let { userId,userType, remark, userName, nickName, email, phonenumber, sex,status } = data
-          let params = { userId, remark, userName, nickName, email, phonenumber, sex,status,userType }
+          let { userId, userType, remark, userName, nickName, email, phonenumber, sex, status } = data
+          let params = { userId, remark, userName, nickName, email, phonenumber, sex, status, userType }
           console.log(data, 'data')
           api.updateUserData(params).then(res => {
+						this.page = 1
             this.getList()
             console.log(res, 'res');
             this.dialogTableVisible = false
@@ -506,9 +507,9 @@ export default {
       span:nth-child(1) {
         font-size: calc(100vw / 1920 * 14);
       }
-			.el-input {
-				margin-right: 20px
-			}
+      .el-input {
+        margin-right: 20px;
+      }
     }
   }
 }

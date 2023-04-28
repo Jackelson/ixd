@@ -226,11 +226,11 @@ export default {
         item == data.label ? num++ : num;
       })
       this.form.menuTreeId.forEach(item => {
-        item == data.deptId ? num++ : num;
+        item == data.id ? num++ : num;
       })
       if (num == 0) {
         this.form.menuTreeData.push(data.label)
-        this.form.menuTreeId.push(data.deptId)
+        this.form.menuTreeId.push(data.id)
       }
       console.log(data, node, nodeData,this.form,'sssssssssss');
 
@@ -268,7 +268,7 @@ export default {
           data.menuCheckStrictly = true
           data.deptCheckStrictly = true
 					data.deptIds = this.form.treeId
-					data.menuIds = null
+					data.menuIds = this.form.menuTreeId
 					data.updateTime = null
 					data.updateBy = ''
 					data.dataScope = '1'

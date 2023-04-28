@@ -42,6 +42,7 @@
         </el-row>
         <el-table
           :data="tableList"
+          v-loading="tableLoading"
           height="calc(100% - 12vh)"
           :header-cell-style="{ background: '#11ac9b !important', color: '#ffffff', }"
           :row-class-name="tableRowClassName"
@@ -93,7 +94,7 @@
             :page-sizes="[10, 20, 50, 100]"
             :page-size="pageSize"
             layout="total, sizes, prev, pager, next, jumper"
-            :total="serviceTotal"
+            :total="total"
             @size-change="handleSizeChange"
             @current-change="handleCurrentChange"
           />
@@ -128,6 +129,7 @@ export default {
   },
   data() {
     return {
+      tableLoading: true,
       dialogTableVisible: false,
       tableData: {},
       tableList: [
@@ -135,7 +137,7 @@ export default {
         // { appId: '12', status: '已上架', address: '无', leader: 'user2', phone: '', operate: '测试链接 用户配置' },
         // { appId: '13', status: '已上架', address: '无', leader: 'user1', phone: '', operate: '测试链接 用户配置' },
       ],
-      serviceTotal: 0,
+      total: 0,
       page: 1,
       pageSize: 10,
       tableHeader: [
@@ -168,19 +170,24 @@ export default {
   methods: {
     requestData() {
       let params = {
-        "appName": "测试11",
-        "appDescribe": "1111",
-        "appSecretKey": "123123",
-        "appAffiliatedCompany": "1231231",
-        "contactPerson": "123123",
-        "contactPersonTel": "13951631328",
-        "contactEmail": "123@qq.com",
-        "dateStart": "2023-02-16 02:17:44",
-        "dateEnd": "2023-02-16 02:17:44"
+        // "appName": "测试11",
+        // "appDescribe": "1111",
+        // "appSecretKey": "123123",
+        // "appAffiliatedCompany": "1231231",
+        // "contactPerson": "123123",
+        // "contactPersonTel": "13951631328",
+        // "contactEmail": "123@qq.com",
+        // "dateStart": "2023-02-16 02:17:44",
+        // "dateEnd": "2023-02-16 02:17:44"
+        pageNum: this.page,
+        pageSize: this.pageSize
       }
+      this.tableLoading = true
       api.getAppInfo(params).then(res => {
         console.log(res, 'res');
         this.tableList = res.data.rows
+        this.total = res.data.total
+        this.tableLoading = false
       })
     },
     filterChange(val) {

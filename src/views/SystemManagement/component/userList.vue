@@ -10,6 +10,7 @@
   >
     <el-table
       ref="multipleTable"
+      v-loading="tableLoading"
       :data="userList"
       height="calc(100% - 7vh)"
       :header-cell-style="{ background: '#11ac9b !important', color: '#ffffff', }"
@@ -48,7 +49,7 @@
         :page-sizes="[10, 20, 50, 100]"
         :page-size="pageSize"
         layout="total, sizes, prev, pager, next, jumper"
-        :total="serviceTotal"
+        :total="total"
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
       />
@@ -56,6 +57,7 @@
   </el-dialog>
 </template>
 <script>
+import * as userApi from "@/api/user"
 
 export default {
   name: 'TaskList',
@@ -65,9 +67,9 @@ export default {
       type: Object,
       default: null
     },
-    userList: {
+    userParams: {
       require: true,
-      type: Array,
+      type: String,
       default: null
     },
     show: {
@@ -78,9 +80,11 @@ export default {
   data() {
     return {
       groupVisible: this.show, // 引入页面弹窗的状态值一定要设置
-      serviceTotal: 0,
+      total: 0,
       page: 1,
       pageSize: 10,
+      tableLoading: true,
+      userList: [],
       userTableHeader: [
         { label: '用户名', key: 'userName', minWidth: '80px' },
         { label: '性别', key: 'sex', minWidth: '80px' },
@@ -105,13 +109,41 @@ export default {
         }
       },
       deep: true
+    },
+    userParams: {
+      handler() {
+        this.getList()
+      },
+      deep: true
     }
   },
   created() {
   },
   mounted() { },
   methods: {
-
+    getList() {
+      let param = {
+        roleId: this.userParams,
+        pageNum: this.page,
+        pageSize: this.pageSize
+      }
+      this.tableLoading = true
+      userApi.selectUserByRoleId(param).then(res => {
+        console.log(res);
+        this.userList = res.data.rows
+        this.total = res.data.total
+        this.tableLoading = false
+      })
+    },
+    handleCurrentChange(page) {
+      this.page = page;
+      this.getList();
+    },
+    handleSizeChange(pageSize) {
+      this.page = 1;
+      this.pageSize = pageSize;
+      this.getList();
+    },
     closeGroupVisible() {
       this.$emit('update:show', false)
       this.resetSelect()

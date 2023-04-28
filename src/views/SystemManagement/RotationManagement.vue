@@ -12,7 +12,8 @@
       <el-card class="role-card">
         <el-table
           ref="multipleTable"
-          :data="list"
+          v-loading="tableLoading"
+          :data="tableList"
           height="calc(100% - 5vh)"
           :header-cell-style="{ background: '#11ac9b !important', color: '#ffffff', }"
           :highlight-current-row="highlight"
@@ -71,12 +72,7 @@
     />
 
     <!--终止、下发、结单 弹框部分-->
-    <el-dialog
-      title="删除"
-      v-model="dialogDel"
-      class="confirmDialog"
-      :close-on-click-modal="false"
-    >
+    <el-dialog title="删除" v-model="dialogDel" class="confirmDialog" :close-on-click-modal="false">
       <el-row type="flex" justify="center">
         <div class="img-tip" />
       </el-row>
@@ -91,6 +87,7 @@
   </div>
 </template>
 <script>
+import * as api from "@/api/appCarousel";
 import RotationDialog from "./component/rotationDialog.vue";
 export default {
   name: 'TaskDistribute',
@@ -101,7 +98,7 @@ export default {
       serviceTotal: 0,
       page: 1,
       pageSize: 10,
-      list: [
+      tableList: [
         { sn: '002', name: '张三', isShow: '1', remark: '' },
         { sn: '002', name: '张三', isShow: '1', remark: '' },
         { sn: '002', name: '张三', isShow: '1', remark: '' },
@@ -133,16 +130,28 @@ export default {
   },
   methods: {
 
+    // 查询表单
     getList() {
+			let params = {
+        pageNum: this.page,
+        pageSize: this.pageSize
+      }
       this.tableLoading = true
+      api.selectData(params).then(res => {
+        console.log(res, 'res');
+        this.tableList = res.data.rows
+        this.total = res.data.total
+        this.tableLoading = false
+      })
     },
     // 分页查询
-    handleCurrentChange(val) {
-			console.log(val);
+    handleCurrentChange(page) {
+      this.page = page;
+      console.log(page);
       this.getList()
     },
     handleSelectionChange(val) {
-			console.log(val,'handleSelectionChange');
+      console.log(val, 'handleSelectionChange');
       this.multipleSelection = val
     },
     recordFormat(index) {
@@ -153,7 +162,7 @@ export default {
     handleSizeChange(pageSize) {
       this.page = 1;
       this.pageSize = pageSize;
-      this.requestData();
+      this.getList();
     },
 
     // 清空已选项数组，且置空所有选择
@@ -166,7 +175,7 @@ export default {
     rowClick(row) {
       this.highlight = true
       this.temp = Object.assign({}, row)
-			console.log(this.temp, );
+      console.log(this.temp,);
     },
     // 行选中
     onTableSelect(rows, row) {
@@ -192,7 +201,7 @@ export default {
     addDialog() {
       this.highlight = false
       // this.temp = {}
-			this.resetSelect()
+      this.resetSelect()
       this.dialogTitle = '新增角色'
       this.dialogStatus = 'create'
       this.dialogAdd = true
@@ -276,37 +285,37 @@ export default {
 /* 二次确认弹出框*/
 
 .confirmDialog {
-    .el-dialog__body {
-        padding: 0px 10px !important;
+  .el-dialog__body {
+    padding: 0px 10px !important;
+  }
+  .message {
+    font-size: 16px;
+    font-family: Microsoft YaHei;
+    color: #666666;
+    font-weight: bold;
+  }
+  .el-dialog {
+    margin-top: 30vh !important;
+    width: 330px;
+    border-radius: 40px;
+    .el-dialog__header {
+      padding: 9px;
+      border-radius: 32px 32px 0 0;
     }
-    .message {
-        font-size: 16px;
-        font-family: Microsoft YaHei;
-        color: #666666;
-        font-weight: bold;
+    .el-dialog__title {
+      // 标题
+      color: #fff;
     }
-    .el-dialog {
-        margin-top: 30vh !important;
-        width: 330px;
-        border-radius: 40px;
-        .el-dialog__header {
-            padding: 9px;
-            border-radius: 32px 32px 0 0;
-        }
-        .el-dialog__title {
-            // 标题
-            color: #fff;
-        }
-        .el-dialog__headerbtn .el-dialog__close {
-            // 右侧关闭按钮
-            font-size: 20px;
-        }
+    .el-dialog__headerbtn .el-dialog__close {
+      // 右侧关闭按钮
+      font-size: 20px;
     }
-    .dialog-footer {
-			display: flex;
+  }
+  .dialog-footer {
+    display: flex;
     justify-content: flex-end;
-        padding: 0px 41px 10px 0px;
-    }
+    padding: 0px 41px 10px 0px;
+  }
 }
 </style>
 

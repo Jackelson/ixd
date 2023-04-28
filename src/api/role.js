@@ -20,6 +20,7 @@ export function deleteRoleData(params) {
 export function selectAllRole(params) {
 	return post('/SysRole/selectAllRole',params)
 }
+
 export function updateRoleMenu(params) {
 	return post('/SysRole/updateRoleMenu',params)
 }

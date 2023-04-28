@@ -65,6 +65,7 @@
               <!-- <el-card class="role-card"> -->
               <el-table
                 ref="multipleTable"
+                v-loading="tableLoading"
                 :data="list"
                 height="calc(100% - 7vh)"
                 :header-cell-style="{ background: '#11ac9b !important', color: '#ffffff', }"
@@ -112,7 +113,7 @@
                   :page-sizes="[10, 20, 50, 100]"
                   :page-size="pageSize"
                   layout="total, sizes, prev, pager, next, jumper"
-                  :total="serviceTotal"
+                  :total="roleTotal"
                   @size-change="handleSizeChange"
                   @current-change="handleCurrentChange"
                 />
@@ -215,14 +216,13 @@
       </div>
     </el-dialog>
     <!-- 用户弹框 -->
-    <UserList title="用户信息" v-model:show="dialogUser" :temp1="temp" :userList="userList" />
+    <UserList title="用户信息" v-model:show="dialogUser" :temp1="temp" :userParams="userParams" />
   </div>
 </template>
 <script>
 import { transTree } from '@/api/transTree_.js'
 import * as api from "@/api/system"
 import * as roleApi from "@/api/role"
-import * as userApi from "@/api/user"
 import TaskList from "./component/taskList.vue";
 import UserList from "./component/userList.vue";
 export default {
@@ -231,7 +231,7 @@ export default {
   data() {
     return {
       tableLoading: true,
-      serviceTotal: 0,
+      roleTotal: 0,
       page: 1,
       pageSize: 10,
       list: [
@@ -256,6 +256,7 @@ export default {
         { roleId: '002', roleName: '张三', roleSort: '1', createTime: '2022-12-33' },
       ],
       dialogUser: false, // 用户信息弹框
+      userParams: '', // 用户
       multipleSelection: [],
       selectRows: [],
       statusOptions: [],
@@ -351,7 +352,7 @@ export default {
   created() {
     this.getGroup()
     this.getList()
-    // 获取菜单tree
+    // // 获取菜单tree
     this.selectMenuTree()
   },
   mounted() {
@@ -359,30 +360,30 @@ export default {
   methods: {
     getList() {
       let params = {
-        // "createBy": "123131313131",
-        // "createTime": "2023-04-12 10:53:10",
-        // "updateBy": "",
-        // "updateTime": null,
-        // "remark": "系统管理员",
-        // "roleName": "应用申请人员11",
-        // "roleKey": "ba66588b61496e2dee2dc7ee2629c68c",
-        // "roleSort": 1,
-        // "dataScope": "1",
-        // "menuCheckStrictly": true,
-        // "deptCheckStrictly": true,
-        // "menuIds": null,
-        // "deptIds": [1]
+        pageNum: this.page,
+        pageSize: this.pageSize
       }
-      roleApi.selectAllRole(params).then(res => {
+      this.tableLoading = true
+      roleApi.selectRoleData(params).then(res => {
         console.log(res, 'res');
-        this.list = res.data
+        this.list = res.data.rows
+        this.roleTotal = res.data.total
+        this.tableLoading = false
       })
     },
     selectRoleByDeptId(val) {
-      let param = { deptIds: [val] }
+      let param = {
+        deptIds: [val],
+				pageNum: this.page,
+        pageSize: this.pageSize
+      }
+      this.tableLoading = true
       roleApi.selectRoleByDeptId(param).then(res => {
         console.log(res, 'res');
         this.list = res.data
+        // this.list = res.data.rows
+        // this.roleTotal = res.data.total
+        this.tableLoading = false
       })
     },
     // 
@@ -432,6 +433,7 @@ export default {
     },
     // 组织架构的相关信息
     handleNodeClick(data, node) {
+      this.page = 1
       this.selectGroupId = data.deptId
       this.selectGroup = data
       this.resetSelect()
@@ -459,12 +461,14 @@ export default {
           this.deleteNodeStatus = true
         }
       }
-      if (this.level === 1) {
-        this.getList()
-      } else {
+      // if (this.level === 1) {
+			// 	console.log(this.level,'sd666666666');
+      //   this.getList()
+      // } else {
+				console.log(this.level,'555555555555');
         this.selectRoleByDeptId(this.selectGroupId)
 
-      }
+      // }
     },
     handleCreateNode() {
       // this.kindOptions = this.getGroupKindOptions(this.level + 1)
@@ -585,15 +589,13 @@ export default {
     },
     searchUserList(row) {
       console.log(row, 'rowssssss');
-      let param = { roleId: row.roleId }
-      userApi.selectUserByRoleId(param).then(res => {
-        console.log(res);
-        this.userList = res.data
-      })
+      this.userParams = row.roleId
+
       this.dialogUser = true
     },
     // 分页查询
     handleCurrentChange(val) {
+      this.page = val;
       console.log(val);
       this.getList()
     },
@@ -609,7 +611,7 @@ export default {
     handleSizeChange(pageSize) {
       this.page = 1;
       this.pageSize = pageSize;
-      this.requestData();
+      this.getList();
     },
 
     // 清空已选项数组，且置空所有选择

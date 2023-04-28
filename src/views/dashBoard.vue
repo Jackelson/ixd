@@ -83,7 +83,7 @@
           :page-sizes="[10, 20, 50, 100]"
           :page-size="pageSize"
           layout="total, sizes, prev, pager, next, jumper"
-          :total="serviceTotal"
+          :total="total"
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
       />-->
@@ -203,12 +203,13 @@ export default {
 			appVisitCount: [],
 			appStatistic: [],
       tableList: [
-        { appId: '11', status: '已上架', address: '无', leader: 'user4', phone: '' },
-        { appId: '11', status: '已上架', address: '无', leader: 'user4', phone: '' },
-        { appId: '11', status: '已上架', address: '无', leader: 'user4', phone: '' },
+        // { appId: '11', status: '已上架', address: '无', leader: 'user4', phone: '' },
+        // { appId: '11', status: '已上架', address: '无', leader: 'user4', phone: '' },
+        // { appId: '11', status: '已上架', address: '无', leader: 'user4', phone: '' },
       ],
       page: 1,
       pageSize: 10,
+			total: 0,
       tableHeader: [
         { label: '应用ID', key: 'createId' },
         { label: '应用状态', key: 'appCheckStatus' },
@@ -238,6 +239,7 @@ export default {
       api.getAppInfo(params).then(res => {
         console.log(res, 'res');
 				this.tableList = res.data.rows
+				this.total = res.data.total
       })
     },
 		getStatisticAnalysis() {
