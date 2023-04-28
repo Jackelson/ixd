@@ -14,7 +14,7 @@
             <div>
               <svg-icon icon="江苏电力公司" class="user-logo"></svg-icon>专责人员
             </div>
-            <div>
+            <div @click="loginOut" style="cursor: pointer;">
               <svg-icon icon="退出" class="user-logo"></svg-icon>
             </div>
           </div>
@@ -131,14 +131,19 @@ export default defineComponent({
     const handleMenu = () => {
       isCollapse.value = !isCollapse.value
     }
-		const route = useRouter()
-		console.log(route, 'route');
+		const router = useRouter()
+		console.log(router, 'router');
+		function loginOut() {
+			localStorage.clear('createById')
+			router.push({path:'/login'})
+		}
 		onMounted(() => {
 			// console.log(this.$route, 'sssssssssss')
 		})
     return {
       isCollapse,
       menus,
+			loginOut,
       handleMenu
     }
   }
