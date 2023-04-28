@@ -139,23 +139,22 @@ export default {
     createData() {
       this.$refs['dataform'].validate((valid) => {
         if (valid) {
-          // const data = Object.assign({}, this.temp)
-          const data = {
-            createBy:"1asd321",
-            remark:"13awda",
-            menuName:"1111",
-            parentId:0,
-            orderNum:1,
-            path:"system",
-            component:null,
-            isFrame:1,
-            isCache:0,
-            menuType:"M",
-            perms:"",
-            icon:"system"
-          }
+          const data = Object.assign({}, this.temp)
+          // const data = {
+          //   createBy:"1asd321",
+          //   remark:"13awda",
+          //   menuName:"1111",
+          //   parentId:0,
+          //   orderNum:1,
+          //   path:"system",
+          //   component:null,
+          //   isFrame:1,
+          //   isCache:0,
+          //   menuType:"M",
+          //   perms:"",
+          //   icon:"system"
+          // }
           console.log(data,"44444444");
-
           menuApi.insertMenuData(data).then(res => {
             this.$parent.getList();
             console.log(res, 'res');
