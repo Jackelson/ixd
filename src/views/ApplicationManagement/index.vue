@@ -8,6 +8,8 @@
             <el-input v-model="filterData.appName" style="width:200px"></el-input>
             <span style="font-size: calc(100vw / 1920 * 14);">应用状态：</span>
             <el-input v-model="filterData.appCheckStatus" style="width:200px"></el-input>
+            <span style="font-size: calc(100vw / 1920 * 14);">业务域：</span>
+            <el-input v-model="filterData.businessName" style="width:200px"></el-input>
             <el-button @click="searchList">查询</el-button>
           </el-col>
         </el-row>
@@ -123,7 +125,7 @@ export default {
         { label: '应用检测状态', key: 'appCheckStatus' },
         { label: '是否离线', key: 'offLineApp' },
         { label: '应用管理员', key: 'contactPerson' },
-        { label: '所属公司', key: 'businessName' },
+        { label: '所属公司', key: 'appAffiliatedCompany' },
         { label: '负责人姓名', key: 'contactPerson' },
         { label: '联系方式', key: 'contactPersonTel' },
         { label: '电子邮箱', key: 'contactEmail' },
@@ -131,6 +133,7 @@ export default {
       filterData: {
         appName: "",
         appCheckStatus: "",
+        businessName: "",
       },
     }
   },
@@ -157,6 +160,18 @@ export default {
       if (val === '7') return val = '申请下架'
       if (val === '8') return val = '申请上架'
     },
+    getState2(val) {
+      if (val === '删除') return val = '-1'
+      if (val === '未提交') return val = '0'
+      if (val === '提交审批') return val = '1'
+      if (val === '上架') return val = '2'
+      if (val === '审批驳回') return val = '3'
+      if (val === '流程删除') return val = '4'
+      if (val === '下架') return val = '5'
+      if (val === '已撤销') return val = '6'
+      if (val === '申请下架') return val = '7'
+      if (val === '申请上架') return val = '8'
+    },
     getoffLineApp(val) {
       if (val === 0) return val = '离线应用'
       if (val === 1) return val = '在线应用'
@@ -171,11 +186,17 @@ export default {
         pageSize: this.pageSize
       }
       !this.filterData.appName ? null : param.appName = this.filterData.appName
-      !this.filterData.appCheckStatus ? null : param.state = this.filterData.appCheckStatus
+      !this.filterData.appCheckStatus ? null : param.state = this.getState2(this.filterData.appCheckStatus)
+      !this.filterData.businessName ? null : param.businessName = this.filterData.businessName
 
       this.tableLoading = true
       api.getAppInfo(param).then(res => {
-        this.tableList = res.data.rows
+        this.tableList = Object.assign([], res.data.rows)
+        this.tableList.forEach(ele => {
+          ele.state = this.getState(ele.state)
+          ele.offLineApp = this.getoffLineApp(ele.offLineApp)
+          ele.appCheckStatus = this.getappCheckStatus(ele.appCheckStatus)
+        })
         this.total = res.data.total
         this.tableLoading = false
       })

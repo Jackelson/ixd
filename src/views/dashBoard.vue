@@ -135,7 +135,7 @@ export default {
         { label: '应用检测状态', key: 'appCheckStatus' },
         { label: '是否离线', key: 'offLineApp' },
         { label: '应用管理员', key: 'contactPerson' },
-        { label: '所属公司', key: 'businessName' },
+        { label: '所属公司', key: 'appAffiliatedCompany' },
         { label: '负责人姓名', key: 'contactPerson' },
         { label: '联系方式', key: 'contactPersonTel' },
         { label: '电子邮箱', key: 'contactEmail' },
