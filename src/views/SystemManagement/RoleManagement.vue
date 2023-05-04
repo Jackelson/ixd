@@ -235,11 +235,11 @@ export default {
       page: 1,
       pageSize: 10,
       list: [
-        { roleId: '002', roleName: '张三', roleSort: '1', createTime: '2022-12-33' },
-        { roleId: '002', roleName: '张三', roleSort: '1', createTime: '2022-12-33' },
-        { roleId: '002', roleName: '张三', roleSort: '1', createTime: '2022-12-33' },
-        { roleId: '002', roleName: '张三', roleSort: '1', createTime: '2022-12-33' },
-        { roleId: '002', roleName: '张三', roleSort: '1', createTime: '2022-12-33' },
+        // { roleId: '002', roleName: '张三', roleSort: '1', createTime: '2022-12-33' },
+        // { roleId: '002', roleName: '张三', roleSort: '1', createTime: '2022-12-33' },
+        // { roleId: '002', roleName: '张三', roleSort: '1', createTime: '2022-12-33' },
+        // { roleId: '002', roleName: '张三', roleSort: '1', createTime: '2022-12-33' },
+        // { roleId: '002', roleName: '张三', roleSort: '1', createTime: '2022-12-33' },
       ],
       tableHeader: [
         { label: '角色编号', key: 'roleId' },
@@ -249,11 +249,11 @@ export default {
         { label: '操作', key: 'operation' },
       ],
       userList: [
-        { roleId: '002', roleName: '张三', roleSort: '1', createTime: '2022-12-33' },
-        { roleId: '002', roleName: '张三', roleSort: '1', createTime: '2022-12-33' },
-        { roleId: '002', roleName: '张三', roleSort: '1', createTime: '2022-12-33' },
-        { roleId: '002', roleName: '张三', roleSort: '1', createTime: '2022-12-33' },
-        { roleId: '002', roleName: '张三', roleSort: '1', createTime: '2022-12-33' },
+        // { roleId: '002', roleName: '张三', roleSort: '1', createTime: '2022-12-33' },
+        // { roleId: '002', roleName: '张三', roleSort: '1', createTime: '2022-12-33' },
+        // { roleId: '002', roleName: '张三', roleSort: '1', createTime: '2022-12-33' },
+        // { roleId: '002', roleName: '张三', roleSort: '1', createTime: '2022-12-33' },
+        // { roleId: '002', roleName: '张三', roleSort: '1', createTime: '2022-12-33' },
       ],
       dialogUser: false, // 用户信息弹框
       userParams: '', // 用户
@@ -274,41 +274,41 @@ export default {
       dialogDelNode: false,
       groupOptions: [], // 获取组织
       groupList: [
-        {
-          label: '一级 1',
-          children: [{
-            label: '二级 1-1',
-            children: [{
-              label: '三级 1-1-1'
-            }]
-          }]
-        }, {
-          label: '一级 2',
-          children: [{
-            label: '二级 2-1',
-            children: [{
-              label: '三级 2-1-1'
-            }]
-          }, {
-            label: '二级 2-2',
-            children: [{
-              label: '三级 2-2-1'
-            }]
-          }]
-        }, {
-          label: '一级 3',
-          children: [{
-            label: '二级 3-1',
-            children: [{
-              label: '三级 3-1-1'
-            }]
-          }, {
-            label: '二级 3-2',
-            children: [{
-              label: '三级 3-2-1'
-            }]
-          }]
-        }
+        // {
+        //   label: '一级 1',
+        //   children: [{
+        //     label: '二级 1-1',
+        //     children: [{
+        //       label: '三级 1-1-1'
+        //     }]
+        //   }]
+        // }, {
+        //   label: '一级 2',
+        //   children: [{
+        //     label: '二级 2-1',
+        //     children: [{
+        //       label: '三级 2-1-1'
+        //     }]
+        //   }, {
+        //     label: '二级 2-2',
+        //     children: [{
+        //       label: '三级 2-2-1'
+        //     }]
+        //   }]
+        // }, {
+        //   label: '一级 3',
+        //   children: [{
+        //     label: '二级 3-1',
+        //     children: [{
+        //       label: '三级 3-1-1'
+        //     }]
+        //   }, {
+        //     label: '二级 3-2',
+        //     children: [{
+        //       label: '三级 3-2-1'
+        //     }]
+        //   }]
+        // }
       ],
       menuList: [],
       groupChildren: 0,

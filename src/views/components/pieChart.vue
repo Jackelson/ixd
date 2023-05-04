@@ -103,7 +103,6 @@ export default {
 
     onMounted(() => {
       chart = echarts.init(document.getElementById(dataMap.chartName));  // 这里就可以获取到这个元素了
-			console.log(props.chartData, '7777777');
 
       // chartOption(props.chartData)  // 绘制图表
 

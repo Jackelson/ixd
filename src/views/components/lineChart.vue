@@ -77,6 +77,7 @@ export default {
           type: 'value',
           name: '',
           min: 0,
+					minInterval:1,
           // max: 250,
           // interval: 50,
           axisLabel: {

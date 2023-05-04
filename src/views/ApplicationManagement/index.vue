@@ -144,14 +144,35 @@ export default {
 
   },
   methods: {
+    // (-1删除，0 未提交，1 提交审批，2.上架状态(也就是审批通过)，3审批驳回 4 流程删除 5下架状态 6 已撤销 7 申请下架状态 8 申请上架状态
+    getState(val) {
+      if (val === '-1') return val = '删除'
+      if (val === '0') return val = '未提交'
+      if (val === '1') return val = '提交审批'
+      if (val === '2') return val = '上架'
+      if (val === '3') return val = '审批驳回'
+      if (val === '4') return val = '流程删除'
+      if (val === '5') return val = '下架'
+      if (val === '6') return val = '已撤销'
+      if (val === '7') return val = '申请下架'
+      if (val === '8') return val = '申请上架'
+    },
+    getoffLineApp(val) {
+      if (val === 0) return val = '离线应用'
+      if (val === 1) return val = '在线应用'
+    },
+    getappCheckStatus(val) {
+      if (val === 0) return val = '未检测'
+      if (val === 1) return val = '已检测'
+    },
     searchList() {
       let param = {
         pageNum: this.page,
         pageSize: this.pageSize
       }
-			!this.filterData.appName ?  null: param.appName = this.filterData.appName
-			!this.filterData.appCheckStatus ? null : param.state = this.filterData.appCheckStatus
-			
+      !this.filterData.appName ? null : param.appName = this.filterData.appName
+      !this.filterData.appCheckStatus ? null : param.state = this.filterData.appCheckStatus
+
       this.tableLoading = true
       api.getAppInfo(param).then(res => {
         this.tableList = res.data.rows
@@ -175,8 +196,12 @@ export default {
       }
       this.tableLoading = true
       api.getAppInfo(params).then(res => {
-        console.log(res, 'res');
-        this.tableList = res.data.rows
+        this.tableList = Object.assign([], res.data.rows)
+        this.tableList.forEach(ele => {
+          ele.state = this.getState(ele.state)
+          ele.offLineApp = this.getoffLineApp(ele.offLineApp)
+          ele.appCheckStatus = this.getappCheckStatus(ele.appCheckStatus)
+        })
         this.total = res.data.total
         this.tableLoading = false
       })

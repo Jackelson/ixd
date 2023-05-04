@@ -108,96 +108,10 @@ export default {
   },
   data() {
     return {
-      regionPieData: {
-        seriesData: {
-          // {
-          //   type: 'max',
-          //   data: [
-          //     [1663171200000, 123],
-          //     [1663171260000, 55],
-          //     [1663171320000, 23],
-          //     [1663171380000, 123],
-          //     [1663171440000, 132],
-          //   ]
-          // },
-          // {
-          //   type: '已用容量',
-          //   data: [
-          //     [1663171200000, 22],
-          //     [1663171260000, 53],
-          //     [1663171320000, 43],
-          //     [1663171380000, 123],
-          //     [1663171440000, 45],
-          //   ]
-          // },
-          // {
-          //   type: '可用容量',
-          //   data: [
-          //     [1663171200000, 100],
-          //     [1663171260000, 35],
-          //     [1663171320000, 93],
-          //     [1663171380000, 25],
-          //     [1663171440000, 75],
-          //   ]
-          // },
-          // {
-          //   type: '已映射LUN容量',
-          //   data: [
-          //     [1663171200000, 122],
-          //     [1663171260000, 43],
-          //     [1663171320000, 93],
-          //     [1663171380000, 103],
-          //     [1663171440000, 205],
-          //   ]
-          // },
-          // {
-          //   type: '未映射LUN容量',
-          //   data: [
-          //     [1663171200000, 22],
-          //     [1663171260000, 43],
-          //     [1663171320000, 93],
-          //     [1663171380000, 103],
-          //     [1663171440000, 185],
-          //   ]
-          // },
-          // {
-          //   type: 'Thin LUN总容量',
-          //   data: [
-          //     [1663171200000, 100],
-          //     [1663171260000, 150],
-          //     [1663171320000, 200],
-          //     [1663171380000, 103],
-          //     [1663171440000, 185],
-          //   ]
-          // },
-          max: [
-            [1663171200000, 123],
-            [1663171260000, 55],
-            [1663171320000, 23],
-            [1663171380000, 123],
-            [1663171440000, 132],
-          ],
-          average: [
-            [1663171200000, 22],
-            [1663171260000, 53],
-            [1663171320000, 43],
-            [1663171380000, 123],
-            [1663171440000, 45],
-          ],
-          quantile: [
-            [1663171200000, 22],
-            [1663171260000, 43],
-            [1663171320000, 93],
-            [1663171380000, 103],
-            [1663171440000, 185],
-          ]
-        },
-        title: '子应用转发请求统计'
-      },
       seriesData: [
-        { value: 1, name: '省公司' },
-        { value: 2, name: '市公司' },
-        { value: 3, name: '工区' },
+        // { value: 1, name: '省公司' },
+        // { value: 2, name: '市公司' },
+        // { value: 3, name: '工区' },
       ],
       appRequestCount: [],
       appVisitCount: [],
@@ -233,14 +147,35 @@ export default {
     this.getData()
   },
   methods: {
+	// (-1删除，0 未提交，1 提交审批，2.上架状态(也就是审批通过)，3审批驳回 4 流程删除 5下架状态 6 已撤销 7 申请下架状态 8 申请上架状态
+		getState(val) {
+			if(val === '-1') return val = '删除'
+			if(val === '0') return val = '未提交'
+			if(val === '1') return val = '提交审批'
+			if(val === '2') return val = '上架'
+			if(val === '3') return val = '审批驳回'
+			if(val === '4') return val = '流程删除'
+			if(val === '5') return val = '下架'
+			if(val === '6') return val = '已撤销'
+			if(val === '7') return val = '申请下架'
+			if(val === '8') return val = '申请上架'
+		},
+		getoffLineApp(val) {
+			if(val === 0) return val = '离线应用'
+			if(val === 1) return val = '在线应用'
+		},
+		getappCheckStatus(val) {
+			if(val === 0) return val = '未检测'
+			if(val === 1) return val = '已检测'
+		},
     filtData(val) {
       if (val === 'offshellCount') {
-        return val = '下架'
+        return val = '已下架'
       } else if (val === 'registerCount') {
-        return val = '中文注册'
+        return val = '已注册'
 
       } else if (val === 'groundingCount') {
-        return val = '上架'
+        return val = '已上架'
 
       } else {
         return val
@@ -259,8 +194,12 @@ export default {
         // "dateEnd": "2023-02-16 02:17:44"
       }
       api.getAppInfo(params).then(res => {
-        console.log(res, 'res');
-        this.tableList = res.data.rows
+        this.tableList = Object.assign([], res.data.rows)
+				this.tableList.forEach(ele => {
+					ele.state = this.getState(ele.state)
+					ele.offLineApp = this.getoffLineApp(ele.offLineApp)
+					ele.appCheckStatus = this.getappCheckStatus(ele.appCheckStatus)
+				})
         this.total = res.data.total
       })
     },

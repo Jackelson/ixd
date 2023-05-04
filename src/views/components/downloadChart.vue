@@ -55,17 +55,17 @@ export default {
       },
       formatter: (params) => {
         return (
-          params[0].data.name + ':' + params[0].data.value
+          params[0].data.app_name + ':' + params[0].data.connectUserCount
         );
       },
       legend: {
-        data: param.map((item) => item.name),
+        data: param.map((item) => item.app_name),
         bottom: 'bottom'
       },
       xAxis: [
         {
           type: 'category',
-          data: param.map((item) => item.name),
+          data: param.map((item) => item.app_name),
           axisPointer: {
             type: 'shadow'
           }
@@ -76,6 +76,7 @@ export default {
           type: 'value',
           name: '',
           min: 0,
+					minInterval:1,
           // max: 250,
           // interval: 50,
           axisLabel: {
@@ -89,7 +90,7 @@ export default {
       ],
       series: [
         {
-          name: param.map((item) => item.name),
+          name: param.map((item) => item.app_name),
           type: 'bar',
           barWidth: 30, // 柱图宽度
           barMaxWidth: 30, // 最大宽度
@@ -98,13 +99,13 @@ export default {
               return value + '';
             }
           },
-          data: param.map((item) => ({ value: item.value, name: item.name }))
+          data: param.map((item) => ({ value: item.connectUserCount, name: item.app_name }))
         },
         {
           // name: 'Temperature',
           type: 'line',
           yAxisIndex: 1,
-          data: param.map((item) => ({ value: item.value, name: item.name }))
+          data: param.map((item) => ({ value: item.connectUserCount, name: item.app_name }))
         }
       ]
     })
