@@ -113,6 +113,7 @@ export default {
   data() {
     return {
       menuName:'',
+			userId:'',
       menuId:'',
       serviceTotal: 0,
       filterData: {
@@ -147,6 +148,7 @@ export default {
     }
   },
   created() {
+		this.userId = localStorage.getItem('createById')
     this.getList();
   },
   mounted() {
@@ -162,7 +164,7 @@ export default {
     getList() {
       let params = {
         params:{
-          "userId":"2"
+          userId:this.userId
         },
       }
       menuApi.selectAllMenu(params).then(res => {

@@ -37,7 +37,7 @@ export default {
     const chartOption = (param) => chart.setOption({
 			title: {
           show: true,
-          text: '单位： 个',
+          // text: '单位： 个',
           right: '10%',
           textStyle: {
             color: "rgb(43,52,56)",

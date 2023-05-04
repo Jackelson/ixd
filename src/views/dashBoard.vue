@@ -7,7 +7,7 @@
             <div class="barContent">
               <span>子应用统计</span>
               <div class="barDiv">
-                <PieChart :chart-data="seriesData" chartName="PieChart"></PieChart>
+                <PieChart :chart-data="appStatistic" chartName="PieChart"></PieChart>
               </div>
             </div>
           </el-col>
@@ -37,7 +37,7 @@
             <div class="barContent">
               <span>子应用用户数</span>
               <div class="barDiv">
-                <DownloadChart :chart-data="appStatistic" chartName="DownloadChart"></DownloadChart>
+                <DownloadChart :chart-data="seriesData" chartName="DownloadChart"></DownloadChart>
               </div>
             </div>
           </el-col>
@@ -140,7 +140,7 @@ export default {
           //     [1663171440000, 75],
           //   ]
           // },
-					// {
+          // {
           //   type: '已映射LUN容量',
           //   data: [
           //     [1663171200000, 122],
@@ -150,7 +150,7 @@ export default {
           //     [1663171440000, 205],
           //   ]
           // },
-					// {
+          // {
           //   type: '未映射LUN容量',
           //   data: [
           //     [1663171200000, 22],
@@ -160,7 +160,7 @@ export default {
           //     [1663171440000, 185],
           //   ]
           // },
-					// {
+          // {
           //   type: 'Thin LUN总容量',
           //   data: [
           //     [1663171200000, 100],
@@ -199,9 +199,9 @@ export default {
         { value: 2, name: '市公司' },
         { value: 3, name: '工区' },
       ],
-			appRequestCount: [],
-			appVisitCount: [],
-			appStatistic: [],
+      appRequestCount: [],
+      appVisitCount: [],
+      appStatistic: [],
       tableList: [
         // { appId: '11', status: '已上架', address: '无', leader: 'user4', phone: '' },
         // { appId: '11', status: '已上架', address: '无', leader: 'user4', phone: '' },
@@ -209,21 +209,43 @@ export default {
       ],
       page: 1,
       pageSize: 10,
-			total: 0,
+      total: 0,
       tableHeader: [
-        { label: '应用ID', key: 'createId' },
-        { label: '应用状态', key: 'appCheckStatus' },
-        { label: '应用地址', key: 'applicationDownloadAddress' },
-        { label: '应用负责人', key: 'contactPerson' },
+        { label: '应用ID', key: 'id' },
+        { label: '名称', key: 'appName' },
+        { label: '描述', key: 'appDescribe' },
+        { label: '应用状态', key: 'state' },
+        { label: '首页地址', key: 'appIndexUrl' },
+        { label: '业务域', key: 'businessName' },
+        { label: '所属部门', key: 'department' },
+        { label: '应用检测状态', key: 'appCheckStatus' },
+        { label: '是否离线', key: 'offLineApp' },
+        { label: '应用管理员', key: 'contactPerson' },
+        { label: '所属公司', key: 'businessName' },
+        { label: '负责人姓名', key: 'contactPerson' },
         { label: '联系方式', key: 'contactPersonTel' },
+        { label: '电子邮箱', key: 'contactEmail' },
       ],
     }
   },
   created() {
+    this.getStatisticAnalysis()
     this.getData()
-		this.getStatisticAnalysis()
   },
   methods: {
+    filtData(val) {
+      if (val === 'offshellCount') {
+        return val = '下架'
+      } else if (val === 'registerCount') {
+        return val = '中文注册'
+
+      } else if (val === 'groundingCount') {
+        return val = '上架'
+
+      } else {
+        return val
+      }
+    },
     getData() {
       let params = {
         // "appName": "测试11",
@@ -238,23 +260,23 @@ export default {
       }
       api.getAppInfo(params).then(res => {
         console.log(res, 'res');
-				this.tableList = res.data.rows
-				this.total = res.data.total
+        this.tableList = res.data.rows
+        this.total = res.data.total
       })
     },
-		getStatisticAnalysis() {
-			api.getStatisticAnalysis().then(res => {
-				this.seriesData = res.data.appConnectUserCount
-				this.appRequestCount = res.data.appRequestCount
-				this.appVisitCount = res.data.appVisitCount
-				res.data.appStatistic.forEach((ele) => {
-					for( let key in ele) {
-						this.appStatistic.push({name: key, value: ele[key]})
-					}
-				})
-				console.log(this.appStatistic, 'ressss');
-			})
-		}
+    getStatisticAnalysis() {
+      api.getStatisticAnalysis().then(res => {
+        this.seriesData = res.data.appConnectUserCount
+        this.appRequestCount = res.data.appRequestCount
+        this.appVisitCount = res.data.appVisitCount
+        res.data.appStatistic.forEach((ele) => {
+          for (let key in ele) {
+            this.appStatistic.push({ name: this.filtData(key), value: ele[key] })
+          }
+        })
+        console.log(this.appStatistic, 'ressss');
+      })
+    }
   }
 }
 </script>

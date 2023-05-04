@@ -27,6 +27,7 @@ export default {
     chartName: String,
   },
   setup(props) {
+		console.log(props.chartData, '555555555555555');
     const dataMap = reactive({
       chartName: props.chartName,
       chartData: props.chartData,
@@ -35,15 +36,15 @@ export default {
     let chart; // 这里是chart的根
     // 绘制图表
     const chartOption = (param) => chart.setOption({
-      title: {
-        show: true,
-        text: '单位： 个',
-        right: '10%',
-        textStyle: {
-          color: "rgb(43,52,56)",
-          fontSize: "0.75rem",
-        },
-      },
+      // title: {
+      //   show: true,
+      //   text: '单位： 个',
+      //   right: '10%',
+      //   textStyle: {
+      //     color: "rgb(43,52,56)",
+      //     fontSize: "0.75rem",
+      //   },
+      // },
       tooltip: {
         trigger: 'axis',
         axisPointer: {

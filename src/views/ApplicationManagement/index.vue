@@ -112,13 +112,21 @@ export default {
       page: 1,
       pageSize: 10,
       tableHeader: [
-        { label: '应用ID', key: 'createId' },
-        { label: '应用名称', key: 'appName' },
-        { label: '应用状态', key: 'appCheckStatus' },
-        { label: '应用地址', key: 'applicationDownloadAddress' },
-        { label: '应用负责人', key: 'contactPerson' },
+        { label: '操作', key: 'operate', width: '200px' },
+        { label: '应用ID', key: 'id' },
+        { label: '名称', key: 'appName' },
+        { label: '描述', key: 'appDescribe' },
+        { label: '应用状态', key: 'state' },
+        { label: '首页地址', key: 'appIndexUrl' },
+        { label: '业务域', key: 'businessName' },
+        { label: '所属部门', key: 'department' },
+        { label: '应用检测状态', key: 'appCheckStatus' },
+        { label: '是否离线', key: 'offLineApp' },
+        { label: '应用管理员', key: 'contactPerson' },
+        { label: '所属公司', key: 'businessName' },
+        { label: '负责人姓名', key: 'contactPerson' },
         { label: '联系方式', key: 'contactPersonTel' },
-        { label: '操作', key: 'operate' },
+        { label: '电子邮箱', key: 'contactEmail' },
       ],
       filterData: {
         appName: "",
@@ -138,11 +146,12 @@ export default {
   methods: {
     searchList() {
       let param = {
-        appName: this.filterData.appName,
-        appCheckStatus: this.filterData.appCheckStatus,
         pageNum: this.page,
         pageSize: this.pageSize
       }
+			!this.filterData.appName ?  null: param.appName = this.filterData.appName
+			!this.filterData.appCheckStatus ? null : param.state = this.filterData.appCheckStatus
+			
       this.tableLoading = true
       api.getAppInfo(param).then(res => {
         this.tableList = res.data.rows
