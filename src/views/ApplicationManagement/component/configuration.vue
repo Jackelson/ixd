@@ -235,33 +235,34 @@ export default {
     },
     // 新增提交
     createData() {
-      this.$refs['dataform'].validate((valid) => {
-        if (valid) {
-          const data = Object.assign({}, this.temp)
-          data.menuCheckStrictly = true
-          data.deptCheckStrictly = true
-          data.deptIds = this.form.treeId
-          data.menuIds = this.form.menuTreeId
-          data.updateTime = null
-          data.updateBy = ''
-          data.dataScope = '1'
-          data.createBy = localStorage.getItem('createById')
-          roleApi.insertRoleData(data).then(res => {
-            this.$parent.getList()
-            console.log(res, 'res');
-            this.form = {
-              treeData: [],
-              treeId: []
-            }
-            this.groupVisible = false
-            this.$message({
-              message: '更新成功！',
-              type: 'success'
-            })
-          })
-          console.log(data);
-        }
-      })
+        this.groupVisible = false
+      // this.$refs['dataform'].validate((valid) => {
+      //   if (valid) {
+      //     const data = Object.assign({}, this.temp)
+      //     data.menuCheckStrictly = true
+      //     data.deptCheckStrictly = true
+      //     data.deptIds = this.form.treeId
+      //     data.menuIds = this.form.menuTreeId
+      //     data.updateTime = null
+      //     data.updateBy = ''
+      //     data.dataScope = '1'
+      //     data.createBy = localStorage.getItem('createById')
+      //     roleApi.insertRoleData(data).then(res => {
+      //       this.$parent.getList()
+      //       console.log(res, 'res');
+      //       this.form = {
+      //         treeData: [],
+      //         treeId: []
+      //       }
+      //       this.groupVisible = false
+      //       this.$message({
+      //         message: '更新成功！',
+      //         type: 'success'
+      //       })
+      //     })
+      //     console.log(data);
+      //   }
+      // })
     },
     // 编辑提交
     updateData() {
