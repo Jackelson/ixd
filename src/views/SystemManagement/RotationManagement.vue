@@ -21,8 +21,8 @@
           :row-style="rowStyle"
           @row-click="rowClick"
           @selection-change="handleSelectionChange"
-          @select="onTableSelect"
         >
+                  <!-- @select="onTableSelect" -->
           <el-table-column type="selection" width="55"></el-table-column>
           <el-table-column
             label="序号"
@@ -42,6 +42,11 @@
             :width="item.width"
           >
             <template v-slot="scope">
+              <span v-if="item.key === 'operate'">
+                <el-button type="text" @click="openImage(scope.row)">
+                  <span>查看</span>
+                </el-button>
+              </span>
               <span>{{ scope.row[item.key] }}</span>
             </template>
           </el-table-column>
@@ -99,16 +104,18 @@ export default {
       page: 1,
       pageSize: 10,
       tableList: [
-        { sn: '002', name: '张三', isShow: '1', remark: '' },
-        { sn: '002', name: '张三', isShow: '1', remark: '' },
-        { sn: '002', name: '张三', isShow: '1', remark: '' },
-        { sn: '002', name: '张三', isShow: '1', remark: '' },
+        // { sn: '002', name: '张三', isShow: '1', remark: '' },
+        // { sn: '002', name: '张三', isShow: '1', remark: '' },
+        // { sn: '002', name: '张三', isShow: '1', remark: '' },
+        // { sn: '002', name: '张三', isShow: '1', remark: '' },
       ],
       tableHeader: [
-        { label: '轮播图顺序', key: 'sn' },
-        { label: '名称', key: 'name' },
-        { label: '是否展示', key: 'isShow' },
-        { label: '备注', key: 'remark' },
+        { label: '顺序', key: 'sort' },
+        { label: '名称', key: 'imageName' },
+        { label: '是否展示', key: 'state' },
+        { label: '查看', key: 'operate' },
+        { label: '创建时间', key: 'createTime' },
+        { label: '创建人', key: 'createBy' },
       ],
       selectRows: [], // 批量操作时选中的所有行数组
       multipleSelection: [],
@@ -125,23 +132,50 @@ export default {
     }
   },
   created() {
+    this.getList()
   },
   mounted() {
   },
   methods: {
+    changeVal(val) {
+      if(val == '-1') {
+        return val = '删除'
+      }else if(val == '0'){
+        return val = '待发布'
+      }else{
+        return val = '发布'
+      }
+    },
 
     // 查询表单
     getList() {
 			let params = {
-        pageNum: this.page,
-        pageSize: this.pageSize
+        // pageNum: this.page,
+        // pageSize: this.pageSize
       }
       this.tableLoading = true
       api.selectData(params).then(res => {
         console.log(res, 'res');
         this.tableList = res.data.rows
+        this.tableList.forEach(ele => {
+          ele.state = this.changeVal(ele.state)
+        })
         this.total = res.data.total
         this.tableLoading = false
+      })
+    },
+    //删除
+    stopData(){
+      let params = this.multipleSelection.map(item => item.id)
+      console.log(params, 'params');
+      api.deleteData(params).then(res => {
+        console.log(res, 'deleteData');
+        this.dialogDel = false
+        this.$message({
+          message: '删除成功！',
+          type: 'success'
+        })
+        this.getList()
       })
     },
     // 分页查询
@@ -178,25 +212,25 @@ export default {
       console.log(this.temp,);
     },
     // 行选中
-    onTableSelect(rows, row) {
-      this.selected = rows.length && rows.indexOf(row) !== -1
-      var ele = document.getElementsByClassName('el-table__row')
-      var domes = Array.prototype.slice.call(ele)
-      var index = this.list.indexOf(row)
-      // 如果是选中
-      if (this.selected === true) {
-        this.selectRows = rows
-        setTimeout(() => {
-          domes[index].classList.add('isactive')
-        }, 100)
-      } else {
-        // 如果是取消
-        this.selectRows = rows
-        setTimeout(() => {
-          domes[index].classList.remove('isactive')
-        }, 100)
-      }
-    },
+    // onTableSelect(rows, row) {
+    //   this.selected = rows.length && rows.indexOf(row) !== -1
+    //   var ele = document.getElementsByClassName('el-table__row')
+    //   var domes = Array.prototype.slice.call(ele)
+    //   var index = this.list.indexOf(row)
+    //   // 如果是选中
+    //   if (this.selected === true) {
+    //     this.selectRows = rows
+    //     setTimeout(() => {
+    //       domes[index].classList.add('isactive')
+    //     }, 100)
+    //   } else {
+    //     // 如果是取消
+    //     this.selectRows = rows
+    //     setTimeout(() => {
+    //       domes[index].classList.remove('isactive')
+    //     }, 100)
+    //   }
+    // },
     // 新增角色
     addDialog() {
       this.highlight = false
@@ -209,7 +243,7 @@ export default {
     },
     // 编辑
     handleUpdate() {
-      if (Object.keys(this.temp).length > 0) {
+      if (Object.keys(this.multipleSelection).length > 0) {
         this.dialogTitle = '修改角色'
         this.dialogStatus = 'update'
         this.dialogAdd = true
@@ -223,18 +257,27 @@ export default {
     },
     // 删除角色
     handleStop() {
-      if (this.selectRows.length === 0) {
+      // if (this.selectRows.length === 0) {
+      //   this.$message({
+      //     message: '请勾选要删除的数据！',
+      //     type: 'warning'
+      //   })
+      // } else if (this.selectRows.length === 1) {
+      //   this.deleteTxt = '是否删除该数据？'
+      //   this.dialogDel = true
+      // } else if (this.selectRows.length > 1) {
+      //   // 勾选多条数据
+      //   this.deleteTxt = '是否删除多条数据？'
+      //   this.dialogDel = true
+      // }
+      if (Object.keys(this.multipleSelection).length > 0) {
+        this.deleteTxt = '是否删除用户'
+        this.dialogDel = true
+      } else {
         this.$message({
-          message: '请勾选要删除的数据！',
+          message: '请勾选要删除的用户！',
           type: 'warning'
         })
-      } else if (this.selectRows.length === 1) {
-        this.deleteTxt = '是否删除该数据？'
-        this.dialogDel = true
-      } else if (this.selectRows.length > 1) {
-        // 勾选多条数据
-        this.deleteTxt = '是否删除多条数据？'
-        this.dialogDel = true
       }
     },
 

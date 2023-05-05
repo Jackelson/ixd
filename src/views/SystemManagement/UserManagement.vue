@@ -157,6 +157,12 @@
             style="width:90%;"
           />
           <el-input
+            v-else-if="item.key === 'parentId' && groupDialogStatus==='create'"
+            disabled
+            v-model="groupTemp[item.key]"
+            style="width:90%;"
+          />
+          <el-input
             v-else-if="item.key === 'orderNum'"
             v-model.number="groupTemp[item.key]"
             style="width:90%;"

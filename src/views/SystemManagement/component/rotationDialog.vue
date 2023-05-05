@@ -18,12 +18,13 @@
       <div v-for="(item,index) in formHeader" :key="index">
         <el-form-item :label="item.label" :prop="item.key">
           <el-upload
-            v-if="item.key === 'image'"
+            v-if="item.key === 'file'"
             class="upload-demo"
-            action="https://jsonplaceholder.typicode.com/posts/"
+            action="#"
             :on-preview="handlePreview"
             :on-remove="handleRemove"
             :file-list="fileList"
+            :http-request="upload"
             list-type="picture"
           >
             <el-button size="small" type="primary">点击上传</el-button>
@@ -41,7 +42,7 @@
   </el-dialog>
 </template>
 <script>
-
+import * as api from "@/api/appCarousel";
 export default {
   name: 'TaskList',
   props: {
@@ -73,22 +74,23 @@ export default {
     return {
       groupVisible: this.show, // 引入页面弹窗的状态值一定要设置
       formHeader: [
-        { label: '轮播图顺序', key: 'sn' },
-        { label: '名称', key: 'name' },
-        { label: '图片', key: 'image' },
+        { label: '名称', key: 'imageName' },
+        { label: '介绍', key: 'imageDesc' },
+        { label: '状态', key: 'state' },
+        { label: '创建id', key: 'createId' },
+        { label: 'createName', key: 'createName' },
+        { label: '文件', key: 'file' },
       ],
       rules: {
       },
       temp: {},
+      // file:'',
       listQuery: {
         _page: 0,
         _page_size: 15
       },
       dialogTitle: '', // 弹框标题
-			fileList: [{
-				name: 'food.jpeg', 
-				url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'}, 
-			]
+			fileList: []
     }
   },
   watch: {
@@ -107,6 +109,15 @@ export default {
   },
   mounted() { },
   methods: {
+    upload(file) {
+      console.log(file)
+      // this.fileList.push({
+      //   name: file.file.name,
+      //   raw: file.file,
+      //   url: URL.createObjectURL(file.file)
+      // })
+      this.fileList.push(file.file)
+    },
     closeGroupVisible() {
       this.$emit('update:show', false)
       if (this.dialogStatus === 'create') {
@@ -135,8 +146,35 @@ export default {
     createData() {
       this.$refs['dataform'].validate((valid) => {
         if (valid) {
-          const data = Object.assign({}, this.temp)
-          console.log(data);
+          const data = Object.assign({}, this.temp);
+          let fileData = new FormData()
+          // fileData.append("file",this.fileList[0])
+          // console.log("444444444",fileData)
+          //  debugger
+          // this.fileList.forEach((item)=>{
+          //   let blob = URL.createObjectURL(item.raw);
+          //   let file = new File([blob], item.name)
+          //   fileData.append('file', file)
+          // })
+          
+          fileData.append("file",this.fileList[0])
+          fileData.append("imageName",data.imageName)
+          fileData.append("imageDesc",data.imageDesc)
+          fileData.append("state",data.state)
+          fileData.append("createName",data.createName)
+          fileData.append("createId",data.createId)
+          // data.file = fileData;
+          console.log(data,"8888888888888888");
+          this.groupVisible = false
+          api.insertData(fileData).then(res => {
+            console.log("222222")
+            this.$parent.getList()
+            console.log(res, 'res');
+            this.$message({
+              message: '更新成功！',
+              type: 'success'
+            })
+          })
         }
       })
     },
@@ -145,7 +183,22 @@ export default {
       this.$refs['dataform'].validate((valid) => {
         if (valid) {
           const data = Object.assign({}, this.temp)
+          let fileData = new FormData()
+          fileData.append("file",this.fileList[0])
+          fileData.append("imageName",data.imageName)
+          fileData.append("imageDesc",data.imageDesc)
+          fileData.append("id",data.id)
           console.log(data, 'data')
+          this.groupVisible = false
+          api.updateData(fileData).then(res => {
+            console.log("222222")
+            this.$parent.getList()
+            console.log(res, 'res');
+            this.$message({
+              message: '更新成功！',
+              type: 'success'
+            })
+          })
         }
       })
     },

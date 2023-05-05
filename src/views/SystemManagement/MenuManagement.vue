@@ -113,13 +113,13 @@ export default {
   data() {
     return {
       menuName:'',
-			userId:'',
       menuId:'',
       serviceTotal: 0,
       filterData: {
         appName: "",
         appStatus: "",
       },
+      userid:"",
       page: 1,
       pageSize: 10,
       selectRows: [],//勾选列表数据
@@ -148,7 +148,8 @@ export default {
     }
   },
   created() {
-		this.userId = localStorage.getItem('createById')
+    this.userid = localStorage.getItem('createById')
+    console.log("ididid",this.userid)
     this.getList();
   },
   mounted() {
@@ -164,7 +165,7 @@ export default {
     getList() {
       let params = {
         params:{
-          userId:this.userId
+          userId:this.userid
         },
       }
       menuApi.selectAllMenu(params).then(res => {
