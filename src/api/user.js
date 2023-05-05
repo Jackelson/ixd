@@ -29,3 +29,11 @@ export function login(params) {
 	return uploadFile('/SysUser/login',params)
 }
 
+export function selectUserByDeptId(params) {
+	return post('/SysUser/selectUserByDeptId',params)
+}
+
+export function selectAppUsers(params) {
+	return post('/SysUser/selectAppUsers',params)
+}
+

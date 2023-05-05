@@ -4,7 +4,7 @@
       <el-card class="role-card">
         <el-row style=" height: calc(100% - 0vh)">
           <!--左侧栏-->
-          <el-col :span="5">
+          <!-- <el-col :span="5">
             <el-row
               type="flex"
               align="middle"
@@ -34,7 +34,6 @@
               </el-col>
             </el-row>
 
-            <!-- <el-card class="table_class"> -->
             <el-tree
               ref="tree"
               draggable
@@ -49,10 +48,9 @@
               style="color:#666;font-family: Microsoft YaHei;"
               @node-click="handleNodeClick"
             />
-            <!-- </el-card> -->
-          </el-col>
+          </el-col> -->
           <!--右侧栏-->
-          <el-col :span="19" style="border-left: 1px solid #ebeef5;">
+          <el-col :span="24" style="border-left: 1px solid #ebeef5;">
             <el-row style="height:40px;line-height:40px;margin-left: 0.5%;" type="flex">
               <el-col class="edit" :span="16">
                 <el-button @click="addDialog">新增角色</el-button>

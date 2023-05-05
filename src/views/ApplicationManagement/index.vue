@@ -50,7 +50,7 @@
                   </el-icon>
                   <span>测试链接</span>
                 </el-button>
-                <el-button type="text">
+                <el-button @click="getUserConfiguration(scope.row)" type="text">
                   <el-icon>
                     <Tools />
                   </el-icon>
@@ -85,20 +85,33 @@
     >
       <ApplicationDialog ref="hostDetailPage" :tableData="tableData" />
     </el-dialog>
+
+    <!--弹框部分-->
+    <Configuration
+      title="用户配置"
+      v-model:show="dialogAdd"
+      :temp1="temp"
+      :menuList="menuList"
+      :source="chooseNum"
+    />
   </div>
 </template>
 
 <script>
+import * as roleApi from "@/api/role"
+import * as userApi from "@/api/user"
 import * as api from "@/api/dashBoard"
 import { Share, Tools } from '@element-plus/icons-vue'
 import ApplicationDialog from "./component/applicationDialog.vue";
+import Configuration from "./component/configuration.vue";
 export default {
   // eslint-disable-next-line vue/multi-word-component-names
   name: 'Application',
   components: {
     Share,
     Tools,
-    ApplicationDialog
+    ApplicationDialog,
+    Configuration
   },
   data() {
     return {
@@ -135,6 +148,10 @@ export default {
         appCheckStatus: "",
         businessName: "",
       },
+      dialogAdd: false,
+      temp: {},
+      menuList: [],
+      chooseNum: []
     }
   },
   watch: {
@@ -142,11 +159,68 @@ export default {
   },
   created() {
     this.requestData()
+    // 获取菜单tree
+    // this.selectMenuTree()
   },
   mounted() {
 
   },
   methods: {
+    selectAppUsers(val) {
+      let param = {
+        appId: val
+      }
+      userApi.selectAppUsers(param).then(res => {
+        // this.menuList = res.data
+        // for (let n = 0; n < this.menuList.length; n++) {
+        //   this.menuList[n].nickName = this.menuList[n].roleName
+        // }
+        const groupsData = res.data
+        for (let n = 0; n < groupsData.length; n++) {
+          groupsData[n].label = groupsData[n].roleName
+        }
+        this.menuList = this.dg(groupsData)
+        console.log(this.menuList, this.chooseNum, '5555555555555');
+      })
+    },
+    // 根据树结构节点id从树结构数据中获取节点数据
+    dg(data) {
+      let arr = []
+      if (data) {
+        data.forEach((item, index1) => {
+          item.label = item.roleName
+          if (item.userNames) {
+            item.userNames.forEach((ele, index) => {
+              ele.label = ele.nickName
+              ele.id = ele.nickName + index1 + index
+              if (ele.isBelong === 0) {
+                this.chooseNum.push(ele.id)
+              }
+            })
+          }
+          arr.push(item)
+        });
+        return arr
+      } else {
+        return null
+      }
+
+    },
+    selectMenuTree() {
+      let param = { "params": { "userId": "1" } }
+      roleApi.selectMenuTree(param).then(res => {
+        console.log(res, 'res');
+        this.menuList = res.data
+      })
+    },
+    // 用户配置
+    getUserConfiguration(val) {
+      this.temp = val
+      // this.selectAppUsers(val.id)
+      this.selectAppUsers('APPREGISTERN1a9fe648b8be422d86fc4bcf6efd0b7f')
+      this.dialogAdd = true
+
+    },
     // (-1删除，0 未提交，1 提交审批，2.上架状态(也就是审批通过)，3审批驳回 4 流程删除 5下架状态 6 已撤销 7 申请下架状态 8 申请上架状态
     getState(val) {
       if (val === '-1') return val = '删除'
