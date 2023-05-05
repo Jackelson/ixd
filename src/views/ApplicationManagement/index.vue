@@ -193,7 +193,7 @@ export default {
             item.userNames.forEach((ele, index) => {
               ele.label = ele.nickName
               ele.id = ele.nickName + index1 + index
-              if (ele.isBelong === 0) {
+              if (ele.isBelong === 1) {
                 this.chooseNum.push(ele.id)
               }
             })
