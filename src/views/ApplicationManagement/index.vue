@@ -8,9 +8,13 @@
             <el-input v-model="filterData.appName" style="width:200px"></el-input>
             <span style="font-size: calc(100vw / 1920 * 14);">应用状态：</span>
             <el-input v-model="filterData.appCheckStatus" style="width:200px"></el-input>
-            <span style="font-size: calc(100vw / 1920 * 14);">业务域：</span>
-            <el-input v-model="filterData.businessName" style="width:200px"></el-input>
-            <el-button @click="searchList">查询</el-button>
+            <span style="font-size: calc(100vw / 1920 * 14);margin-left: 10px;">业务域：</span>
+						<el-select v-model="filterData.businessType" filterable clearable placeholder="--请选择--"
+                @change="enterSelect" style="width:22vh;">
+                <el-option v-for="(item, index) in businessTypeList" :key="index" :label="item.optionName" :value="item.id">
+                </el-option>
+              </el-select>
+            <el-button style="margin-left: 10px;" @click="searchList">查询</el-button>
           </el-col>
         </el-row>
         <el-table
@@ -146,12 +150,14 @@ export default {
       filterData: {
         appName: "",
         appCheckStatus: "",
-        businessName: "",
+        businessType: "",
       },
       dialogAdd: false,
       temp: {},
       menuList: [],
-      chooseNum: []
+      chooseNum: [],
+			businessTypeList: [],
+			businessType: ''
     }
   },
   watch: {
@@ -159,6 +165,7 @@ export default {
   },
   created() {
     this.requestData()
+		this.SysSelectDictionary()
     // 获取菜单tree
     // this.selectMenuTree()
   },
@@ -166,6 +173,18 @@ export default {
 
   },
   methods: {
+		SysSelectDictionary() {
+			let param = {
+				selectFlag: "business_type"
+			}
+			api.SysSelectDictionary(param).then(res => {
+				this.businessTypeList = res.data
+				console.log(res);
+			})
+		},
+		enterSelect() {
+
+		},
     selectAppUsers(val) {
       let param = {
         appId: val
@@ -261,7 +280,7 @@ export default {
       }
       !this.filterData.appName ? null : param.appName = this.filterData.appName
       !this.filterData.appCheckStatus ? null : param.state = this.getState2(this.filterData.appCheckStatus)
-      !this.filterData.businessName ? null : param.businessName = this.filterData.businessName
+      !this.filterData.businessType ? null : param.businessType = this.filterData.businessType
 
       this.tableLoading = true
       api.getAppInfo(param).then(res => {

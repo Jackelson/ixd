@@ -31,7 +31,7 @@
             v-model="form.treeData"
             placeholder="请选择"
             multiple
-						style="width: 90%;"
+            style="width: 90%;"
             collapse-tags
             @change="selectChange"
           >
@@ -58,7 +58,7 @@
             v-model="form.menuTreeData"
             placeholder="请选择"
             multiple
-						style="width: 90%;"
+            style="width: 90%;"
             collapse-tags
             @change="selectChange"
           >
@@ -107,7 +107,7 @@ export default {
       type: Array,
       default: null
     },
-		menuList: {
+    menuList: {
       require: true,
       type: Array,
       default: null
@@ -135,7 +135,7 @@ export default {
     return {
       groupVisible: this.show, // 引入页面弹窗的状态值一定要设置
       formHeader: [
-        { label: '角色编号', key: 'roleKey' },
+        // { label: '角色编号', key: 'roleKey' },
         { label: '角色名称', key: 'roleName' },
         { label: '角色排序', key: 'roleSort' },
         { label: '组织', key: 'deptIds' },
@@ -173,10 +173,10 @@ export default {
       defaultProps: {
         children: "children",
         label: "label",
-				id: 'id'
+        id: 'id'
       },
       treeDataValue: "",
-			menuDataValue: '',
+      menuDataValue: '',
       form: {
         treeData: [], // 多选
         treeId: [],
@@ -190,7 +190,7 @@ export default {
       handler(newValue) {
         this.groupVisible = newValue
         console.log(newValue, 'sdfsdddddd');
-          this.temp = this.temp1
+        this.temp = this.temp1
       },
       deep: true
     }
@@ -215,10 +215,10 @@ export default {
         this.form.treeData.push(data.label)
         this.form.treeId.push(data.deptId)
       }
-      console.log(data, node, nodeData,this.form,'sssssssssss');
+      console.log(data, node, nodeData, this.form, 'sssssssssss');
 
     },
-		handleMenuClick(data, node, nodeData) {
+    handleMenuClick(data, node, nodeData) {
       // select 多选（判重后添加到选择结果数组中）
       this.menuTreeDataValue = data
       let num = 0;
@@ -232,7 +232,7 @@ export default {
         this.form.menuTreeData.push(data.label)
         this.form.menuTreeId.push(data.id)
       }
-      console.log(data, node, nodeData,this.form,'sssssssssss');
+      console.log(data, node, nodeData, this.form, 'sssssssssss');
 
     },
 
@@ -267,23 +267,37 @@ export default {
           const data = Object.assign({}, this.temp)
           data.menuCheckStrictly = true
           data.deptCheckStrictly = true
-					data.deptIds = this.form.treeId
-					data.menuIds = this.form.menuTreeId
-					data.updateTime = null
-					data.updateBy = ''
-					data.dataScope = '1'
-					data.createBy = localStorage.getItem('createById')
+          data.deptIds = this.form.treeId
+          data.menuIds = this.form.menuTreeId
+          // data.updateTime = null
+          // data.updateBy = ''
+          data.dataScope = '1'
+          data.createBy = localStorage.getItem('createById')
           roleApi.insertRoleData(data).then(res => {
-            this.$parent.getList()
-            console.log(res, 'res');
-						this.form = {
-							treeData: [],
-							treeId: []
+            if (res.code === 200) {
+              this.$parent.getList()
+              console.log(res, 'res');
+              this.form = {
+                treeData: [],
+                treeId: []
+              }
+              this.groupVisible = false
+              this.$message({
+                message: '更新成功！',
+                type: 'success'
+              })
+            }else {
+              this.groupVisible = false
+							this.$message({
+                message: res.msg,
+                type: ''
+              })
 						}
-            this.groupVisible = false
+
+          }).catch(err => {
             this.$message({
-              message: '更新成功！',
-              type: 'success'
+              message: err,
+              // type: 'success'
             })
           })
           console.log(data);

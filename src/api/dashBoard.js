@@ -10,3 +10,8 @@ export function getAppInfo(params) {
 export function getStatisticAnalysis(params) {
 	return post('/AppIndexController/selectStatisticAnalysis',params)
 }
+
+
+export function SysSelectDictionary(params) {
+	return post('/SysSelectDictionary/select',params)
+}

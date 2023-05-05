@@ -58,13 +58,13 @@
                 <span style="font-size: calc(100vw / 1920 * 14);margin-left: 10px;">用户名：</span>
                 <el-input v-model="filterData.userName" style="width:200px"></el-input>
                 <span style="font-size: calc(100vw / 1920 * 14);margin-left: 10px;">角色：</span>
-                <el-input v-model="filterData.userType" style="width:200px"></el-input>
+                <el-input v-model="filterData.roleId" style="width:200px"></el-input>
                 <el-button style="margin-left: 10px;" @click="searchList">查询</el-button>
               </el-col>
             </el-row>
             <el-row style="height:40px;line-height:40px;margin-left: 0.5%;" type="flex">
               <el-col class="edit" :span="16">
-                <el-button @click="addDialog">新增用户</el-button>
+                <el-button :disabled="!selectGroupId" @click="addDialog">新增用户</el-button>
                 <el-button @click="handleUpdate">修改用户</el-button>
                 <el-button @click="handleStop">删除用户</el-button>
               </el-col>
@@ -151,13 +151,7 @@
           :prop="item.key"
         >
           <el-input
-            v-if="item.key === 'deptId' && groupDialogStatus==='create'"
-            disabled
-            v-model="groupTemp[item.key]"
-            style="width:90%;"
-          />
-          <el-input
-            v-else-if="item.key === 'parentId' && groupDialogStatus==='create'"
+            v-if="item.key === 'deptId'||item.key === 'parentId' && groupDialogStatus==='create'"
             disabled
             v-model="groupTemp[item.key]"
             style="width:90%;"
@@ -207,10 +201,11 @@
           :key="index"
           :label="item.label"
           :prop="item.key"
+          :required="item.required"
         >
           <el-select
             v-model="temp[item.key]"
-            v-if="item.key === 'userType'"
+            v-if="item.key === 'roleId'"
             filterable
             clearable
             placeholder="--请选择用户角色--"
@@ -224,7 +219,7 @@
               :value="item.key"
             ></el-option>
           </el-select>
-          <el-select
+          <!-- <el-select
             v-else-if="item.key === 'deptIds'"
             v-model="formList.treeData"
             placeholder="请选择"
@@ -250,7 +245,7 @@
                 style="color:#666;font-family: Microsoft YaHei;"
               />
             </el-option>
-          </el-select>
+          </el-select>-->
           <el-radio-group v-else-if="item.key === 'sex'" v-model="temp[item.key]">
             <el-radio :label="'0'">男</el-radio>
             <el-radio :label="'1'">女</el-radio>
@@ -309,17 +304,15 @@ export default {
       highlight: true,
       temp: {},
       tableList: [
-        // { userName: '张三', userType: '管理员', address: '无', email: 'user4', phone: '', remark: '' },
-        // { userName: '张三', userType: '管理员', address: '无', email: 'user4', phone: '', remark: '' },
-        // { userName: '张三', userType: '管理员', address: '无', email: 'user4', phone: '', remark: '' },
-        // { userName: '张三', userType: '管理员', address: '无', email: 'user4', phone: '', remark: '' },
+        // { userName: '张三', roleId: '管理员', address: '无', email: 'user4', phone: '', remark: '' },
+        // { userName: '张三', roleId: '管理员', address: '无', email: 'user4', phone: '', remark: '' },
       ],
       total: 0,
       page: 1,
       pageSize: 10,
       tableHeader: [
         { label: '用户名', key: 'userName' },
-        { label: '用户角色', key: 'userType' },
+        { label: '用户角色', key: 'roleName' },
         { label: '单位信息', key: 'address' },
         { label: '手机号码', key: 'phonenumber' },
         { label: '电子邮箱', key: 'email' },
@@ -327,7 +320,7 @@ export default {
       ],
       filterData: {
         userName: "",
-        userType: "",
+        roleId: "",
       },
       filterSelection: {
         appNameList: [],
@@ -335,12 +328,12 @@ export default {
       },
       formLabel: [
         { label: '用户名', key: 'userName' },
-        { label: '用户角色', key: 'userType' },
-        { label: '组织', key: 'deptIds' },
+        { label: '用户角色', key: 'roleId', required: true },
+        // { label: '组织', key: 'deptIds' },
         { label: '电子邮箱', key: 'email' },
         { label: '手机号码', key: 'phonenumber' },
         { label: '性别', key: 'sex' },
-        { label: '管理员', key: 'admin' },
+        // { label: '管理员', key: 'admin' },
         { label: '密码', key: 'password' },
         // { label: '状态', key: 'status' },
         { label: '备注', key: 'remark' },
@@ -350,7 +343,7 @@ export default {
         userName: '',
         treeData: [], // 多选
         treeId: [],
-        userType: '',
+        roleId: '',
       },
       userTypeList: [],
       dialogVisible: false, // 往下是组织架构的相关数据
@@ -412,15 +405,15 @@ export default {
         label: 'label'
       },
       groupFormHeader: [
-        { label: 'ID', key: 'deptId' },
-        { label: '节点', key: 'parentId' },
+        // { label: 'ID', key: 'deptId' },
+        // { label: '节点', key: 'parentId' },
         { label: '名称', key: 'deptName' },
         // { label: '次序', key: 'orderNum' },
         { label: '领导', key: 'leader' },
         { label: '手机号码', key: 'phone' },
         { label: '电子邮箱', key: 'email' },
-        { label: '状态', key: 'status' },
-        { label: '创建方式', key: 'createBy' },
+        // { label: '状态', key: 'status' },
+        // { label: '创建方式', key: 'createBy' },
       ],
       groupTemp: {
 
@@ -466,17 +459,27 @@ export default {
     searchList() {
       let param = {
         userName: this.filterData.userName,
-        userType: this.filterData.userType,
+        roleId: this.filterData.roleId,
+        pageNum: this.page,
+        pageSize: this.pageSize
       }
       this.getList(param)
     },
     // 查询表单
     getList(val) {
-      let params = val || {}
+      let param = val || {}
+      param.pageNum = this.page
+      param.pageSize = this.pageSize
       this.tableLoading = true
-      api.selectUserData(params).then(res => {
+      api.selectUserData(param).then(res => {
         console.log(res, 'res');
         this.tableList = res.data.rows
+        this.tableList.forEach(ele => {
+          if (ele.roles[0]) {
+            ele.roleName = ele.roles[0].roleName
+
+          }
+        })
         this.total = res.data.total
         this.tableLoading = false
       })
@@ -491,6 +494,12 @@ export default {
       api.selectUserByDeptId(param).then(res => {
         console.log(res, 'res');
         this.tableList = res.data.rows
+        this.tableList.forEach(ele => {
+          if (ele.roles[0]) {
+            ele.roleName = ele.roles[0].roleName
+
+          }
+        })
         this.total = res.data.total
         this.tableLoading = false
       })
@@ -614,7 +623,8 @@ export default {
       this.$refs['groupform'].validate((valid) => {
         if (valid) {
           this.groupTemp.parentId = this.selectGroupId
-					this.groupTemp.createBy = localStorage.getItem("createById")
+          this.groupTemp.createBy = localStorage.getItem("createById")
+          this.groupTemp.status = '0'
           console.log(this.groupTemp, 'groupTemp');
           systemApi.insertData(this.groupTemp).then(res => {
             console.log(res);
@@ -636,6 +646,7 @@ export default {
     updateGroup() {
       this.$refs['groupform'].validate((valid) => {
         if (valid) {
+          this.groupTemp.status = '0'
           systemApi.updateData(this.groupTemp).then((res) => {
             console.log(res);
             this.dialogVisible = false
@@ -678,8 +689,10 @@ export default {
 
     // 查询角色
     getRoleList() {
-      let params = {}
-      roleApi.selectRoleData(params).then(res => {
+      let params = {
+        type: 1
+      }
+      roleApi.selectAllRole(params).then(res => {
         res.data.rows.forEach(ele => {
           this.userTypeList.push({ label: ele.roleName, key: ele.roleId })
         })
@@ -768,20 +781,29 @@ export default {
       this.$refs['dataform'].validate((valid) => {
         if (valid) {
           const data = Object.assign({}, this.temp)
-					data.deptId = this.formList.treeId.join()
+          data.deptId = this.selectGroupId
           data.delFlag = "0"
           data.status = "0"
           data.nickName = data.userName
           data.createBy = localStorage.getItem('createById')
-					console.log(data.deptId, '88888888888');
+					console.log(data, 'dfdfdfdfdfdf');
           api.insertUserData(data).then(res => {
-            this.getList()
-            console.log(res, 'res');
-            this.dialogTableVisible = false
-            this.$message({
-              message: '更新成功！',
-              type: 'success'
-            })
+            if (res.code === 200) {
+              this.selectUserByDeptId(this.selectGroupId)
+              console.log(res, 'res');
+              this.dialogTableVisible = false
+              this.$message({
+                message: '更新成功！',
+                type: 'success'
+              })
+            } else {
+              this.dialogTableVisible = false
+              this.$message({
+                message: res.msg,
+                type: ''
+              })
+            }
+
           })
           console.log(data);
         }
@@ -793,12 +815,12 @@ export default {
         if (valid) {
           const data = Object.assign({}, this.temp)
           console.log(this.temp, 44444444444);
-          let { userId, userType, remark, userName, nickName, email, phonenumber, sex, status } = data
-          let params = { userId, remark, userName, nickName, email, phonenumber, sex, status, userType }
+          let { userId, roleId, remark, userName, nickName, email, phonenumber, sex, status } = data
+          let params = { userId, remark, userName, nickName, email, phonenumber, sex, status, roleId }
           console.log(data, 'data')
           api.updateUserData(params).then(res => {
             this.page = 1
-            this.getList()
+            this.selectGroupId ? this.selectUserByDeptId(this.selectGroupId) : this.getList()
             console.log(res, 'res');
             this.dialogTableVisible = false
             this.$message({
@@ -816,7 +838,8 @@ export default {
       api.deleteUserData(params).then(res => {
         console.log(res, 'deleteData');
         this.dialogDelRole = false
-        this.getList()
+        this.selectGroupId ? this.selectUserByDeptId(this.selectGroupId) : this.getList()
+
         this.$message({
           message: '删除成功！',
           type: 'success'
