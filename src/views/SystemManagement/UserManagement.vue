@@ -55,11 +55,11 @@
           <el-col :span="19" style="border-left: 1px solid #ebeef5;">
             <el-row class="formRow">
               <el-col :span="24" class="formSty">
-                <span>用户名：</span>
+                <span style="font-size: calc(100vw / 1920 * 14);margin-left: 10px;">用户名：</span>
                 <el-input v-model="filterData.userName" style="width:200px"></el-input>
-                <span style="font-size: calc(100vw / 1920 * 14);">角色：</span>
+                <span style="font-size: calc(100vw / 1920 * 14);margin-left: 10px;">角色：</span>
                 <el-input v-model="filterData.userType" style="width:200px"></el-input>
-                <el-button @click="searchList">查询</el-button>
+                <el-button style="margin-left: 10px;" @click="searchList">查询</el-button>
               </el-col>
             </el-row>
             <el-row style="height:40px;line-height:40px;margin-left: 0.5%;" type="flex">
@@ -484,9 +484,8 @@ export default {
       this.tableLoading = true
       api.selectUserByDeptId(param).then(res => {
         console.log(res, 'res');
-        this.list = res.data
-        // this.list = res.data.rows
-        // this.roleTotal = res.data.total
+        this.tableList = res.data.rows
+        this.total = res.data.total
         this.tableLoading = false
       })
     },
@@ -609,6 +608,7 @@ export default {
       this.$refs['groupform'].validate((valid) => {
         if (valid) {
           this.groupTemp.parentId = this.selectGroupId
+					this.groupTemp.createBy = localStorage.getItem("createById")
           console.log(this.groupTemp, 'groupTemp');
           systemApi.insertData(this.groupTemp).then(res => {
             console.log(res);

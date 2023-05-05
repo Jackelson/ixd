@@ -143,7 +143,7 @@ export default {
 
           api.login({ username: this.loginForm.username.trim(), password: this.loginForm.password })
             .then(res => {
-              localStorage.setItem('createById', res.data.userid)
+              localStorage.setItem('createById', res.data.sysUser.userId)
               this.$store.commit("setUserDetail", res.data)
               console.log(this.$store.getters.getUserDetail, 'sddddddddddddddd');
               this.$router.push({
