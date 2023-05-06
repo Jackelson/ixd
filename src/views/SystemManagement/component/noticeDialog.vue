@@ -50,8 +50,8 @@
     </el-form>
     <div style="display: flex; justify-content: flex-end;" class="dialog-footer">
       <el-button @click="cancelAdd">取 消</el-button>
-      <el-button  type="primary" @click="createData">提 交</el-button>
-      <el-button v-if="dialogNoticeStatus === 'update'" type="primary" @click="updateData">提 交</el-button>
+      <el-button v-if="dialogStatus === 'create'" type="primary" @click="createData">提 交</el-button>
+      <el-button v-if="dialogStatus === 'update'" type="primary" @click="updateData">提 交</el-button>
     </div>
   </el-dialog>
 </template>
@@ -78,7 +78,7 @@ export default {
       require: true,
       default: ''
     },
-    dialogNoticeStatus: {
+    dialogStatus: {
       type: String,
       require: true,
       default: ''

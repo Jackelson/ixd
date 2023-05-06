@@ -112,7 +112,7 @@
     <el-row style="height:40px;line-height:40px;" type="flex">
       <el-col class="edit" :span="16">
         <el-button @click="addNoticeDialog">新增</el-button>
-        <el-button @click="handleUpdate">修改</el-button>
+        <el-button @click="noticeUpdate">修改</el-button>
         <el-button @click="deleteNo">删除</el-button>
         <el-button @click="getNotice">查询</el-button>
       </el-col>
@@ -192,7 +192,7 @@
     <!--弹框部分-->
     <NoticeDialog
       :title="dialogTitle"
-      :dialog-status="dialogNoticeStatus"
+      :dialogStatus="dialogNoticeStatus"
       v-model:show="dialogNotice"
       :temp1="temp"
       source="task"
@@ -357,14 +357,14 @@ export default {
     stopNotice(){
       let params = this.multipleSelection.map(item => item.id)
       console.log(params, 'params');
-      api.deleteData(params).then(res => {
-        console.log(res, 'deleteData');
+      api.deleteNews(params).then(res => {
+        console.log(res, 'deleteNews');
         this.dialogDel = false
         this.$message({
           message: '删除成功！',
           type: 'success'
         })
-        this.getList()
+        this.getNotice()
       })
     },
     // 分页查询
@@ -450,6 +450,20 @@ export default {
       } else {
         this.$message({
           message: '请选择要修改的角色！',
+          type: 'warning'
+        })
+      }
+    },
+    //编辑公告
+    noticeUpdate() {
+      if (Object.keys(this.multipleSelection).length > 0) {
+        this.dialogTitle = '修改公告'
+        this.dialogNoticeStatus = 'update'
+        this.dialogNotice = true
+
+      } else {
+        this.$message({
+          message: '请选择要修改的公告！',
           type: 'warning'
         })
       }

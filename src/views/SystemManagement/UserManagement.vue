@@ -524,8 +524,8 @@ export default {
     selectUserByDeptId(val) {
       let param = {
         deptId: String(val),
-        // pageNum: this.page,
-        // pageSize: this.pageSize
+        pageNum: this.page,
+        pageSize: this.pageSize
       }
       this.tableLoading = true
       api.selectUserByDeptId(param).then(res => {
@@ -814,7 +814,7 @@ export default {
         pageNum: this.page,
         pageSize: this.pageSize
       }
-      this.getList(param);
+			this.selectGroupId ? this.selectUserByDeptId(this.selectGroupId) : this.getList(param)
     },
     handleSizeChange(pageSize) {
       this.page = 1;
@@ -823,7 +823,7 @@ export default {
         pageNum: this.page,
         pageSize: this.pageSize
       }
-      this.getList(param);
+			this.selectGroupId ? this.selectUserByDeptId(this.selectGroupId) : this.getList(param)
     },
     // 清空已选项数组，且置空所有选择
     resetSelect() {
