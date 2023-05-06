@@ -149,7 +149,7 @@
       width="45%"
       height="400px"
       v-model="dialogVisible"
-      :close-on-click-modal="false"
+      @close="closeGroupDialog"
     >
       <el-form
         ref="groupform"
@@ -180,7 +180,7 @@
         </el-form-item>
       </el-form>
       <div class="dialog-footer">
-        <el-button @click="dialogVisible = false">取消</el-button>
+        <el-button @click="closeGroupDialog">取消</el-button>
         <el-button v-if="groupDialogStatus==='create'" type="primary" @click="createGroup">提交</el-button>
         <el-button v-else-if="groupDialogStatus==='update'" type="primary" @click="updateGroup">提交</el-button>
       </div>
@@ -209,7 +209,7 @@
       width="45%"
       class="aboutDialog"
       v-model="dialogTableVisible"
-      @close="dialogTableVisible = false"
+      @close="closeUserDialog"
     >
       <el-form ref="dataform" :rules="rulesForm" :model="temp" label-width="120px" class="editForm">
         <el-form-item
@@ -278,7 +278,7 @@
         </el-form-item>
       </el-form>
       <el-row style="display: flex; justify-content: flex-end;">
-        <el-button @click="dialogTableVisible = false">取消</el-button>
+        <el-button @click="closeUserDialog">取消</el-button>
         <el-button v-if="dialogStatus==='create'" type="primary" @click="createData">确定</el-button>
         <el-button v-else-if="dialogStatus==='update'" type="primary" @click="updateData">确定</el-button>
       </el-row>
@@ -633,7 +633,11 @@ export default {
 
       // }
     },
-
+		// 关闭组织弹框
+    closeGroupDialog() {
+      this.dialogVisible = false
+			this.$refs.groupform.clearValidate();
+    },
 
     handleCreateNode() {
       // this.kindOptions = this.getGroupKindOptions(this.level + 1)
@@ -827,6 +831,10 @@ export default {
       this.temp = {}
       this.groupTemp = {}
       this.$refs.multipleTable.clearSelection()
+    },
+    closeUserDialog() {
+      this.dialogTableVisible = false
+      this.$refs.dataform.clearValidate();
     },
     // 新增角色
     addDialog() {
