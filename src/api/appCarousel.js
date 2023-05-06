@@ -22,3 +22,10 @@ export function deleteData(params) {
 export function updateState(params) {
 	return post('/AppCarouselChart/updateState',params)
 }
+
+export function selectNews(params) {
+	return post('/SysNotice/select',params)
+}
+export function insertNews(params) {
+	return post('/SysNotice/insert',params)
+}
