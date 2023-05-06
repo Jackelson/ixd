@@ -206,11 +206,12 @@
 
     <el-dialog
       :title="dialogTitle"
+      width="45%"
       class="aboutDialog"
       v-model="dialogTableVisible"
       @close="dialogTableVisible = false"
     >
-      <el-form ref="dataform" :rules="rulesForm" :model="temp" label-width="120px">
+      <el-form ref="dataform" :rules="rulesForm" :model="temp" label-width="120px" class="editForm">
         <el-form-item
           v-for="(item, index) in formLabel"
           :key="index"
@@ -225,6 +226,7 @@
             placeholder="--请选择用户角色--"
             @change="filterChange(2)"
             class="search-select"
+            style="width:90%;"
           >
             <el-option
               v-for="(item, index) in userTypeList"
@@ -260,7 +262,11 @@
               />
             </el-option>
           </el-select>-->
-          <el-radio-group v-else-if="item.key === 'sex'" v-model="temp[item.key]">
+          <el-radio-group
+            v-else-if="item.key === 'sex'"
+            v-model="temp[item.key]"
+            style="width:90%;"
+          >
             <el-radio :label="'0'">男</el-radio>
             <el-radio :label="'1'">女</el-radio>
           </el-radio-group>
@@ -268,7 +274,7 @@
             <el-radio :label="true">是</el-radio>
             <el-radio :label="false">否</el-radio>
           </el-radio-group>-->
-          <el-input v-else v-model="temp[item.key]" style="width:200px"></el-input>
+          <el-input v-else v-model="temp[item.key]" style="width:90%;"></el-input>
         </el-form-item>
       </el-form>
       <el-row style="display: flex; justify-content: flex-end;">
@@ -781,13 +787,13 @@ export default {
     },
     handleSelectionChange(val) {
       this.multipleSelection = val
-			this.temp = Object.assign({}, this.multipleSelection[0])
+      this.temp = Object.assign({}, this.multipleSelection[0])
       this.temp.roleId = this.temp.roles ? this.temp.roles[0].roleId : null
-      console.log(this.multipleSelection, this.temp,'val');
+      console.log(this.multipleSelection, this.temp, 'val');
     },
     // 选中某行
     rowClick(row) {
-			console.log(row, 'ssssssss');
+      console.log(row, 'ssssssss');
       // this.highlight = true
       // this.temp = Object.assign({}, row)
       // this.temp.roleId = this.temp.roles[0] ? this.temp.roles[0].roleId : null
@@ -838,7 +844,7 @@ export default {
         this.dialogStatus = 'update'
         this.dialogTableVisible = true
         // this.$refs.multipleTable.clearSelection()
-      } else if(Object.keys(this.multipleSelection).length > 1){
+      } else if (Object.keys(this.multipleSelection).length > 1) {
         this.$message({
           message: '请勾选一条要删除的用户！',
           type: 'warning'
@@ -1064,6 +1070,10 @@ export default {
 </style>
 
 <style lang='scss' scoped>
+.dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+}
 .search-select {
   width: 200px;
 }
