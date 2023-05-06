@@ -31,3 +31,7 @@ export function selectRoleByDeptId(params) {
 export function selectMenuTree(params) {
 	return post('/SysMenu/selectMenuTree',params)
 }
+
+export function selectMenuTreeByRoleId(params) {
+	return post('/SysMenu/selectMenuTreeByRoleId',params)
+}
