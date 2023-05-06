@@ -1,21 +1,9 @@
 <template>
   <!--弹框部分-->
-  <el-dialog
-    :title="title"
-    v-model="groupVisible"
-    class="editDialog"
-    :close-on-click-modal="false"
-    @close="closeGroupVisible"
-  >
-    <el-form
-      ref="dataform"
-      label-width="120px"
-      label-position="right"
-      :rules="rules"
-      :model="temp"
-      class="editForm"
-    >
-      <div v-for="(item,index) in formHeader" :key="index">
+  <el-dialog :title="title" v-model="groupVisible" class="editDialog" :close-on-click-modal="false"
+    @close="closeGroupVisible">
+    <el-form ref="dataform" label-width="120px" label-position="right" :rules="rules" :model="temp" class="editForm">
+      <div v-for="(item, index) in formHeader" :key="index">
         <el-form-item :label="item.label" :prop="item.key">
           <el-input v-if="item.key === 'menu'" v-model="temp[item.key]" style="width:90%" />
           <el-input v-else v-model="temp[item.key]" style="width:90%" />
@@ -57,27 +45,56 @@ export default {
       type: String,
       require: true,
       default: ''
+    },
+    parentId: {
+      type: Number,
+      require: true,
+      default: 0
     }
   },
   data() {
     return {
       groupVisible: this.show, // 引入页面弹窗的状态值一定要设置
       formHeader: [
-        { label: '菜单名称', key: 'menuName' },
-        { label: '菜单排序', key: 'orderNum' },
-        { label: '菜单路径', key: 'component' },
-        { label: '创建者', key: 'createBy' },
-        { label: '备注', key: 'remark' },
-        { label: '路由地址', key: 'path' },
-        { label: '是否为外链', key: 'isFrame' },
-        { label: '菜单类型', key: 'menuType' },
-        { label: '是否缓存', key: 'isCache' },
-        { label: '权限标识', key: 'perms' },
-        { label: '菜单图标', key: 'icon' },
-        { label: '父菜单ID', key: 'parentId' },
-        
+        { label: '菜单名称', key: 'menuName', require: true },
+        { label: '菜单排序', key: 'orderNum', require: true },
+        { label: '菜单路径', key: 'component', require: true },
+        { label: '创建者', key: 'createBy', require: false },
+        { label: '备注', key: 'remark', require: false },
+        { label: '路由地址', key: 'path', require: true },
+        { label: '是否为外链', key: 'isFrame', require: false },
+        { label: '菜单类型', key: 'menuType', require: false },
+        { label: '是否缓存', key: 'isCache', require: false },
+        { label: '权限标识', key: 'perms', require: false },
+        { label: '菜单图标', key: 'icon', require: false },
+        // { label: '父菜单ID', key: 'parentId' },
+
       ],
       rules: {
+        menuName: [
+          { required: true, message: '请输入菜单名称', trigger: 'blur' },
+          { min: 1, max: 16, message: '菜单名称长度1-16', trigger: 'blur' },
+        ],
+        orderNum: [
+          { required: true, message: '请输入菜单排序', trigger: 'blur' },
+          {
+            required: true,
+            pattern: "^[0-9]*$",//eslint-disable-line
+            message: "排序只能输入数字",
+            trigger: 'blur'
+          }
+        ],
+        component: [
+          { required: true, message: '请输入菜单路径', trigger: 'blur' },
+        ],
+        path: [
+          { required: true, message: '请输入路由地址', trigger: 'blur' },
+
+        ],
+        createBy: [
+          { required: true, message: '请输入创建者', trigger: 'blur' },
+
+        ]
       },
       temp: {},
       listQuery: {
@@ -98,8 +115,6 @@ export default {
     show: {
       handler(newValue) {
         this.groupVisible = newValue
-        console.log(newValue, 'sdfsdddddd');
-        console.log("temp1",this.temp1)
         if (Object.keys(this.temp1).length > 0) {
           this.temp = this.temp1
         }
@@ -154,7 +169,7 @@ export default {
           //   perms:"",
           //   icon:"system"
           // }
-          console.log(data,"44444444");
+          data.parentId = this.parentId
           menuApi.insertMenuData(data).then(res => {
             this.$parent.getList();
             console.log(res, 'res');
@@ -172,7 +187,7 @@ export default {
       this.$refs['dataform'].validate((valid) => {
         if (valid) {
           const data = Object.assign({}, this.temp)
-          console.log(data,"44444444");
+          console.log(data, "44444444");
 
           menuApi.updateMenuData(data).then(res => {
             this.$parent.getList();
@@ -199,44 +214,53 @@ export default {
   .el-dialog__body {
     padding: 10px 20px;
   }
+
   .el-dialog {
     width: 470px;
     border-radius: 32px;
+
     .el-dialog__header {
       height: 52px;
       background-color: #336699;
       border-radius: 32px 32px 0 0;
     }
+
     .el-dialog__title {
       // 标题
       color: #fff;
     }
+
     .el-dialog__headerbtn .el-dialog__close {
       // 右侧关闭按钮
       color: #fff !important;
       font-size: 20px;
     }
   }
+
   .el-dialog__footer {
     padding: 8px 41px 16px 0px;
+
     .el-button--default {
       padding-top: 8px;
       border-radius: 16px;
       width: 81px;
       height: 32px;
       background: #bfc5e2;
+
       span {
         font-size: 14px;
         font-family: Microsoft YaHei;
         color: #fff;
       }
     }
+
     .el-button--primary {
       padding-top: 8px;
       border-radius: 16px;
       width: 146px;
       height: 32px;
       background: #336699;
+
       span {
         font-size: 14px;
         font-family: Microsoft YaHei;

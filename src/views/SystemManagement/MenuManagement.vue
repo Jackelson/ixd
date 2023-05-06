@@ -1,125 +1,91 @@
 <template>
   <div class="app-container">
     <el-row style="height:40px;line-height:40px;" type="flex">
-			<el-col :span="10">
-				<span>新增菜单：</span>
-				<el-input v-model="menuName" style="width:70%"></el-input>
-			</el-col>
+      <el-col :span="10">
+        <span>搜索菜单：</span>
+        <el-input v-model="menuName" style="width:70%"></el-input>
+      </el-col>
       <el-col class="edit" :span="14">
-        <el-button  @click="queryMenu">查询</el-button>
+        <el-button @click="queryMenu">查询</el-button>
         <el-button @click="addDialog">新增菜单</el-button>
       </el-col>
     </el-row>
     <!-- 表格 -->
     <el-row style="height: calc(100% - 40px)">
       <el-card class="role-card">
-        <el-table
-          ref="multipleTable"
-          :data="list"
-          height="calc(100% - 5vh)"
-          :header-cell-style="{ background: '#11ac9b !important', color: '#ffffff', }"
-          :highlight-current-row="highlight"
-          style="width: 100%"
-          :row-style="rowStyle"
-        >
-          <el-table-column
-            label="序号"
-            align="center"
-            type="index"
-            :index="recordFormat"
-            width="80px"
-            min-width="80px"
-          />
-          <el-table-column
-            v-for="item in tableHeader"
-            :key="item.key"
-            :label="item.label"
-            show-overflow-tooltip
-            align="center"
-            :min-width="item.minWidth"
-            :width="item.width"
-          >
+        <el-table ref="multipleTable" :data="list" height="calc(100% - 5vh)"
+          :header-cell-style="{ background: '#11ac9b !important', color: '#ffffff', }" :highlight-current-row="highlight"
+          style="width: 100%" :row-style="rowStyle" row-key="menuId" @select="handerChange">
+          <el-table-column type="selection" width="55" />
+          <el-table-column label="序号" align="center" type="index" :index="recordFormat" width="80px" min-width="80px" />
+          <el-table-column v-for="item in tableHeader" :key="item.key" :label="item.label" show-overflow-tooltip
+            align="center" :min-width="item.minWidth" :width="item.width">
             <template v-slot="scope">
               <span v-if="item.key === 'operate'">
-								<el-button type="text" @click="openShareDialog(scope.row)">
-                <el-icon>
-                  <Edit />
-                </el-icon>
-                <span>修改</span>
-              </el-button>
-              <el-button type="text" @click="deleteData(scope.row)">
-                <el-icon>
-                  <Tools />
-                </el-icon>
-                <span>删除</span>
-              </el-button>
-							</span>
+                <el-button type="text" @click="openShareDialog(scope.row)">
+                  <el-icon>
+                    <Edit />
+                  </el-icon>
+                  <span>修改</span>
+                </el-button>
+                <el-button type="text" @click="deleteData(scope.row)">
+                  <el-icon>
+                    <Tools />
+                  </el-icon>
+                  <span>删除</span>
+                </el-button>
+              </span>
               <span v-else>{{ scope.row[item.key] }}</span>
             </template>
           </el-table-column>
         </el-table>
 
         <!--分页查询-->
-        <el-row style="width: 100%; display: flex; justify-content: flex-end;">
-          <el-pagination
-            :current-page="page"
-            :page-sizes="[10, 20, 50, 100]"
-            :page-size="pageSize"
-            layout="total, sizes, prev, pager, next, jumper"
-            :total="serviceTotal"
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
-          />
-        </el-row>
+        <!-- <el-row style="width: 100%; display: flex; justify-content: flex-end;">
+          <el-pagination :current-page="page" :page-sizes="[10, 20, 50, 100]" :page-size="pageSize"
+            layout="total, sizes, prev, pager, next, jumper" :total="serviceTotal" @size-change="handleSizeChange"
+            @current-change="handleCurrentChange" />
+        </el-row> -->
       </el-card>
     </el-row>
 
     <!--弹框部分-->
-    <MenuDialog
-      :title="dialogTitle"
-      :dialog-status="dialogStatus"
-      v-model:show="dialogAdd"
-      :temp1="temp"
-      source="task"
-    />
+    <MenuDialog :title="dialogTitle" :dialog-status="dialogStatus" v-model:show="dialogAdd" :temp1="temp" source="task"
+      :parentId="parentId" />
 
-        <!--删除 角色 弹框部分-->
-    <el-dialog
-      title="删除角色"
-      v-model="dialogDelRole"
-      class="confirmDialog"
-      :close-on-click-modal="false"
-    >
+    <!--删除 角色 弹框部分-->
+    <!-- <el-dialog title="删除角色" v-model="dialogDelRole" class="confirmDialog" :close-on-click-modal="false">
       <el-row type="flex" justify="center">
         <div class="img-tip" />
       </el-row>
       <el-row type="flex" justify="center" style="margin:20px 0">
-        <span class="message">是否删除所选角色</span>
+        <span class="message">是否删除所选菜单</span>
       </el-row>
       <div class="dialog-footer">
-        <el-button @click="dialogDelRole=false">取 消</el-button>
+        <el-button @click="dialogDelRole = false">取 消</el-button>
         <el-button type="primary" @click="deleteDataRole">确 认</el-button>
       </div>
-    </el-dialog>
+    </el-dialog> -->
   </div>
 </template>
 <script>
 import { Edit, Tools } from '@element-plus/icons-vue'
 import MenuDialog from "./component/menuDialog.vue";
 import * as menuApi from "@/api/menu"
+import { ElMessage, ElMessageBox } from 'element-plus'
 export default {
   name: 'TaskDistribute',
   components: { MenuDialog, Edit, Tools },
   data() {
     return {
-      menuName:'',
-      menuId:'',
+      menuName: '',
+      menuId: '',
       serviceTotal: 0,
       filterData: {
         appName: "",
         appStatus: "",
       },
-      userid:"",
+      userid: "",
       page: 1,
       pageSize: 10,
       selectRows: [],//勾选列表数据
@@ -144,65 +110,107 @@ export default {
       dialogTitle: '', // 弹框标题
       dialogStatus: '',
       dialogAdd: false,
-      height: document.documentElement.clientHeight
+      height: document.documentElement.clientHeight,
+      parentId: 0,
     }
   },
   created() {
     this.userid = localStorage.getItem('createById')
-    console.log("ididid",this.userid)
     this.getList();
   },
   mounted() {
   },
   methods: {
+    handerChange(row, select) {
+      if (select.parentId == 0) {
+        if (this.parentId == select.menuId) {
+          this.$refs.multipleTable.toggleRowSelection(select, false)
+          this.parentId = 0;
+          return;
+        }
+        this.parentId = select.menuId;
+        this.$refs.multipleTable.clearSelection()
+        this.$refs.multipleTable.toggleRowSelection(select, true)
+        row.forEach(item => {
+          if (item.parentId != 0) {
+            this.$refs.multipleTable.toggleRowSelection(item, false)
+          }
+        })
+      } else {
+        this.$refs.multipleTable.toggleRowSelection(select, false)
+        this.$message({
+          type: "warning",
+          message: "不能选择二级菜单"
+        })
+      }
+    },
     openShareDialog(val) {
-			console.log(val, 'ssss');
+      console.log(val, 'ssss');
       this.temp = val;
-			this.tableData = val;
+      this.tableData = val;
       this.dialogAdd = true;
       this.dialogStatus = 'update'
     },
     getList() {
       let params = {
-        params:{
-          userId:this.userid
-        },
+        menuName: this.menuName
       }
       menuApi.selectAllMenu(params).then(res => {
-        console.log(res, 'res1111');
-        this.list = res.data.rows;
+        // this.list = res.data.rows;
+        this.list = [];
+        res.data.rows.forEach(item => {
+          if (item.parentId == 0) {
+            this.list.push(item);
+          } else {
+            for (let i = 0; i < this.list.length; i++) {
+              if (item.parentId == this.list[i].menuId) {
+                this.list[i].children.push(item)
+              }
+            }
+          }
+        })
         this.menuId = res.data.rows.menuId;
         this.serviceTotal = res.data.total
       })
 
     },
-    queryMenu(){
-      let params = {
-        roleId:"",
-        userId:"",
-      }
-    menuApi.queryMenuData(params).then(res => {
-      console.log(res,"查询数据");
-      this.list = res.data.rows;
-      this.menuId = res.data.rows.menuId
-    })
+    queryMenu() {
+      this.getList();
     },
 
     //删除
-    deleteData(val){
+    deleteData(val) {
       this.dialogDelRole = true
       this.menuId = val.menuId
+      ElMessageBox.confirm(
+        `确定删除${val.menuName}吗?`,
+        'Warning',
+        {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning',
+        }
+      )
+        .then(() => {
+          this.deleteDataRole()
+        })
+        .catch(() => {
+          ElMessage({
+            type: 'info',
+            message: '已取消删除',
+          })
+        })
     },
 
-    deleteDataRole(){
-      console.log("222",this.menuId)
-			let params = {
-        menuId:this.menuId
+    deleteDataRole() {
+      console.log("222", this.menuId)
+      let params = {
+        menuId: this.menuId
       }
       // let params = {
       //   "menuId":menuId
       // }
-			// console.log(menuId, 'params');
+      // console.log(menuId, 'params');
       menuApi.deleteMenuData(params).then(res => {
         console.log(res, 'deleteData');
         this.dialogDelRole = false
@@ -215,7 +223,7 @@ export default {
     },
     // 分页查询
     handleCurrentChange(val) {
-			console.log(val);
+      console.log(val);
       this.getList()
     },
     recordFormat(index) {
@@ -235,15 +243,14 @@ export default {
       this.temp = {}
       this.$refs.multipleTable.clearSelection()
     },
-    
+
     // 新增角色
     addDialog() {
       this.highlight = false
       this.temp = {}
-      this.dialogTitle = '新增角色'
+      this.dialogTitle = '新增菜单'
       this.dialogStatus = 'create'
       this.dialogAdd = true
-      console.log(this.dialogAdd,);
     },
 
   }
@@ -252,6 +259,7 @@ export default {
 <style lang="scss">
 .role-card {
   width: 100%;
+
   .el-card__body {
     padding: 5px;
     height: 100%;
@@ -270,9 +278,11 @@ export default {
 .app-container {
   height: 100%;
 }
+
 .select {
   color: #909399;
   font: 12px;
+
   .select_label {
     display: inline-block;
     font-size: 14px;
@@ -280,6 +290,7 @@ export default {
     line-height: 24px;
     margin-right: 10px;
   }
+
   .select_box {
     .el-input--medium .el-input__inner {
       height: 24px;
@@ -289,6 +300,5 @@ export default {
     }
   }
 }
-
 </style>
 
