@@ -42,7 +42,7 @@
               :props="defaultProps"
               :accordion="false"
               :auto-expand-parent="false"
-              :highlight-current="true"
+              :highlight-current="highlightBoolean"
               :default-expand-all="true"
               :expand-on-click-node="false"
               :filter-node-method="filterNode"
@@ -58,7 +58,22 @@
                 <span style="font-size: calc(100vw / 1920 * 14);margin-left: 10px;">用户名：</span>
                 <el-input v-model="filterData.userName" style="width:200px"></el-input>
                 <span style="font-size: calc(100vw / 1920 * 14);margin-left: 10px;">角色：</span>
-                <el-input v-model="filterData.roleId" style="width:200px"></el-input>
+                <el-select
+                  v-model="filterData.roleId"
+                  filterable
+                  clearable
+                  placeholder="--请选择用户角色--"
+                  @change="filterChange(2)"
+                  class="search-select"
+                >
+                  <el-option
+                    v-for="(item, index) in userTypeList"
+                    :key="index"
+                    :label="item.label"
+                    :value="item.key"
+                  ></el-option>
+                </el-select>
+                <!-- <el-input v-model="filterData.roleId" style="width:200px"></el-input> -->
                 <el-button style="margin-left: 10px;" @click="searchList">查询</el-button>
               </el-col>
             </el-row>
@@ -141,7 +156,7 @@
         :model="groupTemp"
         label-position="right"
         label-width="100px"
-        :rules="groupRule"
+        :rules="rulesGroup"
         class="editForm"
       >
         <el-form-item
@@ -195,13 +210,12 @@
       v-model="dialogTableVisible"
       @close="dialogTableVisible = false"
     >
-      <el-form ref="dataform" :rules="rules" :model="temp" label-width="120px">
+      <el-form ref="dataform" :rules="rulesForm" :model="temp" label-width="120px">
         <el-form-item
           v-for="(item, index) in formLabel"
           :key="index"
           :label="item.label"
           :prop="item.key"
-          :required="item.required"
         >
           <el-select
             v-model="temp[item.key]"
@@ -250,10 +264,10 @@
             <el-radio :label="'0'">男</el-radio>
             <el-radio :label="'1'">女</el-radio>
           </el-radio-group>
-          <el-radio-group v-else-if="item.key === 'admin'" v-model="temp[item.key]">
+          <!-- <el-radio-group v-else-if="item.key === 'admin'" v-model="temp[item.key]">
             <el-radio :label="true">是</el-radio>
             <el-radio :label="false">否</el-radio>
-          </el-radio-group>
+          </el-radio-group>-->
           <el-input v-else v-model="temp[item.key]" style="width:200px"></el-input>
         </el-form-item>
       </el-form>
@@ -329,15 +343,18 @@ export default {
       formLabel: [
         { label: '用户名', key: 'userName' },
         { label: '用户角色', key: 'roleId', required: true },
-        // { label: '组织', key: 'deptIds' },
         { label: '电子邮箱', key: 'email' },
         { label: '手机号码', key: 'phonenumber' },
         { label: '性别', key: 'sex' },
-        // { label: '管理员', key: 'admin' },
         { label: '密码', key: 'password' },
-        // { label: '状态', key: 'status' },
         { label: '备注', key: 'remark' },
       ],
+      rulesForm: {
+        userName: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
+        roleId: [{ required: true, message: '请选择用户角色', trigger: 'blur' }],
+        email: [{ required: true, message: '请输入正确的电子邮箱', trigger: 'blur', pattern: /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/ }],
+        phonenumber: [{ required: true, message: '请输入正确的手机号码', trigger: 'blur', pattern: /^1(3[0-9]|5[0-3,5-9]|7[1-3,5-8]|8[0-9])\d{8}$/ }]
+      },
       rules: {},
       formList: {
         userName: '',
@@ -398,6 +415,7 @@ export default {
         create: '新增部门',
         update: '编辑部门'
       },
+      highlightBoolean: true,
       groupDialogStatus: null,
       resetStatus: null,
       defaultProps: {
@@ -405,19 +423,18 @@ export default {
         label: 'label'
       },
       groupFormHeader: [
-        // { label: 'ID', key: 'deptId' },
-        // { label: '节点', key: 'parentId' },
         { label: '名称', key: 'deptName' },
-        // { label: '次序', key: 'orderNum' },
         { label: '领导', key: 'leader' },
         { label: '手机号码', key: 'phone' },
         { label: '电子邮箱', key: 'email' },
-        // { label: '状态', key: 'status' },
-        // { label: '创建方式', key: 'createBy' },
       ],
-      groupTemp: {
-
+      rulesGroup: {
+        deptName: [{ required: true, message: '请输入名称', trigger: 'blur' }],
+        leader: [{ required: true, message: '请输入领导', trigger: 'blur' }],
+        email: [{ required: true, message: '请输入正确的电子邮箱', trigger: 'blur', pattern: /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/ }],
+        phone: [{ required: true, message: '请输入正确的手机号码', trigger: 'blur', pattern: /^1(3[0-9]|5[0-3,5-9]|7[1-3,5-8]|8[0-9])\d{8}$/ }]
       },
+      groupTemp: {},
       treeDataValue: "",
     }
   },
@@ -439,23 +456,23 @@ export default {
   },
   methods: {
     // 点击树节点
-    handleTreeClick(data, node, nodeData) {
-      // select 多选（判重后添加到选择结果数组中）
-      this.treeDataValue = data
-      let num = 0;
-      this.formList.treeData.forEach(item => {
-        item == data.label ? num++ : num;
-      })
-      this.formList.treeId.forEach(item => {
-        item == data.deptId ? num++ : num;
-      })
-      if (num == 0) {
-        this.formList.treeData.push(data.label)
-        this.formList.treeId.push(data.deptId)
-      }
-      console.log(data, node, nodeData, this.formList, 'sssssssssss');
+    // handleTreeClick(data, node, nodeData) {
+    //   // select 多选（判重后添加到选择结果数组中）
+    //   this.treeDataValue = data
+    //   let num = 0;
+    //   this.formList.treeData.forEach(item => {
+    //     item == data.label ? num++ : num;
+    //   })
+    //   this.formList.treeId.forEach(item => {
+    //     item == data.deptId ? num++ : num;
+    //   })
+    //   if (num == 0) {
+    //     this.formList.treeData.push(data.label)
+    //     this.formList.treeId.push(data.deptId)
+    //   }
+    //   console.log(data, node, nodeData, this.formList, 'sssssssssss');
 
-    },
+    // },
     searchList() {
       let param = {
         userName: this.filterData.userName,
@@ -463,6 +480,12 @@ export default {
         pageNum: this.page,
         pageSize: this.pageSize
       }
+      // 重置 左侧tree结构
+      this.selectGroupId = null
+      this.createNodeStatus = true,
+        this.updataNodeStatus = true,
+        this.deleteNodeStatus = true,
+        this.highlightBoolean = false
       this.getList(param)
     },
     // 查询表单
@@ -472,16 +495,24 @@ export default {
       param.pageSize = this.pageSize
       this.tableLoading = true
       api.selectUserData(param).then(res => {
-        console.log(res, 'res');
-        this.tableList = res.data.rows
-        this.tableList.forEach(ele => {
-          if (ele.roles[0]) {
-            ele.roleName = ele.roles[0].roleName
+        if (res.code === 200) {
+          console.log(res, 'res');
+          this.tableList = res.data.rows
+          this.tableList.forEach(ele => {
+            if (ele.roles[0]) {
+              ele.roleName = ele.roles[0].roleName
 
-          }
-        })
-        this.total = res.data.total
-        this.tableLoading = false
+            }
+          })
+          this.total = res.data.total
+          this.tableLoading = false
+        } else {
+          this.$message({
+            message: res.msg,
+            type: 'warning'
+          })
+        }
+
       })
     },
     selectUserByDeptId(val) {
@@ -492,33 +523,49 @@ export default {
       }
       this.tableLoading = true
       api.selectUserByDeptId(param).then(res => {
-        console.log(res, 'res');
-        this.tableList = res.data.rows
-        this.tableList.forEach(ele => {
-          if (ele.roles[0]) {
-            ele.roleName = ele.roles[0].roleName
+        if (res.code === 200) {
+          console.log(res, 'res');
+          this.tableList = res.data.rows
+          this.tableList.forEach(ele => {
+            if (ele.roles[0]) {
+              ele.roleName = ele.roles[0].roleName
 
-          }
-        })
-        this.total = res.data.total
-        this.tableLoading = false
+            }
+          })
+          this.total = res.data.total
+          this.tableLoading = false
+        } else {
+          this.$message({
+            message: res.msg,
+            type: 'warning'
+          })
+        }
+
       })
     },
     // 左侧tree结构
     getGroup() {
       let param = {}
       systemApi.selectData(param).then(res => {
-        console.log(res, 'res');
-        this.sqGroupOptions = res.data
-        const groupsData = res.data
-        // this.groupsData = res.data
-        for (let n = 0; n < groupsData.length; n++) {
-          groupsData[n].label = groupsData[n].deptName
+        if (res.code === 200) {
+          console.log(res, 'res');
+          this.sqGroupOptions = res.data
+          const groupsData = res.data
+          // this.groupsData = res.data
+          for (let n = 0; n < groupsData.length; n++) {
+            groupsData[n].label = groupsData[n].deptName
+          }
+          const jsonDataTree = transTree(groupsData, 'deptId', 'parentId', 'children')
+          this.groupList = this.dg(jsonDataTree)
+          console.log(groupsData, this.groupList, '8888');
+          this.groupChildren = groupsData.children ? groupsData.children.length : 0
+        } else {
+          this.$message({
+            message: res.msg,
+            type: 'warning'
+          })
         }
-        const jsonDataTree = transTree(groupsData, 'deptId', 'parentId', 'children')
-        this.groupList = this.dg(jsonDataTree)
-        console.log(groupsData, this.groupList, '8888');
-        this.groupChildren = groupsData.children ? groupsData.children.length : 0
+
       })
     },
     // 根据树结构节点id从树结构数据中获取节点数据
@@ -542,6 +589,7 @@ export default {
     },
     // 组织架构的相关信息
     handleNodeClick(data, node) {
+      this.highlightBoolean = true // 开启选择高亮
       this.page = 1
       this.selectGroupId = data.deptId
       this.selectGroup = data
@@ -627,17 +675,25 @@ export default {
           this.groupTemp.status = '0'
           console.log(this.groupTemp, 'groupTemp');
           systemApi.insertData(this.groupTemp).then(res => {
-            console.log(res);
-            this.dialogVisible = false
-            // this.selectGroupId = null
-            this.groupList = []
-            this.searchValue = ''
-            this.getGroup()
-            this.resetTemp()
-            this.$message({
-              message: '新增成功！',
-              type: 'success'
-            })
+            if (res.code === 200) {
+              console.log(res);
+              this.dialogVisible = false
+              // this.selectGroupId = null
+              this.groupList = []
+              this.searchValue = ''
+              this.getGroup()
+              this.resetTemp()
+              this.$message({
+                message: '新增成功！',
+                type: 'success'
+              })
+            } else {
+              this.$message({
+                message: res.msg,
+                type: 'warning'
+              })
+            }
+
           })
         }
       })
@@ -648,17 +704,24 @@ export default {
         if (valid) {
           this.groupTemp.status = '0'
           systemApi.updateData(this.groupTemp).then((res) => {
-            console.log(res);
-            this.dialogVisible = false
-            this.groupList = []
-            this.searchValue = ''
-            this.selectGroupId = null
-            this.getGroup()
-            this.resetTemp()
-            this.$message({
-              message: '更新成功！',
-              type: 'success'
-            })
+            if (res.code === 200) {
+              console.log(res);
+              this.dialogVisible = false
+              this.groupList = []
+              this.searchValue = ''
+              this.selectGroupId = null
+              this.getGroup()
+              this.resetTemp()
+              this.$message({
+                message: '更新成功！',
+                type: 'success'
+              })
+            } else {
+              this.$message({
+                message: res.msg,
+                type: 'warning'
+              })
+            }
           })
         }
       })
@@ -666,17 +729,25 @@ export default {
     // 删除部门
     deleteDataNode() {
       systemApi.deleteData({ deptId: this.selectGroupId }).then(res => {
-        console.log(res, 'deleteData');
-        this.dialogDelNode = false
-        this.groupList = []
-        this.searchValue = ''
-        this.selectGroupId = null
-        this.getGroup()
-        this.resetTemp()
-        this.$message({
-          message: '删除成功！',
-          type: 'success'
-        })
+        if (res.code === 200) {
+          console.log(res, 'deleteData');
+          this.dialogDelNode = false
+          this.groupList = []
+          this.searchValue = ''
+          this.selectGroupId = null
+          this.getGroup()
+          this.resetTemp()
+          this.$message({
+            message: '删除成功！',
+            type: 'success'
+          })
+        } else {
+          this.$message({
+            message: res.msg,
+            type: 'warning'
+          })
+        }
+
       })
     },
     // 重置数据
@@ -693,9 +764,16 @@ export default {
         type: 1
       }
       roleApi.selectAllRole(params).then(res => {
-        res.data.rows.forEach(ele => {
-          this.userTypeList.push({ label: ele.roleName, key: ele.roleId })
-        })
+        if (res.code === 200) {
+          res.data.rows.forEach(ele => {
+            this.userTypeList.push({ label: ele.roleName, key: ele.roleId })
+          })
+        } else {
+          this.$message({
+            message: res.msg,
+            type: 'warning'
+          })
+        }
       })
     },
     filterChange(val) {
@@ -710,6 +788,7 @@ export default {
     rowClick(row) {
       this.highlight = true
       this.temp = Object.assign({}, row)
+      this.temp.roleId = this.temp.roles[0] ? this.temp.roles[0].roleId : null
       console.log(this.temp, 'sssss');
     },
     recordFormat(index) {
@@ -738,6 +817,7 @@ export default {
     resetSelect() {
       this.selectRows = []
       this.temp = {}
+      this.groupTemp = {}
       this.$refs.multipleTable.clearSelection()
     },
     // 新增角色
@@ -786,7 +866,7 @@ export default {
           data.status = "0"
           data.nickName = data.userName
           data.createBy = localStorage.getItem('createById')
-					console.log(data, 'dfdfdfdfdfdf');
+          console.log(data, 'dfdfdfdfdfdf');
           api.insertUserData(data).then(res => {
             if (res.code === 200) {
               this.selectUserByDeptId(this.selectGroupId)
@@ -800,7 +880,7 @@ export default {
               this.dialogTableVisible = false
               this.$message({
                 message: res.msg,
-                type: ''
+                type: 'warning'
               })
             }
 
@@ -819,14 +899,22 @@ export default {
           let params = { userId, remark, userName, nickName, email, phonenumber, sex, status, roleId }
           console.log(data, 'data')
           api.updateUserData(params).then(res => {
-            this.page = 1
-            this.selectGroupId ? this.selectUserByDeptId(this.selectGroupId) : this.getList()
-            console.log(res, 'res');
-            this.dialogTableVisible = false
-            this.$message({
-              message: '更新成功！',
-              type: 'success'
-            })
+            if (res.code === 200) {
+              this.page = 1
+              this.selectGroupId ? this.selectUserByDeptId(this.selectGroupId) : this.getList()
+              console.log(res, 'res');
+              this.dialogTableVisible = false
+              this.$message({
+                message: '更新成功！',
+                type: 'success'
+              })
+            } else {
+              this.$message({
+                message: res.msg,
+                type: 'warning'
+              })
+            }
+
           })
         }
       })
@@ -836,14 +924,22 @@ export default {
       let params = this.multipleSelection.map(item => item.userId)
       console.log(params, 'params');
       api.deleteUserData(params).then(res => {
-        console.log(res, 'deleteData');
-        this.dialogDelRole = false
-        this.selectGroupId ? this.selectUserByDeptId(this.selectGroupId) : this.getList()
+        if (res.code === 200) {
+          console.log(res, 'deleteData');
+          this.dialogDelRole = false
+          this.selectGroupId ? this.selectUserByDeptId(this.selectGroupId) : this.getList()
 
-        this.$message({
-          message: '删除成功！',
-          type: 'success'
-        })
+          this.$message({
+            message: '删除成功！',
+            type: 'success'
+          })
+        } else {
+          this.$message({
+            message: res.msg,
+            type: 'warning'
+          })
+        }
+
       })
     },
   }
