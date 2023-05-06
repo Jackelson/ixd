@@ -781,15 +781,17 @@ export default {
     },
     handleSelectionChange(val) {
       this.multipleSelection = val
-      // this.multipleSelection = JSON.parse(JSON.stringify(val));
-      console.log(this.multipleSelection, this.tableList, 'val');
+			this.temp = Object.assign({}, this.multipleSelection[0])
+      this.temp.roleId = this.temp.roles ? this.temp.roles[0].roleId : null
+      console.log(this.multipleSelection, this.temp,'val');
     },
     // 选中某行
     rowClick(row) {
-      this.highlight = true
-      this.temp = Object.assign({}, row)
-      this.temp.roleId = this.temp.roles[0] ? this.temp.roles[0].roleId : null
-      console.log(this.temp, 'sssss');
+			console.log(row, 'ssssssss');
+      // this.highlight = true
+      // this.temp = Object.assign({}, row)
+      // this.temp.roleId = this.temp.roles[0] ? this.temp.roles[0].roleId : null
+      // console.log(this.temp, 'sssss');
     },
     recordFormat(index) {
       const page = this.page;
@@ -831,18 +833,34 @@ export default {
     },
     // 编辑
     handleUpdate() {
-      if (Object.keys(this.temp).length > 0) {
+      if (Object.keys(this.multipleSelection).length === 1) {
         this.dialogTitle = '修改用户'
         this.dialogStatus = 'update'
         this.dialogTableVisible = true
-        this.$refs.multipleTable.clearSelection()
-
+        // this.$refs.multipleTable.clearSelection()
+      } else if(Object.keys(this.multipleSelection).length > 1){
+        this.$message({
+          message: '请勾选一条要删除的用户！',
+          type: 'warning'
+        })
       } else {
         this.$message({
-          message: '请选择要修改的用户！',
+          message: '请勾选要删除的用户！',
           type: 'warning'
         })
       }
+      // if (Object.keys(this.temp).length > 0) {
+      //   this.dialogTitle = '修改用户'
+      //   this.dialogStatus = 'update'
+      //   this.dialogTableVisible = true
+      //   this.$refs.multipleTable.clearSelection()
+
+      // } else {
+      //   this.$message({
+      //     message: '请选择要修改的用户！',
+      //     type: 'warning'
+      //   })
+      // }
     },
     // 删除角色
     handleStop() {
