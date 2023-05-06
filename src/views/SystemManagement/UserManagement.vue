@@ -480,6 +480,7 @@ export default {
 
     // },
     searchList() {
+			this.page = 1
       let param = {
         userName: this.filterData.userName,
         roleId: this.filterData.roleId,
