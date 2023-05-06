@@ -345,7 +345,7 @@ export default {
           let params = {
             roleId: data.roleId,
             roleName: data.roleName,
-            update_by: localStorage.getItem("createById"),
+            updateBy: localStorage.getItem("createById"),
             roleSort: data.roleSort,
             menuIds: data.menuIds,
             remark: data.remark
