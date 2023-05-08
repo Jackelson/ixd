@@ -28,6 +28,8 @@
           </el-select>
           <el-input v-else-if="item.key == 'noticeContent'" v-model="temp[item.key]" type="textarea" style="width:90%"
             :autosize="{ minRows: 3, maxRows: 10 }" />
+          <!-- </el-upload> -->
+          <el-input type="textarea" v-if="item.key == 'noticeContent'" v-model="temp[item.key]" style="width:90%" />
           <el-input v-else v-model="temp[item.key]" style="width:90%" />
         </el-form-item>
       </div>
@@ -82,6 +84,8 @@ export default {
         // { label: '开始时间', key: 'dateStart' },
         // { label: '结束时间', key: 'dateEnd' },
       ],
+      createId:'',
+      createName:'',
       rules: {
       },
       temp: {},
@@ -109,6 +113,8 @@ export default {
     },
   },
   created() {
+    // this.createId = localStorage.getItem('userId')
+    // this.createName = localStorage.getItem('userName')
   },
   mounted() { },
   methods: {
@@ -156,6 +162,9 @@ export default {
           data.status = 0;
           // data.createName = localStorage.getItem("userName");
           data.createBy = localStorage.getItem("createById")
+          // const data = Object.assign({}, this.temp);   
+          data.createId = this.createId;
+          data.createName = this.createName;       
           this.groupVisible = false
           api.insertNews(data).then(res => {
             if (res.code == 200) {

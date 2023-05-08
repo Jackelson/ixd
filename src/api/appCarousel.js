@@ -41,3 +41,6 @@ export function updateNotice(params) {
 export function deleteNotice(params){
 	return post('SysNotice/delete',params)
 }
+export function deleteNews(params) {
+	return post('/SysNotice/delete',params)
+}

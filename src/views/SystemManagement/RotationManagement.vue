@@ -4,7 +4,7 @@
  * @Autor: hjw
  * @Date: 2023-05-06 17:25:25
  * @LastEditors: hjw
- * @LastEditTime: 2023-05-08 22:14:41
+ * @LastEditTime: 2023-05-08 22:25:06
 -->
 <template>
   <div class="app-container">
@@ -48,6 +48,18 @@
           :header-cell-style="{ background: '#11ac9b !important', color: '#ffffff', }" :highlight-current-row="highlight"
           style="width: 100%" :row-style="rowStyle" @row-click="rowClick" @selection-change="handleSelectionChange">
           <!-- @select="onTableSelect" -->
+        <!-- <el-table
+          ref="multipleTable"
+          v-loading="tableLoading"
+          :data="tableList"
+          :header-cell-style="{ background: '#11ac9b !important', color: '#ffffff', }"
+          :highlight-current-row="highlight"
+          style="width: 100%;max-height:500px;"
+          :row-style="rowStyle"
+          @row-click="rowClick"
+          @selection-change="handleSelectionChange"
+        > -->
+                  <!-- @select="onTableSelect" -->
           <el-table-column type="selection" width="55"></el-table-column>
           <el-table-column label="序号" align="center" type="index" :index="recordFormat" width="80px" min-width="80px" />
           <el-table-column v-for="item in tableHeader" :key="item.key" :label="item.label" show-overflow-tooltip
@@ -151,6 +163,18 @@
           :header-cell-style="{ background: '#11ac9b !important', color: '#ffffff', }" :highlight-current-row="highlight"
           style="width: 100%" :row-style="rowStyle" @row-click="rowClick" @selection-change="handleSelectionChange2">
           <!-- @select="onTableSelect" -->
+        <!-- <el-table
+          ref="multipleTable"
+          v-loading="noticeLoading"
+          :data="noticeList"
+          :header-cell-style="{ background: '#11ac9b !important', color: '#ffffff', }"
+          :highlight-current-row="highlight"
+          style="width:100%;max-height:500px"
+          :row-style="rowStyle"
+          @row-click="rowClick"
+          @selection-change="handleSelectionChange"
+        > -->
+                  <!-- @select="onTableSelect" -->
           <el-table-column type="selection" width="55"></el-table-column>
           <el-table-column label="序号" align="center" type="index" :index="recordFormat" width="80px" min-width="80px" />
           <el-table-column v-for="item in noticeHeader" :key="item.key" :label="item.label" show-overflow-tooltip
@@ -175,6 +199,15 @@
           <el-pagination :current-page="notPage" :page-sizes="[10, 20, 50, 100]" :page-size="notSize"
             layout="total, sizes, prev, pager, next, jumper" :total="serviceTotal">
           </el-pagination>
+          <el-pagination
+            :current-page="page"
+            :page-sizes="[10, 20, 50, 100]"
+            :page-size="pageSize"
+            layout="total, sizes, prev, pager, next, jumper"
+            :total="noticeTotal"
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+          />
         </el-row>
       </el-card>
     </el-row>
@@ -237,6 +270,7 @@ export default {
       noticeLoading: true,
       serviceTotal: 0,
       imgTotal: 0,
+      noticeTotal:0,
       page: 1,
       pageSize: 10,
       notPage: 1,
@@ -404,6 +438,13 @@ export default {
         return val = '展示'
       }
     },
+    // openImage(row){
+    //   debugger
+    //   console.log(row)
+    //     this.$alert(`<img src="data:image/jpg;base64,${row.base64Image}">`, 'HTML 片段', {
+    //       dangerouslyUseHTMLString: true
+    //     });
+    // },
     changeNoticeVal(val) {
       if (val == '0') {
         return val = '待发布'
@@ -429,6 +470,9 @@ export default {
         this.serviceTotal = res.data.total
         console.log(this.serviceTotal, 'serviceTotalserviceTotal')
         // this.noticeLoading = false
+        console.log('3333333333333',res.data.length)
+        this.noticeTotal = res.data.length
+        this.noticeLoading = false
       })
     },
 
@@ -448,6 +492,8 @@ export default {
         })
         this.imgTotal = res.data.total
         // this.tableLoading = false
+        this.serviceTotal = res.data.total
+        this.tableLoading = false
       })
     },
     //删除
@@ -553,6 +599,7 @@ export default {
       // this.temp = {}
       this.resetSelect()
       this.dialogTitle = '新增图片'
+      this.dialogTitle = '新增轮播图'
       this.dialogStatus = 'create'
       this.dialogAdd = true
       console.log(this.dialogAdd,);
@@ -561,12 +608,13 @@ export default {
     handleUpdate() {
       if (Object.keys(this.multipleSelection).length > 0) {
         this.dialogTitle = '修改图片'
+        this.dialogTitle = '修改轮播图'
         this.dialogStatus = 'update'
         this.dialogAdd = true
         this.temp = this.multipleSelection[0]
       } else {
         this.$message({
-          message: '请选择要修改的图片！',
+          message: '请选择要修改的轮播图！',
           type: 'warning'
         })
       }

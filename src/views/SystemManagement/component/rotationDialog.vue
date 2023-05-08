@@ -10,6 +10,12 @@
             <el-button size="small" type="primary">点击上传</el-button>
             <div class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
           </el-upload>
+          <el-select v-else-if="item.key == 'state'" v-model="temp[item.key]">
+            <el-option
+              v-for="item in stateList" :key="item.value" :label="item.label" :value="item.value">
+            </el-option>
+          </el-select>
+          <el-input v-else-if='item.key =="imageDesc"' type='textarea' v-model="temp[item.key]" style="width:90%" />
           <el-input v-else v-model="temp[item.key]" style="width:90%" />
         </el-form-item>
       </div>
@@ -58,14 +64,23 @@ export default {
         { label: '介绍', key: 'imageDesc' },
         // { label: '状态', key: 'state' },
         { label: '排序', key: "sort" },
+        { label: '描述', key: 'imageDesc' },
+        { label: '排序', key: 'sort' },
+        { label: '状态', key: 'state' },
         // { label: '创建id', key: 'createId' },
         // { label: 'createName', key: 'createName' },
         { label: '文件', key: 'file' },
+      ],
+      stateList:[
+        {label:'未发布',value:0},
+        {label:'已发布',value:1},
       ],
       rules: {
       },
       temp: {},
       // file:'',
+      createId:'',
+      createName:'',
       listQuery: {
         _page: 0,
         _page_size: 15
@@ -90,6 +105,8 @@ export default {
     }
   },
   created() {
+    this.createId = localStorage.getItem('userId')
+    this.createName = localStorage.getItem('userName')
   },
   mounted() { },
   methods: {
@@ -148,6 +165,12 @@ export default {
           fileData.append("createName", localStorage.getItem("userName"))
           fileData.append("createId", localStorage.getItem("createById"))
           fileData.append("sort", data.sort)
+          fileData.append("file",this.fileList[0])
+          fileData.append("imageName",data.imageName)
+          fileData.append("imageDesc",data.imageDesc)
+          fileData.append("state",data.state)
+          fileData.append("createName",this.createName)
+          fileData.append("createId",this.createId)
           // data.file = fileData;
           console.log(data, "8888888888888888");
           this.groupVisible = false
@@ -165,7 +188,20 @@ export default {
                 type: 'error'
               })
             }
-
+            console.log("222222")
+            this.$parent.getList()
+            console.log(res, 'res');
+            if(res.status == 200){
+              this.$message({
+              message: '更新成功！',
+              type: 'success'
+            })
+            }else{
+              this.$message({
+              message: '提交失败',
+              type: 'error'
+            })              
+            }
           })
         }
       })
