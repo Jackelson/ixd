@@ -1,6 +1,6 @@
 <template>
   <div style="height: 100%;">
-    <el-row style="height: calc(37%);">
+    <el-row style="height: calc(36%);">
       <el-card class="box-card">
         <el-row type="flex" class="barRow">
           <el-col :span="12" class="barCol">
@@ -22,7 +22,7 @@
         </el-row>
       </el-card>
     </el-row>
-    <el-row style="height: calc(37%); margin: 1vh 0;">
+    <el-row style="height: calc(36%); margin: 1vh 0;">
       <el-card class="box-card">
         <el-row type="flex" class="barRow">
           <el-col :span="12" class="barCol">
@@ -44,7 +44,7 @@
         </el-row>
       </el-card>
     </el-row>
-    <el-row style="width: 100%; height: calc(26% - 2vh)">
+    <el-row style="width: 100%; height: calc(28% - 6vh)">
       <el-table
         :data="tableList"
         height="calc(100% - 0vh)"
@@ -78,15 +78,17 @@
           </template>
         </el-table-column>
       </el-table>
-      <!-- <el-pagination
+      <el-row style="width: 100%; display: flex; justify-content: flex-end;line-height: 2vh">
+        <el-pagination
           :current-page="page"
-          :page-sizes="[10, 20, 50, 100]"
+          :page-sizes="[5, 10, 20, 50]"
           :page-size="pageSize"
           layout="total, sizes, prev, pager, next, jumper"
           :total="total"
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
-      />-->
+        />
+      </el-row>
     </el-row>
   </div>
 </template>
@@ -120,9 +122,11 @@ export default {
         // { appId: '11', status: '已上架', address: '无', leader: 'user4', phone: '' },
         // { appId: '11', status: '已上架', address: '无', leader: 'user4', phone: '' },
         // { appId: '11', status: '已上架', address: '无', leader: 'user4', phone: '' },
+        // { appId: '11', status: '已上架', address: '无', leader: 'user4', phone: '' },
+        // { appId: '11', status: '已上架', address: '无', leader: 'user4', phone: '' },
       ],
       page: 1,
-      pageSize: 10,
+      pageSize: 5,
       total: 0,
       tableHeader: [
         { label: '应用ID', key: 'id' },
@@ -147,27 +151,27 @@ export default {
     this.getData()
   },
   methods: {
-	// (-1删除，0 未提交，1 提交审批，2.上架状态(也就是审批通过)，3审批驳回 4 流程删除 5下架状态 6 已撤销 7 申请下架状态 8 申请上架状态
-		getState(val) {
-			if(val === '-1') return val = '删除'
-			if(val === '0') return val = '未提交'
-			if(val === '1') return val = '提交审批'
-			if(val === '2') return val = '上架'
-			if(val === '3') return val = '审批驳回'
-			if(val === '4') return val = '流程删除'
-			if(val === '5') return val = '下架'
-			if(val === '6') return val = '已撤销'
-			if(val === '7') return val = '申请下架'
-			if(val === '8') return val = '申请上架'
-		},
-		getoffLineApp(val) {
-			if(val === 0) return val = '离线应用'
-			if(val === 1) return val = '在线应用'
-		},
-		getappCheckStatus(val) {
-			if(val === 0) return val = '未检测'
-			if(val === 1) return val = '已检测'
-		},
+    // (-1删除，0 未提交，1 提交审批，2.上架状态(也就是审批通过)，3审批驳回 4 流程删除 5下架状态 6 已撤销 7 申请下架状态 8 申请上架状态
+    getState(val) {
+      if (val === '-1') return val = '删除'
+      if (val === '0') return val = '未提交'
+      if (val === '1') return val = '提交审批'
+      if (val === '2') return val = '上架'
+      if (val === '3') return val = '审批驳回'
+      if (val === '4') return val = '流程删除'
+      if (val === '5') return val = '下架'
+      if (val === '6') return val = '已撤销'
+      if (val === '7') return val = '申请下架'
+      if (val === '8') return val = '申请上架'
+    },
+    getoffLineApp(val) {
+      if (val === 0) return val = '离线应用'
+      if (val === 1) return val = '在线应用'
+    },
+    getappCheckStatus(val) {
+      if (val === 0) return val = '未检测'
+      if (val === 1) return val = '已检测'
+    },
     filtData(val) {
       if (val === 'offshellCount') {
         return val = '已下架'
@@ -191,17 +195,28 @@ export default {
         // "contactPersonTel": "13951631328",
         // "contactEmail": "123@qq.com",
         // "dateStart": "2023-02-16 02:17:44",
-        // "dateEnd": "2023-02-16 02:17:44"
+        // "dateEnd": "2023-02-16 02:17:44",
+        pageNum: this.page,
+        pageSize: this.pageSize
       }
       api.getAppInfo(params).then(res => {
         this.tableList = Object.assign([], res.data.rows)
-				this.tableList.forEach(ele => {
-					ele.state = this.getState(ele.state)
-					ele.offLineApp = this.getoffLineApp(ele.offLineApp)
-					ele.appCheckStatus = this.getappCheckStatus(ele.appCheckStatus)
-				})
+        this.tableList.forEach(ele => {
+          ele.state = this.getState(ele.state)
+          ele.offLineApp = this.getoffLineApp(ele.offLineApp)
+          ele.appCheckStatus = this.getappCheckStatus(ele.appCheckStatus)
+        })
         this.total = res.data.total
       })
+    },
+    handleCurrentChange(page) {
+      this.page = page;
+      this.getData();
+    },
+    handleSizeChange(pageSize) {
+      this.page = 1;
+      this.pageSize = pageSize;
+      this.getData();
     },
     getStatisticAnalysis() {
       api.getStatisticAnalysis().then(res => {

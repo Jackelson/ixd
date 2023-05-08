@@ -152,5 +152,8 @@ export default {
   }
 }
 </script>
-<style lang="scss" scoped>
+<style lang="scss">
+.el-tree__empty-text {
+	position: inherit !important;
+}
 </style>

@@ -245,8 +245,7 @@ export default {
     // 用户配置
     getUserConfiguration(val) {
       this.temp = val
-      // this.selectAppUsers(val.id)
-      this.selectAppUsers('APPREGISTERN1a9fe648b8be422d86fc4bcf6efd0b7f')
+      this.selectAppUsers(val.id)
       this.dialogAdd = true
 
     },
