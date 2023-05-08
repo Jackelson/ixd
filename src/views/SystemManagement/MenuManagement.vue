@@ -203,7 +203,6 @@ export default {
     },
 
     deleteDataRole() {
-      console.log("222", this.menuId)
       let params = {
         menuId: this.menuId
       }
@@ -213,12 +212,20 @@ export default {
       // console.log(menuId, 'params');
       menuApi.deleteMenuData(params).then(res => {
         console.log(res, 'deleteData');
-        this.dialogDelRole = false
-        this.getList()
-        this.$message({
-          message: '删除成功！',
-          type: 'success'
-        })
+        if (res.code == 200) {
+          this.dialogDelRole = false
+          this.getList()
+          this.$message({
+            message: '删除成功！',
+            type: 'success'
+          })
+        }else {
+          this.$message({
+            message: res.msg,
+            type: 'error'
+          })
+        }
+
       })
     },
     // 分页查询

@@ -1,21 +1,9 @@
 <template>
   <!--弹框部分-->
-  <el-dialog
-    :title="title"
-    v-model="groupVisible"
-    class="editDialog"
-    :close-on-click-modal="false"
-    @close="closeGroupVisible"
-  >
-    <el-form
-      ref="dataform"
-      label-width="120px"
-      label-position="right"
-      :rules="rules"
-      :model="temp"
-      class="editForm"
-    >
-      <div v-for="(item,index) in formHeader" :key="index">
+  <el-dialog :title="title" v-model="groupVisible" class="editDialog" :close-on-click-modal="false"
+    @close="closeGroupVisible">
+    <el-form ref="dataform" label-width="120px" label-position="right" :rules="rules" :model="temp" class="editForm">
+      <div v-for="(item, index) in formHeader" :key="index">
         <el-form-item :label="item.label" :prop="item.key">
           <el-input v-if="item.key === 'menu'" v-model="temp[item.key]" style="width:90%" />
           <el-radio-group v-else-if="item.key === 'menuCheckStrictly'" v-model="temp[item.key]">
@@ -26,31 +14,13 @@
             <el-radio :label="true">选择</el-radio>
             <el-radio :label="false">不选择</el-radio>
           </el-radio-group>
-          <el-select
-            v-else-if="item.key === 'deptIds'"
-            v-model="form.treeData"
-            placeholder="请选择"
-            multiple
-            style="width: 90%;"
-            collapse-tags
-            @change="selectChange"
-          >
+          <el-select v-else-if="item.key === 'deptIds'" v-model="form.treeData" placeholder="请选择" multiple
+            style="width: 90%;" collapse-tags @change="selectChange">
             <el-option :value="treeDataValue" style="height: auto;">
-              <el-tree
-                ref="tree"
-                draggable
-                :data="groupList"
-                :props="defaultProps"
-                :accordion="false"
-                node-key="id"
-                @node-click="handleNodeClick"
-                :auto-expand-parent="false"
-                :highlight-current="true"
-                :default-expand-all="true"
-                :expand-on-click-node="false"
-                :filter-node-method="filterNode"
-                style="color:#666;font-family: Microsoft YaHei;"
-              />
+              <el-tree ref="tree" draggable :data="groupList" :props="defaultProps" :accordion="false" node-key="id"
+                @node-click="handleNodeClick" :auto-expand-parent="false" :highlight-current="true"
+                :default-expand-all="true" :expand-on-click-node="false" :filter-node-method="filterNode"
+                style="color:#666;font-family: Microsoft YaHei;" />
             </el-option>
           </el-select>
           <!-- <el-select
@@ -63,24 +33,10 @@
             @change="selectChange"
           >
           <el-option :value="menuDataValue" style="height: auto;">-->
-          <el-tree
-            ref="tree"
-            draggable
-            v-else-if="item.key === 'menuIds'"
-            node-key="id"
-            :default-checked-keys="source"
-            :data="menuList"
-            :props="defaultProps"
-            :accordion="false"
-            show-checkbox
-            @node-click="handleMenuClick"
-            :auto-expand-parent="false"
-            :highlight-current="true"
-            :default-expand-all="true"
-            :expand-on-click-node="false"
-            :filter-node-method="filterNode"
-            style="color:#666;font-family: Microsoft YaHei;"
-          />
+          <el-tree ref="tree" draggable v-else-if="item.key === 'menuIds'" node-key="id" :default-checked-keys="source"
+            :data="menuList" :props="defaultProps" :accordion="false" show-checkbox @node-click="handleMenuClick"
+            :auto-expand-parent="false" :highlight-current="true" :default-expand-all="true" :expand-on-click-node="false"
+            :filter-node-method="filterNode" style="color:#666;font-family: Microsoft YaHei;width: 100%;" />
           <!-- </el-option>
           </el-select>-->
           <el-input v-else v-model="temp[item.key]" style="width:90%" />
@@ -170,7 +126,9 @@ export default {
   },
   created() {
   },
-  mounted() { },
+  mounted() {
+
+  },
   methods: {
 
     // 点击树节点
@@ -235,7 +193,7 @@ export default {
     },
     // 新增提交
     createData() {
-        this.groupVisible = false
+      this.groupVisible = false
       // this.$refs['dataform'].validate((valid) => {
       //   if (valid) {
       //     const data = Object.assign({}, this.temp)
@@ -294,44 +252,53 @@ export default {
   .el-dialog__body {
     padding: 10px 20px;
   }
+
   .el-dialog {
     width: 470px;
     border-radius: 32px;
+
     .el-dialog__header {
       height: 52px;
       background-color: #336699;
       border-radius: 32px 32px 0 0;
     }
+
     .el-dialog__title {
       // 标题
       color: #fff;
     }
+
     .el-dialog__headerbtn .el-dialog__close {
       // 右侧关闭按钮
       color: #fff !important;
       font-size: 20px;
     }
   }
+
   .el-dialog__footer {
     padding: 8px 41px 16px 0px;
+
     .el-button--default {
       padding-top: 8px;
       border-radius: 16px;
       width: 81px;
       height: 32px;
       background: #bfc5e2;
+
       span {
         font-size: 14px;
         font-family: Microsoft YaHei;
         color: #fff;
       }
     }
+
     .el-button--primary {
       padding-top: 8px;
       border-radius: 16px;
       width: 146px;
       height: 32px;
       background: #336699;
+
       span {
         font-size: 14px;
         font-family: Microsoft YaHei;
@@ -339,5 +306,14 @@ export default {
       }
     }
   }
+}
+
+::v-deep .el-tree {
+  width: 100% !important;
+}
+
+::v-deep .el-tree__empty-text {
+  position: static !important;
+  left: 0 !important;
 }
 </style>

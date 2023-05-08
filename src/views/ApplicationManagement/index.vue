@@ -9,53 +9,20 @@
             <span style="font-size: calc(100vw / 1920 * 14);margin-left: 10px;">应用状态：</span>
             <el-input v-model="filterData.appCheckStatus" style="width:200px"></el-input>
             <span style="font-size: calc(100vw / 1920 * 14);margin-left: 10px;">业务域：</span>
-            <el-select
-              v-model="filterData.businessType"
-              filterable
-              clearable
-              placeholder="--请选择--"
-              @change="enterSelect"
-              style="width:22vh;"
-            >
-              <el-option
-                v-for="(item, index) in businessTypeList"
-                :key="index"
-                :label="item.optionName"
-                :value="item.id"
-              ></el-option>
+            <el-select v-model="filterData.businessType" filterable clearable placeholder="--请选择--" @change="enterSelect"
+              style="width:22vh;">
+              <el-option v-for="(item, index) in businessTypeList" :key="index" :label="item.optionName"
+                :value="item.id"></el-option>
             </el-select>
             <el-button style="margin-left: 10px;" @click="searchList">查询</el-button>
           </el-col>
         </el-row>
-        <el-table
-          :data="tableList"
-          v-loading="tableLoading"
-          height="calc(100% - 12vh)"
-          :header-cell-style="{ background: '#11ac9b !important', color: '#ffffff', }"
-          :row-class-name="tableRowClassName"
-          style="width: 100%"
-          size="mini"
-          ref="table"
-          class="appTableSty"
-        >
-          <el-table-column
-            label="序号"
-            align="center"
-            type="index"
-            :index="recordFormat"
-            width="80px"
-            min-width="80px"
-          />
-          <el-table-column
-            v-for="item in tableHeader"
-            :key="item.key"
-            :prop="item.key"
-            :label="item.label"
-            show-overflow-tooltip
-            align="center"
-            :min-width="item.minWidth"
-            :width="item.width"
-          >
+        <el-table :data="tableList" v-loading="tableLoading" height="calc(100% - 12vh)"
+          :header-cell-style="{ background: '#11ac9b !important', color: '#ffffff', }" :row-class-name="tableRowClassName"
+          style="width: 100%" size="mini" ref="table" class="appTableSty">
+          <el-table-column label="序号" align="center" type="index" :index="recordFormat" width="80px" min-width="80px" />
+          <el-table-column v-for="item in tableHeader" :key="item.key" :prop="item.key" :label="item.label"
+            show-overflow-tooltip align="center" :min-width="item.minWidth" :width="item.width">
             <template v-slot="scope">
               <span v-if="item.key === 'operate'">
                 <el-button type="text" @click="openShareDialog(scope.row)">
@@ -76,38 +43,20 @@
           </el-table-column>
         </el-table>
         <el-row style="width: 100%; display: flex; justify-content: flex-end;line-height: 44px">
-          <el-pagination
-            :current-page="page"
-            :page-sizes="[10, 20, 50, 100]"
-            :page-size="pageSize"
-            layout="total, sizes, prev, pager, next, jumper"
-            :total="total"
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
-          />
+          <el-pagination :current-page="page" :page-sizes="[10, 20, 50, 100]" :page-size="pageSize"
+            layout="total, sizes, prev, pager, next, jumper" :total="total" @size-change="handleSizeChange"
+            @current-change="handleCurrentChange" />
         </el-row>
       </el-card>
     </el-row>
 
-    <el-dialog
-      title="应用节点信息"
-      class="aboutDialog"
-      v-model="dialogTableVisible"
-      width="45%"
-      height="400px"
-      @close="closeDialog2"
-    >
+    <el-dialog title="应用节点信息" class="aboutDialog" v-model="dialogTableVisible" width="45%" height="400px"
+      @close="closeDialog2">
       <ApplicationDialog ref="hostDetailPage" :tableData="tableData" />
     </el-dialog>
 
     <!--弹框部分-->
-    <Configuration
-      title="用户配置"
-      v-model:show="dialogAdd"
-      :temp1="temp"
-      :menuList="menuList"
-      :source="chooseNum"
-    />
+    <Configuration title="用户配置" v-model:show="dialogAdd" :temp1="temp" :menuList="menuList" :source="chooseNum" />
   </div>
 </template>
 
@@ -244,9 +193,10 @@ export default {
     },
     // 用户配置
     getUserConfiguration(val) {
+      console.log(val, 'valll')
       this.temp = val
       // this.selectAppUsers(val.id)
-      this.selectAppUsers('APPREGISTERN1a9fe648b8be422d86fc4bcf6efd0b7f')
+      this.selectAppUsers(val.id)
       this.dialogAdd = true
 
     },
@@ -360,8 +310,10 @@ export default {
     height: 100% !important;
   }
 }
+
 .app-card {
   width: 100%;
+
   .el-card__body {
     padding: 5px;
     height: 100%;
@@ -375,6 +327,7 @@ export default {
 .el-table .change-row-2 {
   background: #f9fafa !important;
 }
+
 /*关于 弹窗*/
 
 .aboutDialog {
@@ -382,9 +335,11 @@ export default {
     padding: 10px 20px;
     min-height: 120px;
   }
+
   .el-dialog {
     width: 470px;
     border-radius: 32px;
+
     .el-dialog__header {
       display: flex;
       align-items: center;
@@ -393,15 +348,18 @@ export default {
       border-radius: 32px 32px 0 0;
       padding: 20px;
     }
+
     .el-dialog__title {
       // 标题
       color: #fff;
       font-size: 20px;
       font-weight: 700;
     }
+
     .el-dialog__headerbtn {
       top: auto;
     }
+
     .el-dialog__headerbtn .el-dialog__close {
       // 右侧关闭按钮
       color: #fff !important;
@@ -409,26 +367,31 @@ export default {
       font-weight: 700;
     }
   }
+
   .el-dialog__footer {
     padding: 8px 41px 16px 0px;
+
     .el-button--default {
       padding-top: 8px;
       border-radius: 16px;
       width: 81px;
       height: 32px;
       background: #bfc5e2;
+
       span {
         font-size: 14px;
         font-family: Microsoft YaHei;
         color: #fff;
       }
     }
+
     .el-button--primary {
       padding-top: 8px;
       border-radius: 16px;
       width: 146px;
       height: 32px;
       background: #008b8bd9;
+
       span {
         font-size: 14px;
         font-family: Microsoft YaHei;
@@ -437,11 +400,13 @@ export default {
     }
   }
 }
+
 .aboutForm {
   .el-form-item__label {
     font-weight: 700;
     font-size: 16px;
   }
+
   .el-form-item__content {
     font-size: 16px;
   }
@@ -454,6 +419,7 @@ export default {
   height: 100%;
   background-color: #f0f8f8;
 }
+
 // 表单及表格部分
 .switch-search {
   width: 100%;

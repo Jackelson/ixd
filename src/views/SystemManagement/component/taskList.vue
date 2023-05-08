@@ -165,6 +165,12 @@ export default {
         }
         if (this.dialogStatus == "create") {
           this.temp = {}
+          this.form = {
+            treeData: [], // 多选
+            treeId: [],
+            menuTreeData: [], // 多选
+            menuTreeId: []
+          }
         }
         console.log(this.dialogStatus, 'status')
       },
@@ -208,7 +214,6 @@ export default {
     },
     //下拉框删除节点，树对应删除
     selectChange() {
-      console.log(this.form.menuTreeData, 'ffff')
       const menuIds = [];
       this.menuList.forEach(item => {
         if (this.form.menuTreeData.includes(item.label)) {
@@ -289,8 +294,49 @@ export default {
         this.groupVisible = false
       }
     },
+
+    //验证勾选父菜单是够有勾选子菜单
+    checkMenuSon() {
+      console.log(this.form.menuTreeData, 'menudata')
+      let flag = true;
+      for (let i = 0; i < this.menuList.length; i++) {
+        if (this.form.menuTreeData.includes(this.menuList[i].label) && (this.menuList[i].children && this.menuList[i].children.length > 0)) {
+          for (let j = 0; j < this.menuList[i].children.length; j++) {
+            if (this.form.menuTreeData.includes(this.menuList[i].children[j].label)) {
+              flag = false;
+              break;
+            }
+          }
+        } else if (this.form.menuTreeData.includes(this.menuList[i].label) && !this.menuList[i].children) {
+          flag = true;
+          return flag;
+        }
+      }
+      return flag
+    },
+    //验证勾选了子菜单是否勾选了父菜单
+    checkMenuParent() {
+      let flag = false;
+      for (let i = 0; i < this.menuList.length; i++) {
+        if (this.menuList[i].children && this.menuList[i].children.length > 0) {
+          for (let j = 0; j < this.menuList[i].children.length; j++) {
+            if (this.form.menuTreeData.includes(this.menuList[i].children[j].label)) {
+              if (!this.form.menuTreeData.includes(this.menuList[i].label)) {
+                flag = true;
+                return flag
+              }
+            }
+          }
+        }
+      }
+    },
     // 新增提交
     createData() {
+      const flag = this.checkMenuSon();
+      // const flag2 = this.checkMenuParent();
+      console.log(flag, 'flag')
+      if (flag) return this.$message({ message: "请正确勾选菜单", type: "warning" })
+      // if (flag2) return this.$message({ message: "请勾选子菜单对应的父菜单", type: "warning" })
       this.$refs['dataform'].validate((valid) => {
         if (valid) {
           const data = Object.assign({}, this.temp)
@@ -305,33 +351,33 @@ export default {
           // data.dataScope = '1'
           data.createBy = localStorage.getItem('createById')
           console.log(data, 'data')
-          roleApi.insertRoleData(data).then(res => {
-            if (res.code === 200) {
-              this.$parent.getList()
-              console.log(res, 'res');
-              this.form = {
-                treeData: [],
-                treeId: []
-              }
-              this.groupVisible = false
-              this.$message({
-                message: '更新成功！',
-                type: 'success'
-              })
-            } else {
-              this.groupVisible = false
-              this.$message({
-                message: res.msg,
-                type: ''
-              })
-            }
+          // roleApi.insertRoleData(data).then(res => {
+          //   if (res.code === 200) {
+          //     this.$parent.getList()
+          //     console.log(res, 'res');
+          //     this.form = {
+          //       treeData: [],
+          //       treeId: []
+          //     }
+          //     this.groupVisible = false
+          //     this.$message({
+          //       message: '更新成功！',
+          //       type: 'success'
+          //     })
+          //   } else {
+          //     this.groupVisible = false
+          //     this.$message({
+          //       message: res.msg,
+          //       type: ''
+          //     })
+          //   }
 
-          }).catch(err => {
-            this.$message({
-              message: err,
-              // type: 'success'
-            })
-          })
+          // }).catch(err => {
+          //   this.$message({
+          //     message: err,
+          //     // type: 'success'
+          //   })
+          // })
         }
       })
     },

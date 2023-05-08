@@ -45,48 +45,20 @@
       </el-card>
     </el-row>
     <el-row style="width: 100%; height: calc(26% - 2vh)">
-      <el-table
-        :data="tableList"
-        height="calc(100% - 0vh)"
-        :header-cell-style="{ background: '#11ac9b !important', color: '#ffffff', }"
-        :cell-style="{ padding: 5 + 'px' }"
-        :row-class-name="tableRowClassName"
-        style="width: 100%"
-        size="mini"
-        ref="table"
-      >
-        <el-table-column
-          label="序号"
-          align="center"
-          type="index"
-          :index="recordFormat"
-          width="80px"
-          min-width="80px"
-        />
-        <el-table-column
-          v-for="item in tableHeader"
-          :key="item.key"
-          :prop="item.key"
-          :label="item.label"
-          show-overflow-tooltip
-          align="center"
-          :min-width="item.minWidth"
-          :width="item.width"
-        >
+      <el-table :data="tableList" height="calc(100% - 0vh)"
+        :header-cell-style="{ background: '#11ac9b !important', color: '#ffffff', }" :cell-style="{ padding: 5 + 'px' }"
+        :row-class-name="tableRowClassName" style="width: 100%" size="mini" ref="table">
+        <el-table-column label="序号" align="center" type="index" :index="recordFormat" width="80px" min-width="80px" />
+        <el-table-column v-for="item in tableHeader" :key="item.key" :prop="item.key" :label="item.label"
+          show-overflow-tooltip align="center" :min-width="item.minWidth" :width="item.width">
           <template v-slot="scope">
             <span>{{ scope.row[item.key] }}</span>
           </template>
         </el-table-column>
       </el-table>
-      <!-- <el-pagination
-          :current-page="page"
-          :page-sizes="[10, 20, 50, 100]"
-          :page-size="pageSize"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="total"
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
-      />-->
+      <el-pagination :current-page="page" :page-sizes="[10, 20, 50, 100]" :page-size="pageSize"
+        layout="total, sizes, prev, pager, next, jumper" :total="total" @size-change="handleSizeChange"
+        @current-change="handleCurrentChange" />
     </el-row>
   </div>
 </template>
@@ -147,27 +119,27 @@ export default {
     this.getData()
   },
   methods: {
-	// (-1删除，0 未提交，1 提交审批，2.上架状态(也就是审批通过)，3审批驳回 4 流程删除 5下架状态 6 已撤销 7 申请下架状态 8 申请上架状态
-		getState(val) {
-			if(val === '-1') return val = '删除'
-			if(val === '0') return val = '未提交'
-			if(val === '1') return val = '提交审批'
-			if(val === '2') return val = '上架'
-			if(val === '3') return val = '审批驳回'
-			if(val === '4') return val = '流程删除'
-			if(val === '5') return val = '下架'
-			if(val === '6') return val = '已撤销'
-			if(val === '7') return val = '申请下架'
-			if(val === '8') return val = '申请上架'
-		},
-		getoffLineApp(val) {
-			if(val === 0) return val = '离线应用'
-			if(val === 1) return val = '在线应用'
-		},
-		getappCheckStatus(val) {
-			if(val === 0) return val = '未检测'
-			if(val === 1) return val = '已检测'
-		},
+    // (-1删除，0 未提交，1 提交审批，2.上架状态(也就是审批通过)，3审批驳回 4 流程删除 5下架状态 6 已撤销 7 申请下架状态 8 申请上架状态
+    getState(val) {
+      if (val === '-1') return val = '删除'
+      if (val === '0') return val = '未提交'
+      if (val === '1') return val = '提交审批'
+      if (val === '2') return val = '上架'
+      if (val === '3') return val = '审批驳回'
+      if (val === '4') return val = '流程删除'
+      if (val === '5') return val = '下架'
+      if (val === '6') return val = '已撤销'
+      if (val === '7') return val = '申请下架'
+      if (val === '8') return val = '申请上架'
+    },
+    getoffLineApp(val) {
+      if (val === 0) return val = '离线应用'
+      if (val === 1) return val = '在线应用'
+    },
+    getappCheckStatus(val) {
+      if (val === 0) return val = '未检测'
+      if (val === 1) return val = '已检测'
+    },
     filtData(val) {
       if (val === 'offshellCount') {
         return val = '已下架'
@@ -183,6 +155,8 @@ export default {
     },
     getData() {
       let params = {
+        pageNum:this.page,
+        pageSize:this.pageSize
         // "appName": "测试11",
         // "appDescribe": "1111",
         // "appSecretKey": "123123",
@@ -195,11 +169,11 @@ export default {
       }
       api.getAppInfo(params).then(res => {
         this.tableList = Object.assign([], res.data.rows)
-				this.tableList.forEach(ele => {
-					ele.state = this.getState(ele.state)
-					ele.offLineApp = this.getoffLineApp(ele.offLineApp)
-					ele.appCheckStatus = this.getappCheckStatus(ele.appCheckStatus)
-				})
+        this.tableList.forEach(ele => {
+          ele.state = this.getState(ele.state)
+          ele.offLineApp = this.getoffLineApp(ele.offLineApp)
+          ele.appCheckStatus = this.getappCheckStatus(ele.appCheckStatus)
+        })
         this.total = res.data.total
       })
     },
@@ -257,11 +231,20 @@ export default {
     height: calc(100% - 4.5vh);
   }
 }
+
 .title {
   height: 3vh;
   padding: 0 1vh;
 }
+
 .chartDiv {
   height: calc(100% - 3vh);
+}
+
+::v-deep .el-pagination {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  padding:20px;
 }
 </style>

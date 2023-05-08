@@ -23,35 +23,25 @@
     </header>
     <main class="T-main">
       <el-container class="T-main-container">
-        <el-aside :width="isCollapse? '64px' : '200px'" class="T-aSide">
+        <el-aside :width="isCollapse ? '64px' : '200px'" class="T-aSide">
           <div class="T-side-container">
-            <el-menu
-              :default-active="'1-4-1'"
-              class="T-menu"
-              :collapse="isCollapse"
-              router
-              @open="handleOpen"
-              @close="handleClose"
-            >
+            <el-menu :default-active="'0'" class="T-menu" :collapse="isCollapse" router @open="handleOpen"
+              @close="handleClose">
               <template v-for="item in menus" :key="item.id">
                 <el-sub-menu v-if="item.children" :index="item.path">
                   <template #title>
                     <!-- <el-icon><setting /></el-icon> -->
                     <svg-icon :icon="item.icon" class="svgIcon"></svg-icon>
-                    <span style="margin-left: 5px;">{{item.name}}</span>
+                    <span style="margin-left: 5px;">{{ item.name }}</span>
                   </template>
-                  <el-menu-item
-                    v-for="subItem in item.children"
-                    :key="subItem.id"
-                    :index="subItem.path"
-                  >
+                  <el-menu-item v-for="subItem in item.children" :key="subItem.id" :index="subItem.path">
                     <svg-icon :icon="subItem.icon" class="svgIcon"></svg-icon>
-                    <span style="margin-left: 5px;">{{subItem.name}}</span>
+                    <span style="margin-left: 5px;">{{ subItem.name }}</span>
                   </el-menu-item>
                 </el-sub-menu>
                 <el-menu-item class="firstMenu" v-if="!item.children" :index="item.path">
                   <svg-icon :icon="item.icon" class="svgIcon"></svg-icon>
-                  <span style="margin-left: 5px;">{{item.name}}</span>
+                  <span style="margin-left: 5px;">{{ item.name }}</span>
                 </el-menu-item>
               </template>
             </el-menu>
@@ -69,82 +59,58 @@
 
 <script>
 // import MenuPart from './MenuPart.vue';
-import { defineComponent, ref, onMounted } from 'vue';
+import { defineComponent, ref, onMounted, reactive } from 'vue';
 import { useRouter } from "vue-router";
+import { menuList } from "./menus"
 export default defineComponent({
   name: 'MainPage',
   setup() {
     const isCollapse = ref(false);
-    const menus = [
-      {
-        id: '0',
-        name: '首页',
-        icon: '首页',
-        path: '/dashBoard',
-      },
-      {
-        id: '1',
-        name: '应用管理',
-        icon: '应用管理',
-        path: '/application',
-        // children: [
-        //   {
-        //     id: '1-1',
-        //     name: '应用管理',
-        //     path: '/application'
-        //   },
-        // ]
-      },
-      {
-        id: '2',
-        name: '系统管理',
-        icon: '系统管理',
-        path: '/userManagement',
-        children: [
-          {
-            id: '2-1',
-            name: '用户管理',
-            icon: '用户管理',
-            path: '/userManagement'
-          },
-          {
-            id: '2-2',
-            name: '角色管理',
-            icon: '角色管理',
-            path: '/roleManagement'
-          },
-          {
-            id: '2-3',
-            name: '菜单管理',
-            icon: '菜单管理',
-            path: '/menuManagement'
-          },
-          {
-            id: '2-4',
-            name: '轮播图管理',
-            icon: '轮播图管理',
-            path: '/rotationManagement'
-          }
-        ]
-      },
-    ]
     const handleMenu = () => {
       isCollapse.value = !isCollapse.value
     }
-		const router = useRouter()
-		console.log(router, 'router');
-		function loginOut() {
-			localStorage.clear('createById')
-			router.push({path:'/login'})
-		}
-		onMounted(() => {
-			// console.log(this.$route, 'sssssssssss')
-		})
+    const router = useRouter()
+    function loginOut() {
+      localStorage.clear('createById')
+      router.push({ path: '/login' })
+    }
+    let menus = reactive([]);
+    const getUserMenus = () => {
+      const userMenus = localStorage.getItem("menus")
+      const me = JSON.parse(JSON.stringify(menuList))
+      me.forEach((item) => {
+        if (userMenus.includes(item.id)) {
+          const obj = {
+            id: item.id,
+            name: item.name,
+            path: item.path,
+            icon: item.icon,
+            children: []
+          }
+          if (item.children && item.children.length > 0) {
+            item.children.forEach(v => {
+              if (userMenus.includes(v.id)) {
+                obj.children.push(v)
+              }
+            })
+          }
+          if (obj.children.length == 0) {
+            delete obj.children
+          }
+          menus.push(obj)
+        }
+        console.log(menus, 'menussss')
+      })
+    }
+    onMounted(() => {
+      getUserMenus();
+    })
     return {
       isCollapse,
       menus,
-			loginOut,
-      handleMenu
+      loginOut,
+      handleMenu,
+      getUserMenus
     }
   }
 })
@@ -156,15 +122,18 @@ export default defineComponent({
     border-right: none;
   }
 }
+
 .T-container {
   display: flex;
   box-sizing: border-box;
+
   .T-header {
     height: 66px;
     background: #0d8678;
     position: relative;
     padding: 0 15px;
     box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
+
     .T-framework-logo-title {
       display: flex;
       align-items: center;
@@ -178,12 +147,14 @@ export default defineComponent({
       bottom: 0;
       margin: auto 0;
       z-index: 2;
+
       .T-framework-logo {
         width: 60px !important;
         height: 60px !important;
         vertical-align: middle;
         line-height: 60px;
       }
+
       .T-framework-title {
         margin-left: 15px !important;
         color: #fff;
@@ -195,6 +166,7 @@ export default defineComponent({
         line-height: 60px;
       }
     }
+
     .right-pannel {
       display: flex;
       align-content: center;
@@ -202,9 +174,11 @@ export default defineComponent({
       justify-content: flex-end;
       height: 100%;
       white-space: nowrap;
+
       .user-info-container {
         padding-left: 50px;
         position: relative;
+
         &::before {
           content: '';
           display: block;
@@ -216,13 +190,15 @@ export default defineComponent({
           border: 50px solid transparent;
           border-bottom-color: #d4f0ee;
         }
+
         .user-action {
           display: flex;
           align-items: center;
           border-radius: 0 4px 4px 0;
           height: 50px;
           background: #d4f0ee;
-          > div {
+
+          >div {
             position: relative;
             font-size: 16px;
             padding: 0 8px;
@@ -230,6 +206,7 @@ export default defineComponent({
             border-bottom-width: 2px;
             border-bottom-style: solid;
             border-bottom-color: transparent;
+
             .user-logo {
               width: 24px;
               height: 24px;
@@ -240,50 +217,62 @@ export default defineComponent({
       }
     }
   }
+
   .T-main {
     box-sizing: border-box;
     flex: 1;
     flex-basis: auto;
     padding: 12px 12px 12px 0;
     overflow: hidden;
+
     &-container {
       height: 100%;
+
       .mainBox {
         padding: 0 !important;
         padding-left: 12px !important;
       }
+
       .T-aSide {
         transition: all 0.2s ease 0s;
         box-shadow: 0 0 6px rgba(82, 106, 222, 0.4);
         border-top-right-radius: 4px;
         border-bottom-right-radius: 4px;
         overflow: inherit;
+
         .T-side-container {
           .el-menu-item {
             color: #fff;
           }
+
           .el-menu-item.is-active {
             color: #0d8678;
             background: #e2f3f0;
           }
+
           .el-menu-item:hover {
             color: #0d8678;
             background: #e2f3f0;
           }
+
           .el-sub-menu__title {
             color: #fff;
+
             &:hover {
               color: #0d8678;
               background: #e2f3f0;
             }
           }
+
           height: 100%;
           background: #0d8678;
           position: relative;
           overflow: visible;
+
           .T-menu {
             background: #0d8678;
           }
+
           .collapse-icon {
             width: 12px;
             height: 102px;
@@ -300,9 +289,11 @@ export default defineComponent({
             background: linear-gradient(90deg, #f0f2fc, #fff);
             color: #666;
           }
+
           .el-menu {
             background: #0d8678;
           }
+
           .el-sub-menu {
             display: grid;
           }
@@ -310,6 +301,7 @@ export default defineComponent({
       }
     }
   }
+
   .T-footer {
     box-sizing: border-box;
     height: 40px;
@@ -318,11 +310,13 @@ export default defineComponent({
     flex-shrink: 0;
   }
 }
+
 .T-framework {
   width: 100%;
   height: 100%;
   overflow: hidden;
 }
+
 .is-vertical {
   flex-direction: column;
 }
