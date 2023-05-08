@@ -29,3 +29,6 @@ export function selectNews(params) {
 export function insertNews(params) {
 	return post('/SysNotice/insert',params)
 }
+export function deleteNews(params) {
+	return post('/SysNotice/delete',params)
+}

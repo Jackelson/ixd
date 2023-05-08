@@ -15,10 +15,9 @@
           ref="multipleTable"
           v-loading="tableLoading"
           :data="tableList"
-          height="calc(100% - 5vh)"
           :header-cell-style="{ background: '#11ac9b !important', color: '#ffffff', }"
           :highlight-current-row="highlight"
-          style="width: 100%"
+          style="width: 100%;max-height:500px;"
           :row-style="rowStyle"
           @row-click="rowClick"
           @selection-change="handleSelectionChange"
@@ -124,10 +123,9 @@
           ref="multipleTable"
           v-loading="noticeLoading"
           :data="noticeList"
-          height="calc(100% - 5vh)"
           :header-cell-style="{ background: '#11ac9b !important', color: '#ffffff', }"
           :highlight-current-row="highlight"
-          style="width: 100%"
+          style="width:100%;max-height:500px"
           :row-style="rowStyle"
           @row-click="rowClick"
           @selection-change="handleSelectionChange"
@@ -164,7 +162,7 @@
             :page-sizes="[10, 20, 50, 100]"
             :page-size="pageSize"
             layout="total, sizes, prev, pager, next, jumper"
-            :total="serviceTotal"
+            :total="noticeTotal"
             @size-change="handleSizeChange"
             @current-change="handleCurrentChange"
           />
@@ -228,6 +226,7 @@ export default {
       tableLoading: true,
       noticeLoading:true,
       serviceTotal: 0,
+      noticeTotal:0,
       page: 1,
       pageSize: 10,
       form:{
@@ -254,7 +253,7 @@ export default {
         { label: '是否展示', key: 'state' },
         { label: '查看', key: 'operate' },
         { label: '创建时间', key: 'createTime' },
-        { label: '创建人', key: 'createBy' },
+        { label: '创建人', key: 'createName' },
       ],
       selectRows: [], // 批量操作时选中的所有行数组
       multipleSelection: [],
@@ -292,6 +291,13 @@ export default {
         return val = '发布'
       }
     },
+    openImage(row){
+      debugger
+      console.log(row)
+        this.$alert(`<img src="data:image/jpg;base64,${row.base64Image}">`, 'HTML 片段', {
+          dangerouslyUseHTMLString: true
+        });
+    },
     changeNoticeVal(val) {
       if(val == '0') {
         return val = '待发布'
@@ -317,7 +323,8 @@ export default {
         this.noticeList.forEach(ele => {
           ele.status = this.changeNoticeVal(ele.status)
         })
-        // this.total = res.data.total
+        console.log('3333333333333',res.data.length)
+        this.noticeTotal = res.data.length
         this.noticeLoading = false
       })
     },
@@ -335,7 +342,7 @@ export default {
         this.tableList.forEach(ele => {
           ele.state = this.changeVal(ele.state)
         })
-        this.total = res.data.total
+        this.serviceTotal = res.data.total
         this.tableLoading = false
       })
     },
@@ -435,7 +442,7 @@ export default {
       this.highlight = false
       // this.temp = {}
       this.resetSelect()
-      this.dialogTitle = '新增角色'
+      this.dialogTitle = '新增轮播图'
       this.dialogStatus = 'create'
       this.dialogAdd = true
       console.log(this.dialogAdd,);
@@ -443,13 +450,13 @@ export default {
     // 编辑
     handleUpdate() {
       if (Object.keys(this.multipleSelection).length > 0) {
-        this.dialogTitle = '修改角色'
+        this.dialogTitle = '修改轮播图'
         this.dialogStatus = 'update'
         this.dialogAdd = true
 
       } else {
         this.$message({
-          message: '请选择要修改的角色！',
+          message: '请选择要修改的轮播图！',
           type: 'warning'
         })
       }

@@ -30,18 +30,7 @@
             <el-button size="small" type="primary">点击上传</el-button>
             <div class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
           </el-upload> -->
-          <el-date-picker
-            v-model="temp[item.key]"
-            v-if="item.key == 'dateStart'"
-            type="datetime"
-            placeholder="选择开始时间">
-          </el-date-picker>
-          <el-date-picker
-            v-model="temp[item.key]"
-            v-else-if="item.key == 'dateEnd'"
-            type="datetime"
-            placeholder="选择结束时间">
-          </el-date-picker>
+          <el-input type="textarea" v-if="item.key == 'noticeContent'" v-model="temp[item.key]" style="width:90%" />
           <el-input v-else v-model="temp[item.key]" style="width:90%" />
         </el-form-item>
       </div>
@@ -93,9 +82,9 @@ export default {
         { label: '公告内容', key: 'noticeContent' },
         { label: '类别', key: 'noticeType' },
         { label: '备注', key: 'remark' },
-        { label: '开始时间', key: 'dateStart' },
-        { label: '结束时间', key: 'dateEnd' },
       ],
+      createId:'',
+      createName:'',
       rules: {
       },
       temp: {},
@@ -121,6 +110,8 @@ export default {
     }
   },
   created() {
+    // this.createId = localStorage.getItem('userId')
+    // this.createName = localStorage.getItem('userName')
   },
   mounted() { },
   methods: {
@@ -161,9 +152,10 @@ export default {
     createData() {
       this.$refs['dataform'].validate((valid) => {
         if (valid) {
-          const data = Object.assign({}, this.temp);          
+          const data = Object.assign({}, this.temp);   
+          data.createId = this.createId;
+          data.createName = this.createName;       
           console.log("111111",data);
-          console.log("222",data.dateStart);
           this.groupVisible = false
           api.insertNews(data).then(res => {
             console.log("222222")

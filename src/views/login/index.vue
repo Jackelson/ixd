@@ -147,6 +147,8 @@ export default {
               localStorage.setItem('createByRole', res.data.sysUser.roles[0].roleId)
               localStorage.setItem('updateBy', res.data.sysUser.dept.updateBy)
               localStorage.setItem('remark', res.data.sysUser.dept.remark)
+              localStorage.setItem('userId', res.data.sysUser.userId)
+              localStorage.setItem('userName', res.data.sysUser.userName)
               this.$store.commit("setUserDetail", res.data)
               console.log(this.$store.getters.getUserDetail, 'sddddddddddddddd');
               this.$router.push({
