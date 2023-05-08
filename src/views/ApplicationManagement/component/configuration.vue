@@ -38,6 +38,7 @@
             <el-option :value="treeDataValue" style="height: auto;">
               <el-tree
                 ref="tree"
+                class="deptTreeSty"
                 draggable
                 :data="groupList"
                 :props="defaultProps"
@@ -67,6 +68,7 @@
             ref="tree"
             draggable
             v-else-if="item.key === 'menuIds'"
+            class="menuIdsTreeSty"
             node-key="id"
             :default-checked-keys="source"
             :data="menuList"
@@ -235,7 +237,7 @@ export default {
     },
     // 新增提交
     createData() {
-        this.groupVisible = false
+      this.groupVisible = false
       // this.$refs['dataform'].validate((valid) => {
       //   if (valid) {
       //     const data = Object.assign({}, this.temp)
@@ -288,6 +290,12 @@ export default {
 }
 </script>
 <style lang="scss">
+
+.menuIdsTreeSty {
+	.el-tree__empty-text {
+		position: inherit !important;
+	}
+}
 /*增加，编辑弹窗*/
 
 .editDialog {

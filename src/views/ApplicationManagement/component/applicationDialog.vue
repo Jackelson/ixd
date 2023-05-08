@@ -13,6 +13,7 @@
           <el-option :value="mineStatusValue" style="height: auto">
             <el-tree
               :data="data"
+							class="mineTreeSty"
               show-checkbox
               node-key="id"
               ref="tree"
@@ -153,7 +154,5 @@ export default {
 }
 </script>
 <style lang="scss">
-.el-tree__empty-text {
-	position: inherit !important;
-}
+
 </style>
