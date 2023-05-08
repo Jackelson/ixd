@@ -69,6 +69,7 @@
             draggable
             v-else-if="item.key === 'menuIds'"
             class="menuIdsTreeSty"
+						empty-text="暂无人员配置"
             node-key="id"
             :default-checked-keys="source"
             :data="menuList"
