@@ -148,6 +148,7 @@ export default {
               localStorage.setItem('updateBy', res.data.sysUser.dept.updateBy)
               localStorage.setItem('remark', res.data.sysUser.dept.remark)
               localStorage.setItem('menus',res.data.permissions)
+              localStorage.setItem('userName',res.data.sysUser.userName)
               this.$store.commit("setUserDetail", res.data)
               console.log(this.$store.getters.getUserDetail, 'sddddddddddddddd');
               this.$router.push({

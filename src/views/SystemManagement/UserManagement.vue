@@ -163,7 +163,7 @@
       </el-row>
     </el-dialog>
     <!--删除 角色 弹框部分-->
-    <el-dialog title="删除角色" v-model="dialogDelRole" class="confirmDialog" :close-on-click-modal="false">
+    <el-dialog title="删除用户" v-model="dialogDelRole" class="confirmDialog" :close-on-click-modal="false">
       <el-row type="flex" justify="center">
         <div class="img-tip" />
       </el-row>

@@ -510,10 +510,10 @@ export default {
             message: '删除成功！',
             type: 'success'
           })
-        }else {
+        } else {
           this.$message({
-            message:res.msg,
-            type:"error"
+            message: res.msg,
+            type: "error"
           })
         }
         this.dialogDelRole = false
@@ -597,6 +597,12 @@ export default {
         message: '修改角色只能选择一个！',
         type: 'warning'
       })
+      if (this.multipleSelection.length == 0) {
+        return this.$message({
+          message: '请选择修改的角色！',
+          type: 'warning'
+        })
+      }
       this.temp = this.multipleSelection[0]
       if (Object.keys(this.temp).length > 0) {
         this.dialogTitle = '修改角色'

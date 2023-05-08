@@ -21,6 +21,10 @@
                 @node-click="handleNodeClick" :auto-expand-parent="false" :highlight-current="true"
                 :default-expand-all="true" :expand-on-click-node="false" :filter-node-method="filterNode"
                 style="color:#666;font-family: Microsoft YaHei;" />
+              <el-tree ref="tree" class="deptTreeSty" draggable :data="groupList" :props="defaultProps" :accordion="false"
+                node-key="id" @node-click="handleNodeClick" :auto-expand-parent="false" :highlight-current="true"
+                :default-expand-all="true" :expand-on-click-node="false" :filter-node-method="filterNode"
+                style="color:#666;font-family: Microsoft YaHei;" />
             </el-option>
           </el-select>
           <!-- <el-select
@@ -33,10 +37,16 @@
             @change="selectChange"
           >
           <el-option :value="menuDataValue" style="height: auto;">-->
-          <el-tree ref="tree" draggable v-else-if="item.key === 'menuIds'" node-key="id" :default-checked-keys="source"
-            :data="menuList" :props="defaultProps" :accordion="false" show-checkbox @node-click="handleMenuClick"
-            :auto-expand-parent="false" :highlight-current="true" :default-expand-all="true" :expand-on-click-node="false"
-            :filter-node-method="filterNode" style="color:#666;font-family: Microsoft YaHei;width: 100%;" />
+          <el-tree ref="tree" draggable v-else-if="item.key === 'menuIds'" node-key="userId"
+            :default-checked-keys="source" :data="menuList" :props="defaultProps" :accordion="false" show-checkbox
+            @node-click="handleMenuClick" :auto-expand-parent="false" :highlight-current="true" :default-expand-all="true"
+            :expand-on-click-node="false" :filter-node-method="filterNode"
+            style="color:#666;font-family: Microsoft YaHei;width: 100%;" />
+          <!-- <el-tree ref="tree" draggable v-else-if="item.key === 'menuIds'" class="menuIdsTreeSty" empty-text="暂无人员配置"
+            node-key="id" :default-checked-keys="source" :data="menuList" :props="defaultProps" :accordion="false"
+            show-checkbox @node-click="handleMenuClick" :auto-expand-parent="false" :highlight-current="true"
+            :default-expand-all="true" :expand-on-click-node="false" :filter-node-method="filterNode"
+            style="color:#666;font-family: Microsoft YaHei;" /> -->
           <!-- </el-option>
           </el-select>-->
           <el-input v-else v-model="temp[item.key]" style="width:90%" />
@@ -118,13 +128,30 @@ export default {
     show: {
       handler(newValue) {
         this.groupVisible = newValue
-        console.log(newValue, 'sdfsdddddd');
         this.temp = this.temp1
       },
       deep: true
+    },
+    menuList: {
+      handler() {
+        console.log(this.menuList, 'menuList')
+        const keys = []
+        this.menuList.forEach(item => {
+          if (item.userNames && item.userNames.length > 0) {
+            item.userNames.forEach(v => {
+              console.log(v,'vvvvvvvv')
+              if (v.isBelong) {
+                keys.push(v.userId)
+              }
+            })
+          }
+        })
+        this.$refs.tree[0].setCheckedKeys(keys, true)
+      }
     }
   },
   created() {
+
   },
   mounted() {
 
@@ -194,6 +221,38 @@ export default {
     // 新增提交
     createData() {
       this.groupVisible = false
+      const menus = this.$refs.tree[0].getCheckedKeys()
+      const params = [];
+      this.menuList.forEach(item => {
+        if (item.userNames && item.userNames.length > 0) {
+          item.userNames.forEach(v => {
+            if (menus.includes(v.userId)) {
+              const obj = {
+                userId: v.userId,
+                roleId: item.roleId,
+                appId: this.temp.id
+              }
+              params.push(obj)
+            }
+          })
+        }
+      })
+      console.log(params, 'paramsparams')
+      roleApi.updateUserRole(params).then((res) => {
+        console.log(res, 'res')
+        if (res.code == 200) {
+          this.$message({
+            type: "success",
+            message: "更新成功"
+          })
+        } else {
+          return this.$message({
+            type: "error",
+            message: res.msg
+          })
+        }
+
+      })
       // this.$refs['dataform'].validate((valid) => {
       //   if (valid) {
       //     const data = Object.assign({}, this.temp)
@@ -246,6 +305,12 @@ export default {
 }
 </script>
 <style lang="scss">
+.menuIdsTreeSty {
+  .el-tree__empty-text {
+    position: inherit !important;
+  }
+}
+
 /*增加，编辑弹窗*/
 
 .editDialog {

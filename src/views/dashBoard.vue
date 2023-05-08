@@ -1,6 +1,6 @@
 <template>
   <div style="height: 100%;">
-    <el-row style="height: calc(37%);">
+    <el-row style="height: calc(36%);">
       <el-card class="box-card">
         <el-row type="flex" class="barRow">
           <el-col :span="12" class="barCol">
@@ -22,7 +22,7 @@
         </el-row>
       </el-card>
     </el-row>
-    <el-row style="height: calc(37%); margin: 1vh 0;">
+    <el-row style="height: calc(36%); margin: 1vh 0;">
       <el-card class="box-card">
         <el-row type="flex" class="barRow">
           <el-col :span="12" class="barCol">
@@ -45,20 +45,48 @@
       </el-card>
     </el-row>
     <el-row style="width: 100%; height: calc(26% - 2vh)">
-      <el-table :data="tableList" height="calc(100% - 0vh)"
-        :header-cell-style="{ background: '#11ac9b !important', color: '#ffffff', }" :cell-style="{ padding: 5 + 'px' }"
-        :row-class-name="tableRowClassName" style="width: 100%" size="mini" ref="table">
-        <el-table-column label="序号" align="center" type="index" :index="recordFormat" width="80px" min-width="80px" />
-        <el-table-column v-for="item in tableHeader" :key="item.key" :prop="item.key" :label="item.label"
-          show-overflow-tooltip align="center" :min-width="item.minWidth" :width="item.width">
+      <el-table
+        :data="tableList"
+        height="calc(100% - 0vh)"
+        :header-cell-style="{ background: '#11ac9b !important', color: '#ffffff', }"
+        :cell-style="{ padding: 5 + 'px' }"
+        :row-class-name="tableRowClassName"
+        style="width: 100%"
+        size="mini"
+        ref="table"
+      >
+        <el-table-column
+          label="序号"
+          align="center"
+          type="index"
+          :index="recordFormat"
+          width="80px"
+          min-width="80px"
+        />
+        <el-table-column
+          v-for="item in tableHeader"
+          :key="item.key"
+          :prop="item.key"
+          :label="item.label"
+          show-overflow-tooltip
+          align="center"
+          :min-width="item.minWidth"
+          :width="item.width"
+        >
           <template v-slot="scope">
             <span>{{ scope.row[item.key] }}</span>
           </template>
         </el-table-column>
       </el-table>
-      <el-pagination :current-page="page" :page-sizes="[10, 20, 50, 100]" :page-size="pageSize"
-        layout="total, sizes, prev, pager, next, jumper" :total="total" @size-change="handleSizeChange"
-        @current-change="handleCurrentChange" />
+      <el-pagination
+          :current-page="page"
+          :page-sizes="[10, 20, 50, 100]"
+          :page-size="pageSize"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="total"
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+      />
     </el-row>
   </div>
 </template>
@@ -89,6 +117,8 @@ export default {
       appVisitCount: [],
       appStatistic: [],
       tableList: [
+        // { appId: '11', status: '已上架', address: '无', leader: 'user4', phone: '' },
+        // { appId: '11', status: '已上架', address: '无', leader: 'user4', phone: '' },
         // { appId: '11', status: '已上架', address: '无', leader: 'user4', phone: '' },
         // { appId: '11', status: '已上架', address: '无', leader: 'user4', phone: '' },
         // { appId: '11', status: '已上架', address: '无', leader: 'user4', phone: '' },
@@ -165,7 +195,9 @@ export default {
         // "contactPersonTel": "13951631328",
         // "contactEmail": "123@qq.com",
         // "dateStart": "2023-02-16 02:17:44",
-        // "dateEnd": "2023-02-16 02:17:44"
+        // "dateEnd": "2023-02-16 02:17:44",
+        // pageNum: this.page,
+        // pageSize: this.pageSize
       }
       api.getAppInfo(params).then(res => {
         this.tableList = Object.assign([], res.data.rows)
@@ -176,6 +208,15 @@ export default {
         })
         this.total = res.data.total
       })
+    },
+    handleCurrentChange(page) {
+      this.page = page;
+      this.getData();
+    },
+    handleSizeChange(pageSize) {
+      this.page = 1;
+      this.pageSize = pageSize;
+      this.getData();
     },
     getStatisticAnalysis() {
       api.getStatisticAnalysis().then(res => {

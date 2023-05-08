@@ -1,36 +1,16 @@
 <template>
   <!--弹框部分-->
-  <el-dialog
-    :title="title"
-    v-model="groupVisible"
-    class="editDialog"
-    :close-on-click-modal="false"
-    @close="closeGroupVisible"
-  >
-    <el-form
-      ref="dataform"
-      label-width="120px"
-      label-position="right"
-      :rules="rules"
-      :model="temp"
-      class="editForm"
-    >
-      <div v-for="(item,index) in formNoticeHeader" :key="index">
+  <el-dialog :title="title" v-model="groupVisible" class="editDialog" :close-on-click-modal="false"
+    @close="closeGroupVisible">
+    <el-form ref="dataform" label-width="120px" label-position="right" :rules="rules" :model="temp" class="editForm">
+      <div v-for="(item, index) in formNoticeHeader" :key="index">
         <el-form-item :label="item.label" :prop="item.key">
-          <!-- <el-upload
-            v-if="item.key === 'file'"
-            class="upload-demo"
-            action="#"
-            :on-preview="handlePreview"
-            :on-remove="handleRemove"
-            :file-list="fileList"
-            :http-request="upload"
-            list-type="picture"
-          >
+          <el-upload v-if="item.key === 'file'" class="upload-demo" action="#" :on-preview="handlePreview"
+            :on-remove="handleRemove" :file-list="fileList" :http-request="upload" list-type="picture">
             <el-button size="small" type="primary">点击上传</el-button>
             <div class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
-          </el-upload> -->
-          <el-date-picker
+          </el-upload>
+          <!-- <el-date-picker
             v-model="temp[item.key]"
             v-if="item.key == 'dateStart'"
             type="datetime"
@@ -41,7 +21,13 @@
             v-else-if="item.key == 'dateEnd'"
             type="datetime"
             placeholder="选择结束时间">
-          </el-date-picker>
+          </el-date-picker> -->
+          <el-select v-else-if="item.key == 'noticeType'" v-model="temp[item.key]" style="width:90%">
+            <el-option value="2" label="公告"></el-option>
+            <el-option value="1" label="通知"></el-option>
+          </el-select>
+          <el-input v-else-if="item.key == 'noticeContent'" v-model="temp[item.key]" type="textarea" style="width:90%"
+            :autosize="{ minRows: 3, maxRows: 10 }" />
           <el-input v-else v-model="temp[item.key]" style="width:90%" />
         </el-form-item>
       </div>
@@ -86,15 +72,15 @@ export default {
   },
   data() {
     return {
-      value1:'',
+      value1: '',
       groupVisible: this.show, // 引入页面弹窗的状态值一定要设置
       formNoticeHeader: [
         { label: '标题', key: 'noticeTitle' },
         { label: '公告内容', key: 'noticeContent' },
         { label: '类别', key: 'noticeType' },
         { label: '备注', key: 'remark' },
-        { label: '开始时间', key: 'dateStart' },
-        { label: '结束时间', key: 'dateEnd' },
+        // { label: '开始时间', key: 'dateStart' },
+        // { label: '结束时间', key: 'dateEnd' },
       ],
       rules: {
       },
@@ -105,20 +91,22 @@ export default {
         _page_size: 15
       },
       dialogTitle: '', // 弹框标题
-			fileList: []
+      fileList: []
     }
   },
   watch: {
     show: {
       handler(newValue) {
         this.groupVisible = newValue
-        console.log(newValue, 'sdfsdddddd');
-        if (Object.keys(this.temp1).length > 0) {
-          this.temp = this.temp1
+        // if (Object.keys(this.temp1).length > 0) {
+        // }
+        this.temp = this.temp1
+        if (this.dialogStatus == 'create') {
+          this.temp = {}
         }
       },
       deep: true
-    }
+    },
   },
   created() {
   },
@@ -161,18 +149,29 @@ export default {
     createData() {
       this.$refs['dataform'].validate((valid) => {
         if (valid) {
-          const data = Object.assign({}, this.temp);          
-          console.log("111111",data);
-          console.log("222",data.dateStart);
+          const data = Object.assign({}, this.temp);
+          data.noticeType = !data.noticeType || data.noticeType == "" ? "2" : data.noticeType
+          console.log(this.temp, 'temp')
+          console.log(data, 'datata')
+          data.status = 0;
+          // data.createName = localStorage.getItem("userName");
+          data.createBy = localStorage.getItem("createById")
           this.groupVisible = false
           api.insertNews(data).then(res => {
-            console.log("222222")
-            this.$parent.getNotice()
-            console.log(res, 'res');
-            this.$message({
-              message: '更新成功！',
-              type: 'success'
-            })
+            if (res.code == 200) {
+              this.$parent.getNotice()
+              console.log(res, 'res');
+              this.$message({
+                message: '更新成功！',
+                type: 'success'
+              })
+            } else {
+              this.$message({
+                message: res.msg,
+                type: 'error'
+              })
+            }
+
           })
         }
       })
@@ -182,31 +181,45 @@ export default {
       this.$refs['dataform'].validate((valid) => {
         if (valid) {
           const data = Object.assign({}, this.temp)
-          let fileData = new FormData()
-          fileData.append("file",this.fileList[0])
-          fileData.append("imageName",data.imageName)
-          fileData.append("imageDesc",data.imageDesc)
-          fileData.append("id",data.id)
           console.log(data, 'data')
+          // let fileData = new FormData()
+          // fileData.append("file", this.fileList[0])
+          // fileData.append("imageName", data.imageName)
+          // fileData.append("imageDesc", data.imageDesc)
+          // fileData.append("id", data.id)
+          // console.log(data, 'data')
+          const params = {
+            id: data.id,
+            isAsc: data.isAsc,
+            noticeContent: data.noticeContent,
+            noticeId: data.noticeId,
+            noticeTitle: data.noticeTitle,
+            noticeType: data.noticeType,
+            orderBy: data.orderBy,
+            remark: data.remark,
+            state: data.status == "待发布" ? 0 : data.status == "发布" ? 1 : 2
+          }
           this.groupVisible = false
-          api.updateData(fileData).then(res => {
-            console.log("222222")
-            this.$parent.getList()
-            console.log(res, 'res');
-            this.$message({
-              message: '更新成功！',
-              type: 'success'
-            })
+          api.updateNotice(params).then(res => {
+            if (res.code == 200) {
+              this.$parent.getList()
+              this.$message({
+                message: '更改成功！',
+                type: 'success'
+              })
+            } else {
+              return this.$message({ type: 'error', message: res.msg })
+            }
           })
         }
       })
     },
-		handleRemove(file, fileList) {
-        console.log(file, fileList);
-      },
-      handlePreview(file) {
-        console.log(file);
-      }
+    handleRemove(file, fileList) {
+      console.log(file, fileList);
+    },
+    handlePreview(file) {
+      console.log(file);
+    }
   }
 }
 </script>
@@ -217,44 +230,53 @@ export default {
   .el-dialog__body {
     padding: 10px 20px;
   }
+
   .el-dialog {
     width: 470px;
     border-radius: 32px;
+
     .el-dialog__header {
       height: 52px;
       background-color: #336699;
       border-radius: 32px 32px 0 0;
     }
+
     .el-dialog__title {
       // 标题
       color: #fff;
     }
+
     .el-dialog__headerbtn .el-dialog__close {
       // 右侧关闭按钮
       color: #fff !important;
       font-size: 20px;
     }
   }
+
   .el-dialog__footer {
     padding: 8px 41px 16px 0px;
+
     .el-button--default {
       padding-top: 8px;
       border-radius: 16px;
       width: 81px;
       height: 32px;
       background: #bfc5e2;
+
       span {
         font-size: 14px;
         font-family: Microsoft YaHei;
         color: #fff;
       }
     }
+
     .el-button--primary {
       padding-top: 8px;
       border-radius: 16px;
       width: 146px;
       height: 32px;
       background: #336699;
+
       span {
         font-size: 14px;
         font-family: Microsoft YaHei;

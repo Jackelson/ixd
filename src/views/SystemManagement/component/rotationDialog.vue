@@ -1,32 +1,12 @@
 <template>
   <!--弹框部分-->
-  <el-dialog
-    :title="title"
-    v-model="groupVisible"
-    class="editDialog"
-    :close-on-click-modal="false"
-    @close="closeGroupVisible"
-  >
-    <el-form
-      ref="dataform"
-      label-width="120px"
-      label-position="right"
-      :rules="rules"
-      :model="temp"
-      class="editForm"
-    >
-      <div v-for="(item,index) in formHeader" :key="index">
+  <el-dialog :title="title" v-model="groupVisible" class="editDialog" :close-on-click-modal="false"
+    @close="closeGroupVisible">
+    <el-form ref="dataform" label-width="120px" label-position="right" :rules="rules" :model="temp" class="editForm">
+      <div v-for="(item, index) in formHeader" :key="index">
         <el-form-item :label="item.label" :prop="item.key">
-          <el-upload
-            v-if="item.key === 'file'"
-            class="upload-demo"
-            action="#"
-            :on-preview="handlePreview"
-            :on-remove="handleRemove"
-            :file-list="fileList"
-            :http-request="upload"
-            list-type="picture"
-          >
+          <el-upload v-if="item.key === 'file'" class="upload-demo" action="#" :on-preview="handlePreview"
+            :on-remove="handleRemove" :file-list="fileList" :http-request="upload" list-type="picture" limit="1">
             <el-button size="small" type="primary">点击上传</el-button>
             <div class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
           </el-upload>
@@ -76,9 +56,10 @@ export default {
       formHeader: [
         { label: '名称', key: 'imageName' },
         { label: '介绍', key: 'imageDesc' },
-        { label: '状态', key: 'state' },
-        { label: '创建id', key: 'createId' },
-        { label: 'createName', key: 'createName' },
+        // { label: '状态', key: 'state' },
+        { label: '排序', key: "sort" },
+        // { label: '创建id', key: 'createId' },
+        // { label: 'createName', key: 'createName' },
         { label: '文件', key: 'file' },
       ],
       rules: {
@@ -90,7 +71,7 @@ export default {
         _page_size: 15
       },
       dialogTitle: '', // 弹框标题
-			fileList: []
+      fileList: []
     }
   },
   watch: {
@@ -100,6 +81,9 @@ export default {
         console.log(newValue, 'sdfsdddddd');
         if (Object.keys(this.temp1).length > 0) {
           this.temp = this.temp1
+        }
+        if (this.dialogStatus == 'create') {
+          this.temp = {}
         }
       },
       deep: true
@@ -156,24 +140,32 @@ export default {
           //   let file = new File([blob], item.name)
           //   fileData.append('file', file)
           // })
-          
-          fileData.append("file",this.fileList[0])
-          fileData.append("imageName",data.imageName)
-          fileData.append("imageDesc",data.imageDesc)
-          fileData.append("state",data.state)
-          fileData.append("createName",data.createName)
-          fileData.append("createId",data.createId)
+          console.log(this.$store.state, 'statata')
+          fileData.append("file", this.fileList[0])
+          fileData.append("imageName", data.imageName)
+          fileData.append("imageDesc", data.imageDesc)
+          fileData.append("state", 0)
+          fileData.append("createName", localStorage.getItem("userName"))
+          fileData.append("createId", localStorage.getItem("createById"))
+          fileData.append("sort", data.sort)
           // data.file = fileData;
-          console.log(data,"8888888888888888");
+          console.log(data, "8888888888888888");
           this.groupVisible = false
           api.insertData(fileData).then(res => {
-            console.log("222222")
-            this.$parent.getList()
-            console.log(res, 'res');
-            this.$message({
-              message: '更新成功！',
-              type: 'success'
-            })
+            if (res.code == 200) {
+              this.$parent.getList()
+              console.log(res, 'res');
+              this.$message({
+                message: '更新成功！',
+                type: 'success'
+              })
+            } else {
+              this.$message({
+                message: res.msg,
+                type: 'error'
+              })
+            }
+
           })
         }
       })
@@ -184,10 +176,16 @@ export default {
         if (valid) {
           const data = Object.assign({}, this.temp)
           let fileData = new FormData()
-          fileData.append("file",this.fileList[0])
-          fileData.append("imageName",data.imageName)
-          fileData.append("imageDesc",data.imageDesc)
-          fileData.append("id",data.id)
+          fileData.append("file", this.fileList[0])
+          fileData.append("imageName", data.imageName)
+          fileData.append("imageDesc", data.imageDesc)
+          fileData.append("id", data.id)
+          fileData.append("createBy", data.createBy)
+          fileData.append("createId", data.createId)
+          fileData.append("createName", data.createName)
+          fileData.append("createTime", data.createTime)
+          fileData.append("sort", data.sort)
+          fileData.append("remark", data.remark)
           console.log(data, 'data')
           this.groupVisible = false
           api.updateData(fileData).then(res => {
@@ -202,12 +200,12 @@ export default {
         }
       })
     },
-		handleRemove(file, fileList) {
-        console.log(file, fileList);
-      },
-      handlePreview(file) {
-        console.log(file);
-      }
+    handleRemove(file, fileList) {
+      console.log(file, fileList);
+    },
+    handlePreview(file) {
+      console.log(file);
+    }
   }
 }
 </script>
@@ -218,44 +216,53 @@ export default {
   .el-dialog__body {
     padding: 10px 20px;
   }
+
   .el-dialog {
     width: 470px;
     border-radius: 32px;
+
     .el-dialog__header {
       height: 52px;
       background-color: #336699;
       border-radius: 32px 32px 0 0;
     }
+
     .el-dialog__title {
       // 标题
       color: #fff;
     }
+
     .el-dialog__headerbtn .el-dialog__close {
       // 右侧关闭按钮
       color: #fff !important;
       font-size: 20px;
     }
   }
+
   .el-dialog__footer {
     padding: 8px 41px 16px 0px;
+
     .el-button--default {
       padding-top: 8px;
       border-radius: 16px;
       width: 81px;
       height: 32px;
       background: #bfc5e2;
+
       span {
         font-size: 14px;
         font-family: Microsoft YaHei;
         color: #fff;
       }
     }
+
     .el-button--primary {
       padding-top: 8px;
       border-radius: 16px;
       width: 146px;
       height: 32px;
       background: #336699;
+
       span {
         font-size: 14px;
         font-family: Microsoft YaHei;

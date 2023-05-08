@@ -50,7 +50,7 @@
       </el-card>
     </el-row>
 
-    <el-dialog title="应用节点信息" class="aboutDialog" v-model="dialogTableVisible" width="45%" height="400px"
+    <el-dialog title="应用节点信息" class="aboutDialog" v-model="dialogTableVisible" width="20%" height="50px"
       @close="closeDialog2">
       <ApplicationDialog ref="hostDetailPage" :tableData="tableData" />
     </el-dialog>
@@ -67,6 +67,7 @@ import * as api from "@/api/dashBoard"
 import { Share, Tools } from '@element-plus/icons-vue'
 import ApplicationDialog from "./component/applicationDialog.vue";
 import Configuration from "./component/configuration.vue";
+import {  ElMessageBox } from 'element-plus'
 export default {
   // eslint-disable-next-line vue/multi-word-component-names
   name: 'Application',
@@ -195,8 +196,8 @@ export default {
     getUserConfiguration(val) {
       console.log(val, 'valll')
       this.temp = val
-      // this.selectAppUsers(val.id)
       this.selectAppUsers(val.id)
+      // this.selectAppUsers('APPREGISTERN1a9fe648b8be422d86fc4bcf6efd0b7f')
       this.dialogAdd = true
 
     },
@@ -292,10 +293,18 @@ export default {
       this.pageSize = pageSize;
       this.requestData();
     },
-    openShareDialog(val) {
-      console.log(val, 'ssss');
-      this.tableData = val
-      this.dialogTableVisible = true
+    openShareDialog() {
+      // console.log(val, 'ssss');
+      // this.tableData = val
+      // this.dialogTableVisible = true
+      ElMessageBox.alert('应用访问正常', '测试连接', {
+        // if you want to disable its autofocus
+        // autofocus: false,
+        confirmButtonText: 'OK',
+        callback: () => {
+          
+        },
+      })
     },
     closeDialog2() {
       // this.$refs.hostDetailPage.reloadDate()

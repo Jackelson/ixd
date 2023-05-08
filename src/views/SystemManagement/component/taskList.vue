@@ -162,6 +162,12 @@ export default {
         this.temp = this.temp1
         if (this.dialogStatus == "update") {
           this.getRoleMenu(this.temp.roleId)
+          this.form = {
+            treeData: [], // 多选
+            treeId: [],
+            menuTreeData: [], // 多选
+            menuTreeId: []
+          }
         }
         if (this.dialogStatus == "create") {
           this.temp = {}

@@ -1,6 +1,7 @@
 <template>
   <div>
-    <el-form class="aboutForm">
+    <div style="font-size: 30px;width:100%;text-align:center">应用访问正常</div>
+    <!-- <el-form class="aboutForm">
       <el-form-item v-for="(item, index) in formLabel" :key="index" :label="item.label">
         <el-select
           v-if="item.key === 'menu'"
@@ -13,6 +14,7 @@
           <el-option :value="mineStatusValue" style="height: auto">
             <el-tree
               :data="data"
+							class="mineTreeSty"
               show-checkbox
               node-key="id"
               ref="tree"
@@ -25,7 +27,7 @@
 
         <el-input v-else v-model="formList[item.key]"></el-input>
       </el-form-item>
-    </el-form>
+    </el-form> -->
   </div>
 </template>
 
@@ -152,5 +154,6 @@ export default {
   }
 }
 </script>
-<style lang="scss" scoped>
+<style lang="scss">
+
 </style>
