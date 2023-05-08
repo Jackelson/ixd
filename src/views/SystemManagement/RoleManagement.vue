@@ -61,38 +61,15 @@
             <!-- 表格 -->
             <el-row style="width: 99%;margin-left: 0.5%; height: calc(100% - 40px)">
               <!-- <el-card class="role-card"> -->
-              <el-table
-                ref="multipleTable"
-                v-loading="tableLoading"
-                :data="list"
-                height="calc(100% - 7vh)"
+              <el-table ref="multipleTable" v-loading="tableLoading" :data="list" height="calc(100% - 7vh)"
                 :header-cell-style="{ background: '#11ac9b !important', color: '#ffffff', }"
-                :highlight-current-row="highlight"
-                style="width: 100%"
-                class="roleTableSty"
-                :row-style="rowStyle"
-                @row-click="rowClick"
-                @selection-change="handleSelectionChange"
-                @select="onTableSelect"
-              >
+                :highlight-current-row="highlight" style="width: 100%" class="roleTableSty" :row-style="rowStyle"
+                @row-click="rowClick" @selection-change="handleSelectionChange" @select="onTableSelect">
                 <el-table-column type="selection" width="55"></el-table-column>
-                <el-table-column
-                  label="序号"
-                  align="center"
-                  type="index"
-                  :index="recordFormat"
-                  width="80px"
-                  min-width="80px"
-                />
-                <el-table-column
-                  v-for="item in tableHeader"
-                  :key="item.key"
-                  :label="item.label"
-                  show-overflow-tooltip
-                  align="center"
-                  :min-width="item.minWidth"
-                  :width="item.width"
-                >
+                <el-table-column label="序号" align="center" type="index" :index="recordFormat" width="80px"
+                  min-width="80px" />
+                <el-table-column v-for="item in tableHeader" :key="item.key" :label="item.label" show-overflow-tooltip
+                  align="center" :min-width="item.minWidth" :width="item.width">
                   <template v-slot="scope">
                     <span v-if="item.key === 'operation'">
                       <el-button @click="searchUserList(scope.row)">查看用户</el-button>
@@ -103,18 +80,10 @@
               </el-table>
 
               <!--分页查询-->
-              <el-row
-                style="width: 100%; display: flex; justify-content: flex-end;align-items: flex-start;"
-              >
-                <el-pagination
-                  :current-page="page"
-                  :page-sizes="[10, 20, 50, 100]"
-                  :page-size="pageSize"
-                  layout="total, sizes, prev, pager, next, jumper"
-                  :total="roleTotal"
-                  @size-change="handleSizeChange"
-                  @current-change="handleCurrentChange"
-                />
+              <el-row style="width: 100%; display: flex; justify-content: flex-end;align-items: flex-start;">
+                <el-pagination :current-page="page" :page-sizes="[10, 20, 50, 100]" :page-size="pageSize"
+                  layout="total, sizes, prev, pager, next, jumper" :total="roleTotal" @size-change="handleSizeChange"
+                  @current-change="handleCurrentChange" />
               </el-row>
               <!-- </el-card> -->
             </el-row>
@@ -124,66 +93,29 @@
     </el-row>
 
     <!--弹框部分-->
-    <taskList
-      :title="dialogTitle"
-      :dialog-status="dialogStatus"
-      v-model:show="dialogAdd"
-      :temp1="temp"
-      :groupList="groupList"
-      :menuList="menuList"
-      source="task"
-    />
+    <taskList :title="dialogTitle" :dialog-status="dialogStatus" v-model:show="dialogAdd" :temp1="temp"
+      :groupList="groupList" :menuList="menuList" source="task" />
 
     <!-- 组织新增/编辑弹窗 -->
-    <el-dialog
-      :title="groupText[groupDialogStatus]"
-      class="aboutDialog"
-      width="45%"
-      height="400px"
-      v-model="dialogVisible"
-      :close-on-click-modal="false"
-    >
-      <el-form
-        ref="groupform"
-        :model="groupTemp"
-        label-position="right"
-        label-width="100px"
-        :rules="groupRule"
-        class="editForm"
-      >
-        <el-form-item
-          v-for="item in groupFormHeader"
-          :key="item.key"
-          :label="item.label"
-          :prop="item.key"
-        >
-          <el-input
-            v-if="item.key === 'deptId' && groupDialogStatus==='create'"
-            disabled
-            v-model="groupTemp[item.key]"
-            style="width:90%;"
-          />
-          <el-input
-            v-else-if="item.key === 'orderNum'"
-            v-model.number="groupTemp[item.key]"
-            style="width:90%;"
-          />
+    <el-dialog :title="groupText[groupDialogStatus]" class="aboutDialog" width="45%" height="400px"
+      v-model="dialogVisible" :close-on-click-modal="false">
+      <el-form ref="groupform" :model="groupTemp" label-position="right" label-width="100px" :rules="groupRule"
+        class="editForm">
+        <el-form-item v-for="item in groupFormHeader" :key="item.key" :label="item.label" :prop="item.key">
+          <el-input v-if="item.key === 'deptId' && groupDialogStatus === 'create'" disabled v-model="groupTemp[item.key]"
+            style="width:90%;" />
+          <el-input v-else-if="item.key === 'orderNum'" v-model.number="groupTemp[item.key]" style="width:90%;" />
           <el-input v-else v-model="groupTemp[item.key]" style="width:90%;" />
         </el-form-item>
       </el-form>
       <div class="dialog-footer">
         <el-button @click="dialogVisible = false">取消</el-button>
-        <el-button v-if="groupDialogStatus==='create'" type="primary" @click="createGroup">提交</el-button>
-        <el-button v-else-if="groupDialogStatus==='update'" type="primary" @click="updateGroup">提交</el-button>
+        <el-button v-if="groupDialogStatus === 'create'" type="primary" @click="createGroup">提交</el-button>
+        <el-button v-else-if="groupDialogStatus === 'update'" type="primary" @click="updateGroup">提交</el-button>
       </div>
     </el-dialog>
     <!--删除 部门分组 弹框部分-->
-    <el-dialog
-      title="删除部门"
-      v-model="dialogDelNode"
-      class="confirmDialog"
-      :close-on-click-modal="false"
-    >
+    <el-dialog title="删除部门" v-model="dialogDelNode" class="confirmDialog" :close-on-click-modal="false">
       <el-row type="flex" justify="center">
         <div class="img-tip" />
       </el-row>
@@ -191,17 +123,12 @@
         <span class="message">是否删除所选部门</span>
       </el-row>
       <div class="dialog-footer">
-        <el-button @click="dialogDelNode=false">取 消</el-button>
+        <el-button @click="dialogDelNode = false">取 消</el-button>
         <el-button type="primary" @click="deleteDataNode">确 认</el-button>
       </div>
     </el-dialog>
     <!--删除 角色 弹框部分-->
-    <el-dialog
-      title="删除角色"
-      v-model="dialogDelRole"
-      class="confirmDialog"
-      :close-on-click-modal="false"
-    >
+    <el-dialog title="删除角色" v-model="dialogDelRole" class="confirmDialog" :close-on-click-modal="false">
       <el-row type="flex" justify="center">
         <div class="img-tip" />
       </el-row>
@@ -209,7 +136,7 @@
         <span class="message">是否删除所选角色</span>
       </el-row>
       <div class="dialog-footer">
-        <el-button @click="dialogDelRole=false">取 消</el-button>
+        <el-button @click="dialogDelRole = false">取 消</el-button>
         <el-button type="primary" @click="deleteDataRole">确 认</el-button>
       </div>
     </el-dialog>
@@ -372,7 +299,7 @@ export default {
     selectRoleByDeptId(val) {
       let param = {
         deptIds: [val],
-				pageNum: this.page,
+        pageNum: this.page,
         pageSize: this.pageSize
       }
       this.tableLoading = true
@@ -460,11 +387,11 @@ export default {
         }
       }
       // if (this.level === 1) {
-			// 	console.log(this.level,'sd666666666');
+      // 	console.log(this.level,'sd666666666');
       //   this.getList()
       // } else {
-				console.log(this.level,'555555555555');
-        this.selectRoleByDeptId(this.selectGroupId)
+      console.log(this.level, '555555555555');
+      this.selectRoleByDeptId(this.selectGroupId)
 
       // }
     },
@@ -573,16 +500,24 @@ export default {
 
     // 删除角色
     deleteDataRole() {
-      let params = this.selectRows.map(item => item.roleId)
-      console.log(params, 'params');
+      let params = this.selectRows.map(item => {
+        return { roleId: item.roleId }
+      })
       roleApi.deleteRoleData(params).then(res => {
-        console.log(res, 'deleteData');
+        if (res.code == 200) {
+          this.getList()
+          this.$message({
+            message: '删除成功！',
+            type: 'success'
+          })
+        }else {
+          this.$message({
+            message:res.msg,
+            type:"error"
+          })
+        }
         this.dialogDelRole = false
-        this.getList()
-        this.$message({
-          message: '删除成功！',
-          type: 'success'
-        })
+
       })
     },
     searchUserList(row) {
@@ -658,6 +593,11 @@ export default {
     },
     // 编辑
     handleUpdate() {
+      if (this.multipleSelection.length > 1) return this.$message({
+        message: '修改角色只能选择一个！',
+        type: 'warning'
+      })
+      this.temp = this.multipleSelection[0]
       if (Object.keys(this.temp).length > 0) {
         this.dialogTitle = '修改角色'
         this.dialogStatus = 'update'
@@ -695,8 +635,10 @@ export default {
     height: 100% !important;
   }
 }
+
 .role-card {
   width: 100%;
+
   .el-card__body {
     padding: 5px;
     height: 100%;
@@ -722,9 +664,11 @@ export default {
   padding: 5px 10px;
   height: auto;
 }
+
 .select {
   color: #909399;
   font: 12px;
+
   .select_label {
     display: inline-block;
     font-size: 14px;
@@ -732,6 +676,7 @@ export default {
     line-height: 24px;
     margin-right: 10px;
   }
+
   .select_box {
     .el-input--medium .el-input__inner {
       height: 24px;
@@ -748,35 +693,42 @@ export default {
   .el-dialog__body {
     padding: 0px 10px !important;
   }
+
   .message {
     font-size: 16px;
     font-family: Microsoft YaHei;
     color: #666666;
     font-weight: bold;
   }
+
   .el-dialog {
     margin-top: 30vh !important;
     width: 330px;
     border-radius: 40px;
+
     .el-dialog__header {
       padding: 9px;
       border-radius: 32px 32px 0 0;
     }
+
     .el-dialog__title {
       // 标题
       color: #fff;
     }
+
     .el-dialog__headerbtn .el-dialog__close {
       // 右侧关闭按钮
       font-size: 20px;
     }
   }
+
   .dialog-footer {
     display: flex;
     justify-content: flex-end;
     padding: 0px 41px 10px 0px;
   }
 }
+
 .table_class {
   // overflow: scroll;
   background: #ffffff;
