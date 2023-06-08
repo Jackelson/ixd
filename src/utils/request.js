@@ -2,7 +2,7 @@ import axios from 'axios';
 // axios 配置
 axios.defaults.timeout = 300000;
 axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8';
-axios.defaults.baseURL = 'api';
+axios.defaults.baseURL = 'ixdpc';
 axios.defaults.withCredentials = true;
 axios.defaults.headers={'X-Requested-With': 'XMLHttpRequest'}; //请求头
 // POST传参序列化

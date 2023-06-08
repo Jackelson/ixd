@@ -303,7 +303,6 @@ export default {
 
     //验证勾选父菜单是够有勾选子菜单
     checkMenuSon() {
-      console.log(this.form.menuTreeData, 'menudata')
       let flag = true;
       for (let i = 0; i < this.menuList.length; i++) {
         if (this.form.menuTreeData.includes(this.menuList[i].label) && (this.menuList[i].children && this.menuList[i].children.length > 0)) {
@@ -357,33 +356,33 @@ export default {
           // data.dataScope = '1'
           data.createBy = localStorage.getItem('createById')
           console.log(data, 'data')
-          // roleApi.insertRoleData(data).then(res => {
-          //   if (res.code === 200) {
-          //     this.$parent.getList()
-          //     console.log(res, 'res');
-          //     this.form = {
-          //       treeData: [],
-          //       treeId: []
-          //     }
-          //     this.groupVisible = false
-          //     this.$message({
-          //       message: '更新成功！',
-          //       type: 'success'
-          //     })
-          //   } else {
-          //     this.groupVisible = false
-          //     this.$message({
-          //       message: res.msg,
-          //       type: ''
-          //     })
-          //   }
+          roleApi.insertRoleData(data).then(res => {
+            if (res.code === 200) {
+              this.$parent.getList()
+              console.log(res, 'res');
+              this.form = {
+                treeData: [],
+                treeId: []
+              }
+              this.groupVisible = false
+              this.$message({
+                message: '更新成功！',
+                type: 'success'
+              })
+            } else {
+              this.groupVisible = false
+              this.$message({
+                message: res.msg,
+                type: ''
+              })
+            }
 
-          // }).catch(err => {
-          //   this.$message({
-          //     message: err,
-          //     // type: 'success'
-          //   })
-          // })
+          }).catch(err => {
+            this.$message({
+              message: err,
+              // type: 'success'
+            })
+          })
         }
       })
     },

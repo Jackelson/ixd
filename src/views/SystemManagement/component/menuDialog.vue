@@ -77,12 +77,12 @@ export default {
         ],
         orderNum: [
           { required: true, message: '请输入菜单排序', trigger: 'blur' },
-          {
-            required: true,
-            pattern: "^[0-9]*$",//eslint-disable-line
-            message: "排序只能输入数字",
-            trigger: 'blur'
-          }
+          // {
+          //   required: true,
+          //   pattern: "^[0-9]*$",//eslint-disable-line
+          //   message: "排序只能输入数字",
+          //   trigger: 'blur'
+          // }
         ],
         component: [
           { required: true, message: '请输入菜单路径', trigger: 'blur' },

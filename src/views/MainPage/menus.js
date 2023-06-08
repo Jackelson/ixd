@@ -4,21 +4,23 @@
  * @Autor: hjw
  * @Date: 2023-05-06 20:32:21
  * @LastEditors: hjw
- * @LastEditTime: 2023-05-08 09:33:07
+ * @LastEditTime: 2023-05-09 10:38:14
  */
 export const menuList = [
-    {
-        id: '0',
-        name: '首页',
-        icon: '首页',
-        path: '/dashBoard',
-    },
+   
     {
         id: '2',
         name: '应用管理',
         icon: '应用管理',
-        path: '/application',
-        children: []
+        path: '/applicationManage',
+        children: [
+            {
+                id: '114',
+                name: '应用信息管理',
+                icon: '轮播图管理',
+                path: '/application'
+            },
+        ]
     },
     {
         id: '1',
@@ -46,7 +48,7 @@ export const menuList = [
             },
             {
                 id: '103',
-                name: '轮播图管理',
+                name: '轮播图公告管理',
                 icon: '轮播图管理',
                 path: '/rotationManagement'
             }

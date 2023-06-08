@@ -49,6 +49,15 @@
           </div>
         </el-aside>
         <el-main class="mainBox">
+          <el-breadcrumb separator="/">
+            <el-breadcrumb-item :to="{ path: '/dashBoard' }">
+              <el-icon style="font-size:14px;">
+                <House />
+              </el-icon></el-breadcrumb-item>
+            <el-breadcrumb-item v-for="(v, k) in $store.state.breadcrumb" :key="k">{{ v }}</el-breadcrumb-item>
+
+          </el-breadcrumb>
+          <!-- <div class="main-title">{{ $store.state.menuTitle }}</div> -->
           <router-view></router-view>
         </el-main>
       </el-container>
@@ -74,10 +83,36 @@ export default defineComponent({
       localStorage.clear('createById')
       router.push({ path: '/login' })
     }
-    let menus = reactive([]);
+    let menus = reactive([{
+      id: '0',
+      name: '首页',
+      icon: '首页',
+      path: '/dashBoard',
+    },]);
     const getUserMenus = () => {
       const userMenus = localStorage.getItem("menus")
       const me = JSON.parse(JSON.stringify(menuList))
+      if (userMenus == '*:*:*') {
+        me.forEach(item => {
+          const obj = {
+            id: item.id,
+            name: item.name,
+            path: item.path,
+            icon: item.icon,
+            children: []
+          }
+          if (item.children && item.children.length > 0) {
+            item.children.forEach(v => {
+              obj.children.push(v)
+            })
+          }
+          if (obj.children.length == 0) {
+            delete obj.children
+          }
+          menus.push(obj)
+        })
+        return
+      }
       me.forEach((item) => {
         if (userMenus.includes(item.id)) {
           const obj = {
@@ -99,7 +134,6 @@ export default defineComponent({
           }
           menus.push(obj)
         }
-        console.log(menus, 'menussss')
       })
     }
     onMounted(() => {
@@ -128,7 +162,7 @@ export default defineComponent({
   box-sizing: border-box;
 
   .T-header {
-    height: 66px;
+    height: 48px !important;
     background: #0d8678;
     position: relative;
     padding: 0 15px;
@@ -137,7 +171,7 @@ export default defineComponent({
     .T-framework-logo-title {
       display: flex;
       align-items: center;
-      height: 60px;
+      height: 48px;
       padding: 0 16px;
       text-align: center;
       position: absolute;
@@ -150,9 +184,9 @@ export default defineComponent({
 
       .T-framework-logo {
         width: 60px !important;
-        height: 60px !important;
+        height: 48px !important;
         vertical-align: middle;
-        line-height: 60px;
+        line-height: 48px;
       }
 
       .T-framework-title {
@@ -163,7 +197,7 @@ export default defineComponent({
         font-size: 24px;
         display: inline-block;
         vertical-align: middle;
-        line-height: 60px;
+        line-height: 48px;
       }
     }
 
@@ -176,7 +210,7 @@ export default defineComponent({
       white-space: nowrap;
 
       .user-info-container {
-        padding-left: 50px;
+        padding-left: 30px;
         position: relative;
 
         &::before {
@@ -187,7 +221,7 @@ export default defineComponent({
           height: 0;
           bottom: 0;
           left: 0;
-          border: 50px solid transparent;
+          border: 30px solid transparent;
           border-bottom-color: #d4f0ee;
         }
 
@@ -195,7 +229,7 @@ export default defineComponent({
           display: flex;
           align-items: center;
           border-radius: 0 4px 4px 0;
-          height: 50px;
+          height: 30px;
           background: #d4f0ee;
 
           >div {
@@ -221,7 +255,6 @@ export default defineComponent({
   .T-main {
     box-sizing: border-box;
     flex: 1;
-    flex-basis: auto;
     padding: 12px 12px 12px 0;
     overflow: hidden;
 
@@ -231,6 +264,15 @@ export default defineComponent({
       .mainBox {
         padding: 0 !important;
         padding-left: 12px !important;
+        background-color: #f8f8f8;
+
+        .main-title {
+          width: 100%;
+          color: rgba(51, 51, 51, 1);
+          font-size: 26px;
+          font-weight: 600;
+          margin:20px 0;
+        }
       }
 
       .T-aSide {

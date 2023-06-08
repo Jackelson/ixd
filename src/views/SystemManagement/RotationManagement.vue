@@ -4,7 +4,7 @@
  * @Autor: hjw
  * @Date: 2023-05-06 17:25:25
  * @LastEditors: hjw
- * @LastEditTime: 2023-05-08 22:25:06
+ * @LastEditTime: 2023-05-09 10:58:13
 -->
 <template>
   <div class="app-container">
@@ -26,7 +26,7 @@
           <el-input v-model="imgQuery.imageDesc" clearable />
         </el-form-item>
         <el-form-item>
-          <el-button @click="getList">查询</el-button>
+          <el-button @click="getList('query')">查询</el-button>
         </el-form-item>
       </el-form>
     </el-row>
@@ -44,11 +44,11 @@
     <!-- 表格 -->
     <el-row style="height: calc(100% - 40px)">
       <el-card class="role-card">
-        <el-table ref="multipleTable" :data="tableList" height="calc(100% - 5vh)"
+        <el-table ref="multipleTable" :data="tableList" height="450px"
           :header-cell-style="{ background: '#11ac9b !important', color: '#ffffff', }" :highlight-current-row="highlight"
           style="width: 100%" :row-style="rowStyle" @row-click="rowClick" @selection-change="handleSelectionChange">
           <!-- @select="onTableSelect" -->
-        <!-- <el-table
+          <!-- <el-table
           ref="multipleTable"
           v-loading="tableLoading"
           :data="tableList"
@@ -59,7 +59,7 @@
           @row-click="rowClick"
           @selection-change="handleSelectionChange"
         > -->
-                  <!-- @select="onTableSelect" -->
+          <!-- @select="onTableSelect" -->
           <el-table-column type="selection" width="55"></el-table-column>
           <el-table-column label="序号" align="center" type="index" :index="recordFormat" width="80px" min-width="80px" />
           <el-table-column v-for="item in tableHeader" :key="item.key" :label="item.label" show-overflow-tooltip
@@ -141,7 +141,7 @@
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-button @click="getNotice">查询</el-button>
+        <el-button @click="getNotice('query')">查询</el-button>
       </el-form-item>
     </el-form>
   </el-row>
@@ -159,11 +159,11 @@
     <!-- 表格 -->
     <el-row style="height: calc(100% - 40px);">
       <el-card class="role-card">
-        <el-table ref="multipleTable" :data="noticeList" height="calc(100% - 5vh)"
+        <el-table ref="multipleTable" :data="noticeList" height="450px"
           :header-cell-style="{ background: '#11ac9b !important', color: '#ffffff', }" :highlight-current-row="highlight"
           style="width: 100%" :row-style="rowStyle" @row-click="rowClick" @selection-change="handleSelectionChange2">
           <!-- @select="onTableSelect" -->
-        <!-- <el-table
+          <!-- <el-table
           ref="multipleTable"
           v-loading="noticeLoading"
           :data="noticeList"
@@ -174,7 +174,7 @@
           @row-click="rowClick"
           @selection-change="handleSelectionChange"
         > -->
-                  <!-- @select="onTableSelect" -->
+          <!-- @select="onTableSelect" -->
           <el-table-column type="selection" width="55"></el-table-column>
           <el-table-column label="序号" align="center" type="index" :index="recordFormat" width="80px" min-width="80px" />
           <el-table-column v-for="item in noticeHeader" :key="item.key" :label="item.label" show-overflow-tooltip
@@ -187,27 +187,21 @@
             </template>
           </el-table-column>
         </el-table>
-        <el-row style="width: 100%; display: flex; justify-content: flex-end;">
+        <!-- <el-row style="width: 100%; display: flex; justify-content: flex-end;">
           <el-pagination :current-page="page" :page-sizes="[10, 20, 50, 100]" :page-size="pageSize"
             layout="total, sizes, prev, pager, next, jumper" :total="serviceTotal" @size-change="handleSizeChange"
             @current-change="handleCurrentChange" />
-        </el-row>
+        </el-row> -->
         <el-row style="width: 100%; display: flex; justify-content: flex-end;">
           <!-- <el-pagination :current-page="page" :page-sizes="[10, 20, 50, 100]" :page-size="pageSize"
             layout="total, sizes, prev, pager, next, jumper" :total="serviceTotal" @size-change="handleSizeChange"
             @current-change="handleCurrentChange" id="newPage" /> -->
-          <el-pagination :current-page="notPage" :page-sizes="[10, 20, 50, 100]" :page-size="notSize"
+          <!-- <el-pagination :current-page="notPage" :page-sizes="[10, 20, 50, 100]" :page-size="notSize"
             layout="total, sizes, prev, pager, next, jumper" :total="serviceTotal">
-          </el-pagination>
-          <el-pagination
-            :current-page="page"
-            :page-sizes="[10, 20, 50, 100]"
-            :page-size="pageSize"
-            layout="total, sizes, prev, pager, next, jumper"
-            :total="noticeTotal"
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
-          />
+          </el-pagination> -->
+          <el-pagination :current-page="notPage" :page-sizes="[10, 20, 50, 100]" :page-size="notSize"
+            layout="total, sizes, prev, pager, next, jumper" :total="noticeTotal" @size-change="handleSizeChange2"
+            @current-change="handleCurrentChange2" />
         </el-row>
       </el-card>
     </el-row>
@@ -270,7 +264,7 @@ export default {
       noticeLoading: true,
       serviceTotal: 0,
       imgTotal: 0,
-      noticeTotal:0,
+      noticeTotal: 0,
       page: 1,
       pageSize: 10,
       notPage: 1,
@@ -397,7 +391,7 @@ export default {
           this.multipleSelection2.forEach(item => {
             if (item.status == "撤回" || item.status == "待发布") flag = true
           })
-          if(flag)  return this.$message({ type: "warning", message: "勾选的公告中包含待发布或者已撤回" }) 
+          if (flag) return this.$message({ type: "warning", message: "勾选的公告中包含待发布或者已撤回" })
           const params = []
           this.multipleSelection2.forEach(item => {
             const obj = {
@@ -457,33 +451,36 @@ export default {
       }
     },
     //查询公告
-    getNotice() {
+    getNotice(type) {
       const params = Object.assign({}, this.form)
       params.pageNum = this.notPage;
       params.pageSize = this.notSize;
+      if(type == 'query'){
+        params.pageNum = 1
+      }
       api.selectNews(params).then(res => {
-        console.log(res, 'res');
         this.noticeList = res.data.rows
         this.noticeList.forEach(ele => {
           ele.status = this.changeNoticeVal(ele.status)
         })
         this.serviceTotal = res.data.total
-        console.log(this.serviceTotal, 'serviceTotalserviceTotal')
         // this.noticeLoading = false
-        console.log('3333333333333',res.data.length)
         this.noticeTotal = res.data.length
         this.noticeLoading = false
       })
     },
 
     // 查询表单
-    getList() {
+    getList(type) {
       let params = {
         pageNum: this.page,
         pageSize: this.pageSize,
         ...this.imgQuery
       }
       // this.tableLoading = true
+      if (type == 'query') {
+        params.pageNum = 1
+      }
       api.selectData(params).then(res => {
         console.log(res, 'res');
         this.tableList = res.data.rows
@@ -533,6 +530,10 @@ export default {
       console.log(page);
       this.getList()
     },
+    handleCurrentChange2(page) {
+      this.notPage = page;
+      this.getNotice()
+    },
     handleSelectionChange(val) {
       console.log(val, 'handleSelectionChange');
       this.multipleSelection = val
@@ -549,6 +550,11 @@ export default {
     handleSizeChange(pageSize) {
       this.page = 1;
       this.pageSize = pageSize;
+      this.getList();
+    },
+    handleSizeChang2(pageSize) {
+      this.notPage = 1;
+      this.notSize = pageSize;
       this.getList();
     },
 
@@ -762,24 +768,6 @@ export default {
   }
 }
 </script>
-<style lang="scss">
-.role-card {
-  width: 100%;
-
-  .el-card__body {
-    padding: 5px;
-    height: 100%;
-  }
-}
-
-.el-table .change-row {
-  background: #e4f4f3 !important;
-}
-
-.el-table .change-row-2 {
-  background: #f9fafa !important;
-}
-</style>
 <style lang="scss" scoped>
 .app-container {
   height: 70%;
@@ -853,4 +841,23 @@ export default {
   }
 }
 </style>
+<style lang="scss">
+.role-card {
+  width: 100%;
+
+  .el-card__body {
+    padding: 5px;
+    height: 100%;
+  }
+}
+
+.el-table .change-row {
+  background: #e4f4f3 !important;
+}
+
+.el-table .change-row-2 {
+  background: #f9fafa !important;
+}
+</style>
+
 

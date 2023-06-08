@@ -7,8 +7,21 @@
             <span>应用名称：</span>
             <el-input v-model="filterData.appName" style="width:200px"></el-input>
             <span style="font-size: calc(100vw / 1920 * 14);margin-left: 10px;">应用状态：</span>
-            <el-input v-model="filterData.appCheckStatus" style="width:200px"></el-input>
+            <!-- <el-input v-model="filterData.appCheckStatus" style="width:200px"></el-input> -->
+            <el-select v-model="filterData.appCheckStatus"  style="width:200px" clearable>
+              <el-option label="删除" value="-1"></el-option>
+              <el-option label="未提交" value="0"></el-option>
+              <el-option label="提交审批" value="1"></el-option>
+              <el-option label="上架" value="2"></el-option>
+              <el-option label="审批驳回" value="3"></el-option>
+              <el-option label="流程删除" value="4"></el-option>
+              <el-option label="下架" value="5"></el-option>
+              <el-option label="已撤销" value="6"></el-option>
+              <el-option label="申请下架" value="7"></el-option>
+              <el-option label="申请上架" value="8"></el-option>
+            </el-select>
             <span style="font-size: calc(100vw / 1920 * 14);margin-left: 10px;">业务域：</span>
+            
             <el-select v-model="filterData.businessType" filterable clearable placeholder="--请选择--" @change="enterSelect"
               style="width:22vh;">
               <el-option v-for="(item, index) in businessTypeList" :key="index" :label="item.optionName"
@@ -240,7 +253,9 @@ export default {
         pageSize: this.pageSize
       }
       !this.filterData.appName ? null : param.appName = this.filterData.appName
-      !this.filterData.appCheckStatus ? null : param.state = this.getState2(this.filterData.appCheckStatus)
+      // !this.filterData.appCheckStatus ? null : param.state = this.getState2(this.filterData.appCheckStatus)
+      console.log(this.filterData,'filterData')
+      param.state= this.filterData.appCheckStatus
       !this.filterData.businessType ? null : param.businessType = this.filterData.businessType
 
       this.tableLoading = true

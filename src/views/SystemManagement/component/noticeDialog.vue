@@ -29,7 +29,7 @@
           <el-input v-else-if="item.key == 'noticeContent'" v-model="temp[item.key]" type="textarea" style="width:90%"
             :autosize="{ minRows: 3, maxRows: 10 }" />
           <!-- </el-upload> -->
-          <el-input type="textarea" v-if="item.key == 'noticeContent'" v-model="temp[item.key]" style="width:90%" />
+          <!-- <el-input type="textarea" v-if="item.key == 'noticeContent'" v-model="temp[item.key]" style="width:90%" /> -->
           <el-input v-else v-model="temp[item.key]" style="width:90%" />
         </el-form-item>
       </div>

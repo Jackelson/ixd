@@ -1,57 +1,31 @@
 <template>
   <div class="login-container">
     <div class="login_box">
-      <div class="login_title">i锡电综合管理应用</div>
-      <el-form
-        ref="loginForm"
-        :model="loginForm"
-        :rules="loginRules"
-        class="login-form"
-        autocomplete="on"
-        label-position="left"
-      >
+      <div class="login_title" style="font-size:32px;margin-bottom:18px;margin-top:40px;">欢迎登录～</div>
+      <div class="login_title" style="font-size:24px;">i锡电综合管理应用</div>
+      <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" autocomplete="on"
+        label-position="left">
         <el-form-item prop="username">
           <span class="img-container">
             <svg-icon icon="用户名"></svg-icon>
           </span>
-          <el-input
-            ref="username"
-            v-model="loginForm.username"
-            placeholder="请输入"
-            name="username"
-            type="text"
-            tabindex="1"
-            autocomplete="on"
-          />
+          <el-input ref="username" v-model="loginForm.username" placeholder="请输入" name="username" type="text" tabindex="1"
+            autocomplete="on" />
         </el-form-item>
         <el-tooltip v-model="capsTooltip" content="Caps lock is On" placement="right" manual>
           <el-form-item prop="password">
             <span class="img-container">
               <svg-icon icon="密码"></svg-icon>
             </span>
-            <el-input
-              :key="passwordType"
-              ref="password"
-              v-model="loginForm.password"
-              :type="passwordType"
-              placeholder="Password"
-              name="password"
-              tabindex="2"
-              autocomplete="on"
-              @keyup="checkCapslock"
-              @blur="capsTooltip = false"
-              @keyup.enter="handleLogin"
-            />
+            <el-input :key="passwordType" ref="password" v-model="loginForm.password" :type="passwordType"
+              placeholder="Password" name="password" tabindex="2" autocomplete="on" @keyup="checkCapslock"
+              @blur="capsTooltip = false" @keyup.enter="handleLogin" />
           </el-form-item>
         </el-tooltip>
         <el-checkbox v-model="checked" class="pwd-check">记住密码</el-checkbox>
-        <el-button
-          :loading="loading"
-          type="primary"
-          style="width:100%;margin-bottom:30px;background-color:#0d8678;border:none;font-size:18px;font-weight:500;"
-          round
-          @click.prevent="handleLogin"
-        >登&emsp;&emsp;录</el-button>
+        <el-button :loading="loading" type="primary"
+          style="width:100%;margin-bottom:30px;background-color:#0d8678;border:none;font-size:18px;font-weight:500;" round
+          @click.prevent="handleLogin">登&emsp;&emsp;录</el-button>
       </el-form>
     </div>
   </div>
@@ -147,6 +121,9 @@ export default {
               localStorage.setItem('createByRole', res.data.sysUser.roles[0].roleId)
               localStorage.setItem('updateBy', res.data.sysUser.dept.updateBy)
               localStorage.setItem('remark', res.data.sysUser.dept.remark)
+              localStorage.setItem('remark', res.data.sysUser.dept.remark)
+              localStorage.setItem('menus', res.data.permissions)
+              localStorage.setItem('userName', res.data.sysUser.userName)
               this.$store.commit("setUserDetail", res.data)
               console.log(this.$store.getters.getUserDetail, 'sddddddddddddddd');
               this.$router.push({
@@ -222,20 +199,25 @@ $cursor: #000;
     border-radius: 5px;
     color: #454545;
   }
+
   .el-checkbox__input.is-checked .el-checkbox__inner {
     background-color: #ffffff;
     border-color: #cccccc;
   }
+
   .el-checkbox__input.is-checked .el-checkbox__inner {
     background-color: #ffffff;
     border-color: #cccccc;
   }
-  .el-checkbox__input.is-checked + .el-checkbox__label {
+
+  .el-checkbox__input.is-checked+.el-checkbox__label {
     color: #cccccc;
   }
+
   .el-checkbox__inner::after {
     border-color: #ff0000;
   }
+
   .el-checkbox__input.is-focus .el-checkbox__inner {
     border-color: #cccccc;
   }
@@ -252,35 +234,42 @@ $light_gray: #eee;
   width: 100%;
   // background-color: $bg;
   overflow: hidden;
-  // background-image: url("../../assets/2107_images/login_bg.jpg");
+  background-image: url("../../assets/bg.png");
   background-size: cover;
 
   //我的样式
   .login_box {
-    width: 560px;
-    height: 406px;
+    box-sizing: border-box;
+    width: 476px;
+    height: 614px;
     background-color: #ffffff;
-    border-radius: 32px;
+    box-shadow: 0px 0px 11px 0px rgba(86, 92, 91, 0.27);
+    border-radius: 4px;
     position: absolute;
     top: 50%;
-    left: 50%;
+    left: 68%;
     transform: translate(-50%, -50%);
+    padding: 110px 20px 0 20px;
+
     .login_title {
       text-align: center;
-      margin-top: 79px;
       color: #0d8678;
       font-size: 32px;
       font-family: FZZZHONGJW;
-      font-weight: 500;
+      text-align: left;
+      margin: 0 auto;
+      width:320px;
     }
   }
+
   .login-form {
     position: relative;
-    width: 240px;
+    width: 320px;
     max-width: 100%;
-    padding: 50px 0;
+    padding: 37px 0;
     margin: 0 auto;
     overflow: hidden;
+
     .pwd-check {
       margin-bottom: 20px;
       color: #cccccc;
@@ -306,17 +295,20 @@ $light_gray: #eee;
     height: 30px;
     margin-left: 5px;
     position: relative;
+
     @mixin imgcenter {
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
     }
+
     .user {
       width: 30px;
       height: 30px;
       @include imgcenter;
     }
+
     .lock {
       width: 14px;
       height: 18px;
