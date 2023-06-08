@@ -4,7 +4,7 @@
  * @Autor: hjw
  * @Date: 2023-05-05 20:17:30
  * @LastEditors: hjw
- * @LastEditTime: 2023-05-26 21:11:55
+ * @LastEditTime: 2023-06-08 22:21:36
  */
 import { createApp } from 'vue'
 import App from './App.vue'
@@ -36,7 +36,7 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
 router.beforeEach((to, from, next) => {
 	if(to.path == '/login') {
 		next()
-		return;
+		return; 
 	}
 	const menuName = menuTitles[to.meta.title];
 	store.commit("SET_MENU_TITLE", menuName)
