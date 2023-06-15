@@ -1,7 +1,14 @@
+/*
+ * @Description: 
+ * @Version: 2.0
+ * @Autor: hjw
+ * @Date: 2023-05-05 20:17:29
+ * @LastEditors: hjw
+ * @LastEditTime: 2023-06-15 21:56:25
+ */
 import { 
 	// get, 
 	post,
-	uploadFile
 } from '../utils/request';
 
 export function insertUserData(params) {
@@ -26,7 +33,7 @@ export function selectUserByRoleId(params) {
 	return post('/SysUser/selectUserByRoleId',params)
 }
 export function login(params) {
-	return uploadFile('/SysUser/login',params)
+	return post('/SysUser/login',params)
 }
 
 export function selectUserByDeptId(params) {

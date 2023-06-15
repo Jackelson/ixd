@@ -124,8 +124,8 @@ export default {
               localStorage.setItem('remark', res.data.sysUser.dept.remark)
               localStorage.setItem('menus', res.data.permissions)
               localStorage.setItem('userName', res.data.sysUser.userName)
+              localStorage.setItem('token', res.data.toekn)
               this.$store.commit("setUserDetail", res.data)
-              console.log(this.$store.getters.getUserDetail, 'sddddddddddddddd');
               this.$router.push({
                 path: this.redirect || '/',
               })
@@ -258,7 +258,7 @@ $light_gray: #eee;
       font-family: FZZZHONGJW;
       text-align: left;
       margin: 0 auto;
-      width:320px;
+      width: 320px;
     }
   }
 
