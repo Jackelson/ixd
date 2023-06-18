@@ -4,10 +4,12 @@
  * @Autor: hjw
  * @Date: 2023-05-05 20:17:30
  * @LastEditors: hjw
- * @LastEditTime: 2023-06-15 22:45:09
+ * @LastEditTime: 2023-06-18 13:41:11
  */
 import axios from 'axios';
 import { v4 as uuidv4 } from "uuid";
+import router from "@/router/index"
+import {ElMessage} from "element-plus"
 // axios 配置
 axios.defaults.timeout = 300000;
 axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8';
@@ -26,14 +28,14 @@ axios.interceptors.request.use(
         return config;
     },
     error => {
-        console.log(error);
+        console.log(error,'error')
         return Promise.reject();
     }
 );
 
 // 返回状态判断
 axios.interceptors.response.use(
-    response => {
+    response => {   
         if (response.status === 200) {
             return response;
         } else {
@@ -41,19 +43,27 @@ axios.interceptors.response.use(
         }
     },
     error => {
-        console.log(error);
+        if(error.response.status == 401){
+            ElMessage.warning("登录过期，请重新登录")
+            router.push('/login')
+        }else {
+            ElMessage.warning("请求错误，请联系管理员")
+        }
         return Promise.reject();
     }
 );
 
 export function post(url, params) {
     let data = {};
-    if (params) {
-        const pwdKey = "71B3CC7F6035D9BC1E430D997C88A6BF"
-        const sm4 = require('sm-crypto').sm4
-        data = { message: sm4.encrypt(JSON.stringify(params), pwdKey, { mode: 'cbc', iv: '15D05CC8DD7045F4BF096B8661300CE1' }) }
+    if (url != '/AppCarouselChart/insert' && url != '/AppCarouselChart/update') {
+        if (params) {
+            const pwdKey = "71B3CC7F6035D9BC1E430D997C88A6BF"
+            const sm4 = require('sm-crypto').sm4
+            data = { message: sm4.encrypt(JSON.stringify(params), pwdKey, { mode: 'cbc', iv: '15D05CC8DD7045F4BF096B8661300CE1' }) }
+        }
+    } else {
+        data = params;
     }
-
     if (params) {
         return new Promise((resolve, reject) => {
             axios

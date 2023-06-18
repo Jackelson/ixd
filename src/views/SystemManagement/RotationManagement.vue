@@ -4,7 +4,7 @@
  * @Autor: hjw
  * @Date: 2023-05-06 17:25:25
  * @LastEditors: hjw
- * @LastEditTime: 2023-05-09 10:58:13
+ * @LastEditTime: 2023-06-18 19:15:50
 -->
 <template>
   <div class="app-container">
@@ -33,7 +33,7 @@
     <el-row style="height:40px;line-height:40px;" type="flex">
       <el-col class="edit" :span="16">
         <el-button @click="addDialog">新增</el-button>
-        <el-button @click="handleUpdate">修改</el-button>
+        <!-- <el-button @click="handleUpdate">修改</el-button> -->
         <el-button @click="handleStop(-1)">删除</el-button>
         <el-button @click="handleUpdateStatus(1)">展示</el-button>
         <el-button @click="handleUpdateStatus(0)">取消展示</el-button>
@@ -455,7 +455,8 @@ export default {
       const params = Object.assign({}, this.form)
       params.pageNum = this.notPage;
       params.pageSize = this.notSize;
-      if(type == 'query'){
+      params.userId = localStorage.getItem('createById')
+      if (type == 'query') {
         params.pageNum = 1
       }
       api.selectNews(params).then(res => {
@@ -477,10 +478,12 @@ export default {
         pageSize: this.pageSize,
         ...this.imgQuery
       }
+      params.userId = localStorage.getItem('createById')
       // this.tableLoading = true
       if (type == 'query') {
         params.pageNum = 1
       }
+      console.log('pppppppppppppp', params)
       api.selectData(params).then(res => {
         console.log(res, 'res');
         this.tableList = res.data.rows
@@ -535,12 +538,10 @@ export default {
       this.getNotice()
     },
     handleSelectionChange(val) {
-      console.log(val, 'handleSelectionChange');
       this.multipleSelection = val
     },
     handleSelectionChange2(val) {
       this.multipleSelection2 = val
-      console.log(val, 'lllllllllllllllllllll')
     },
     recordFormat(index) {
       const page = this.page;
@@ -612,6 +613,12 @@ export default {
     },
     // 编辑
     handleUpdate() {
+      if (this.multipleSelection.length > 1) {
+        return this.$message({
+          message: '只能选择一条修改',
+          type: 'warning'
+        })
+      }
       if (Object.keys(this.multipleSelection).length > 0) {
         this.dialogTitle = '修改图片'
         this.dialogTitle = '修改轮播图'

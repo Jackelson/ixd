@@ -5,11 +5,13 @@
     <el-form ref="dataform" label-width="120px" label-position="right" :rules="rules" :model="temp" class="editForm">
       <div v-for="(item, index) in formHeader" :key="index">
         <el-form-item :label="item.label" :prop="item.key">
-          <el-upload v-if="item.key === 'file'" class="upload-demo" action="#" :on-preview="handlePreview"
-            :on-remove="handleRemove" :file-list="fileList" :http-request="upload" list-type="picture" limit="1">
+          <el-upload v-if="item.key === 'file' && dialogStatus == 'create'" class="upload-demo" action="#" :on-preview="handlePreview"
+            :on-remove="handleRemove" :file-list="fileList" :http-request="upload" list-type="picture" limit="1"
+            accept=".jpg,.png,.jpeg,.gif">
             <el-button size="small" type="primary">点击上传</el-button>
             <div class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
           </el-upload>
+          <img :src="'data:image/png;base64,'+this.temp.base64Image" v-else-if="item.key === 'file' && dialogStatus == 'update' "/>
           <el-select v-else-if="item.key == 'state'" v-model="temp[item.key]">
             <el-option v-for="item in stateList" :key="item.value" :label="item.label" :value="item.value">
             </el-option>
@@ -92,13 +94,17 @@ export default {
     show: {
       handler(newValue) {
         this.groupVisible = newValue
-        console.log(newValue, 'sdfsdddddd');
         if (Object.keys(this.temp1).length > 0) {
           this.temp = this.temp1
         }
         if (this.dialogStatus == 'create') {
           this.temp = {}
+          this.fileList = []
+        }else{
+          const img =  this.base64ToFile(this.temp.base64Image, 'picture.png', 'image/png')
+          this.fileList.push(img)
         }
+        console.log(this.temp)
       },
       deep: true
     }
@@ -109,14 +115,33 @@ export default {
   },
   mounted() { },
   methods: {
+    base64ToFile(base64, filename, contentType) {
+      // let arr = base64.split(',')  //去掉base64格式图片的头部
+      let bstr = atob(base64)   //atob()方法将数据解码
+      let leng = bstr.length
+      let u8arr = new Uint8Array(leng)
+      while (leng--) {
+        u8arr[leng] = bstr.charCodeAt(leng) //返回指定位置的字符的 Unicode 编码
+      }
+      return new File([u8arr], filename, { type: contentType })
+    },
     upload(file) {
-      console.log(file)
+      console.log(file,'ffff')
+      const fileType = file.file.name.substring((file.file.name.indexOf(".") + 1))
+      if (fileType == 'png' || fileType == 'jpg' || fileType == 'jpeg' || fileType == 'gif') {
+        this.fileList.push(file.file)
+        console.log(this.fileList,'uuuuuuuu')
+      } else {
+        this.$message({
+          message: '只能上传图片!',
+          type: 'warning'
+        })
+      }
       // this.fileList.push({
       //   name: file.file.name,
       //   raw: file.file,
       //   url: URL.createObjectURL(file.file)
       // })
-      this.fileList.push(file.file)
     },
     closeGroupVisible() {
       this.$emit('update:show', false)
@@ -224,7 +249,7 @@ export default {
       console.log(file, fileList);
     },
     handlePreview(file) {
-      console.log(file);
+      console.log(file, 'ff');
     }
   }
 }

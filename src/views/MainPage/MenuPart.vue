@@ -26,41 +26,7 @@ export default {
     return {
       isCollapse: false,
       menus: [
-        {
-          id: '1',
-          name: '安全管理',
-          icon: 'bg-security',
-          path: '/SecurityManagement',
-          children: [
-            {
-              id: '1-1',
-              name: '安全督察管理',
-              path: '/SecurityManagement/management'
-            },
-            {
-              id: '1-2',
-              name: '安全分析统计',
-              path: '/SecurityManagement/analyze'
-            },
-            {
-              id: '1-3',
-              name: '人员准入管理',
-              path: '/SecurityManagement/admittance'
-            }
-          ]
-        },
-        {
-          id: '2',
-          name: '员工管理',
-          icon: 'bg-security',
-          path: '/PersonManagement'
-        },
-        {
-          id: '3',
-          name: '项目管理',
-          icon: 'bg-security',
-          path: '/ProjectManagement'
-        },
+       
       ]
     }
   },

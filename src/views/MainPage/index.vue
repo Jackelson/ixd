@@ -49,14 +49,14 @@
           </div>
         </el-aside>
         <el-main class="mainBox">
-          <el-breadcrumb separator="/">
+          <!-- <el-breadcrumb separator="/">
             <el-breadcrumb-item :to="{ path: '/dashBoard' }">
               <el-icon style="font-size:14px;">
                 <House />
               </el-icon></el-breadcrumb-item>
             <el-breadcrumb-item v-for="(v, k) in $store.state.breadcrumb" :key="k">{{ v }}</el-breadcrumb-item>
 
-          </el-breadcrumb>
+          </el-breadcrumb> -->
           <!-- <div class="main-title">{{ $store.state.menuTitle }}</div> -->
           <router-view></router-view>
         </el-main>
@@ -111,6 +111,7 @@ export default defineComponent({
           }
           menus.push(obj)
         })
+        console.log('menus',menus)
         return
       }
       me.forEach((item) => {
@@ -135,6 +136,7 @@ export default defineComponent({
           menus.push(obj)
         }
       })
+      console.log('menus',menus)
     }
     onMounted(() => {
       getUserMenus();

@@ -133,9 +133,9 @@ export default {
 
       chartOption(props.chartData)  // 绘制图表
 
-      window.onresize = function () { //自适应大小
-        chart.resize();
-      };
+      // window.onresize = function () { //自适应大小
+      //   chart.resize();
+      // };
     });
     onUnmounted(() => {
 

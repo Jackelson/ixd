@@ -1,3 +1,11 @@
+/*
+ * @Description: 
+ * @Version: 2.0
+ * @Autor: hjw
+ * @Date: 2023-05-05 20:17:30
+ * @LastEditors: hjw
+ * @LastEditTime: 2023-06-17 20:58:08
+ */
 import { createRouter,createWebHashHistory } from 'vue-router'
 
 const routes = [

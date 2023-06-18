@@ -1,12 +1,18 @@
+/*
+ * @Description: 
+ * @Version: 2.0
+ * @Autor: hjw
+ * @Date: 2023-05-05 20:17:30
+ * @LastEditors: hjw
+ * @LastEditTime: 2023-06-17 21:29:12
+ */
 import router from '@/router';
 var whiteList = ['/login', '/auth-redirect', '/config/control/index'] // no redirect whitelist
 router.beforeEach((to, from, next) => {
 	const hasToken = localStorage.getItem('createById')
 	if (hasToken) {
 		if (to.path === '/login') {
-			next({
-				path: '/'
-			})
+			next()
 			// NProgress.done()
 		} else {
 			const hasRoles = 'this.$store.getters.getUserDetail'

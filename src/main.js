@@ -4,7 +4,7 @@
  * @Autor: hjw
  * @Date: 2023-05-05 20:17:30
  * @LastEditors: hjw
- * @LastEditTime: 2023-06-08 22:21:36
+ * @LastEditTime: 2023-06-18 10:40:11
  */
 import { createApp } from 'vue'
 import App from './App.vue'
@@ -24,8 +24,8 @@ import axios from "axios";
 
 // main.js:注册所有图标
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
-import { menuTitles } from './utils/menuTitle';
-import { menuList } from './views/MainPage/menus';
+// import { menuTitles } from './utils/menuTitle';
+// import { menuList } from './views/MainPage/menus';
 
 
 const app = createApp(App)
@@ -33,35 +33,34 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
 	app.component(key, component)
 }
 
-router.beforeEach((to, from, next) => {
-	if(to.path == '/login') {
-		next()
-		return; 
-	}
-	const menuName = menuTitles[to.meta.title];
-	store.commit("SET_MENU_TITLE", menuName)
-	let menus = [];
-	let flag = false;
-	if (to.path != '/dashBoard') {
-		for (let i = 0; i < menuList.length; i++) {
-			if (menuList[i].children && menuList[i].children.length > 0) {
-				for (let j = 0; i < menuList[i].children.length; j++) {
-					if (menuList[i].children[j] && menuList[i].children[j].path == to.path) {
-						menus = [menuList[i].name, menuList[i].children[j].name];
-						console.log(menus, 'menus')
-						flag = true;
-						break;
-					}
-				}
-			}
-			if (flag) {
-				break;
-			}
-		}
-		store.commit("SET_BREADCRUMB", menus)
-	}
-	next()
-})
+// router.beforeEach((to, from, next) => {
+// 	if(to.path == '/login') {
+// 		next()
+// 		return; 
+// 	}
+// 	const menuName = menuTitles[to.meta.title];
+// 	store.commit("SET_MENU_TITLE", menuName)
+// 	let menus = [];
+// 	let flag = false;
+// 	if (to.path != '/dashBoard') {
+// 		for (let i = 0; i < menuList.length; i++) {
+// 			if (menuList[i].children && menuList[i].children.length > 0) {
+// 				for (let j = 0; i < menuList[i].children.length; j++) {
+// 					if (menuList[i].children[j] && menuList[i].children[j].path == to.path) {
+// 						menus = [menuList[i].name, menuList[i].children[j].name];
+// 						flag = true;
+// 						break;
+// 					}
+// 				}
+// 			}
+// 			if (flag) {
+// 				break;
+// 			}
+// 		}
+// 		store.commit("SET_BREADCRUMB", menus)
+// 	}
+// 	next()
+// })
 installIcons(app)
 app.use(store)
 // 全局挂载 axios
