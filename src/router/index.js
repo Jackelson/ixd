@@ -4,7 +4,7 @@
  * @Autor: hjw
  * @Date: 2023-05-05 20:17:30
  * @LastEditors: hjw
- * @LastEditTime: 2023-06-17 20:58:08
+ * @LastEditTime: 2023-08-01 15:32:38
  */
 import { createRouter,createWebHashHistory } from 'vue-router'
 
@@ -26,6 +26,12 @@ const routes = [
         name: 'Application',
         component: () => import('@/views/ApplicationManagement/index.vue'),
         meta:{title:"应用信息管理"}
+      },
+      {
+        path: '/approved',
+        name: 'Approved',
+        component: () => import('@/views/ApplicationManagement/index.vue'),
+        meta:{title:"应用审批"}
       },
 			{
         path: '/userManagement',
@@ -50,6 +56,12 @@ const routes = [
         name: 'RotationManagement',
         component: () => import('@/views/SystemManagement/RotationManagement.vue'),
         meta:{title:"轮播图公告管理"}
+      },
+      {
+        path: '/approved',
+        name: 'Approved',
+        component: () => import('@/views/Approved/index.vue'),
+        meta:{title:"应用待办管理"}
       },
 
     ]

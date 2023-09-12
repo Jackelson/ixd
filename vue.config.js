@@ -1,3 +1,11 @@
+/*
+ * @Description: 
+ * @Version: 2.0
+ * @Autor: hjw
+ * @Date: 2023-05-05 20:17:30
+ * @LastEditors: hjw
+ * @LastEditTime: 2023-08-11 14:02:02
+ */
 const { defineConfig } = require('@vue/cli-service')
 const path = require('path')
 function resolve(dir) {
@@ -24,9 +32,9 @@ module.exports = defineConfig({
     // port: 8080,
     proxy: {
       "/ixdpc": {
-        // target: "https://6x54604q10.zicp.fun", //反向代理地址
-        target: "http://121.36.73.70:18085", //反向代理地址
-        // target: "http://localhost:18085", //反向代理地址
+        // target: "https://6x54604q10.zicp.fun", //反向代理地址 开发
+        // target: "http://121.36.73.70:18085", //反向代理地址 外网
+        target: "http://localhost:18085", //反向代理地址  内网
         changeOrigin: true,
         pathRewrite: {
           "^/ixdpc": "",

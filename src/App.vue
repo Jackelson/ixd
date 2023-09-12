@@ -1,3 +1,11 @@
+<!--
+ * @Description: 
+ * @Version: 2.0
+ * @Autor: hjw
+ * @Date: 2023-05-05 20:17:29
+ * @LastEditors: hjw
+ * @LastEditTime: 2023-08-03 22:21:57
+-->
 <template>
   <router-view />
 </template>
@@ -30,6 +38,7 @@ export default {
       }
     }
 		onMounted(() => {
+       
     });
 
   },

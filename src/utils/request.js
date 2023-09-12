@@ -4,7 +4,7 @@
  * @Autor: hjw
  * @Date: 2023-05-05 20:17:30
  * @LastEditors: hjw
- * @LastEditTime: 2023-06-18 13:41:11
+ * @LastEditTime: 2023-08-01 15:30:41
  */
 import axios from 'axios';
 import { v4 as uuidv4 } from "uuid";
@@ -54,20 +54,21 @@ axios.interceptors.response.use(
 );
 
 export function post(url, params) {
-    let data = {};
-    if (url != '/AppCarouselChart/insert' && url != '/AppCarouselChart/update') {
-        if (params) {
-            const pwdKey = "71B3CC7F6035D9BC1E430D997C88A6BF"
-            const sm4 = require('sm-crypto').sm4
-            data = { message: sm4.encrypt(JSON.stringify(params), pwdKey, { mode: 'cbc', iv: '15D05CC8DD7045F4BF096B8661300CE1' }) }
-        }
-    } else {
-        data = params;
-    }
+    // let data = {};
+    // if (url != '/AppCarouselChart/insert' && url != '/AppCarouselChart/update') {
+    //     if (params) {
+    //         const pwdKey = "71B3CC7F6035D9BC1E430D997C88A6BF"
+    //         const sm4 = require('sm-crypto').sm4
+    //         data = { message: sm4.encrypt(JSON.stringify(params), pwdKey, { mode: 'cbc', iv: '15D05CC8DD7045F4BF096B8661300CE1' }) }
+    //     }
+    // } else {
+    //     data = params;
+    // }
     if (params) {
         return new Promise((resolve, reject) => {
             axios
-                .post(url, data)
+                // .post(url, data)
+                .post(url, params)
                 .then(response => {
                     resolve(response.data);
                 })
@@ -120,6 +121,19 @@ export function uploadFile(url, params) {
     return new Promise((resolve, reject) => {
         axios
             .post(url, param, config)
+            .then(response => {
+                resolve(response.data);
+            })
+            .catch(error => {
+                reject(error);
+            });
+    });
+}
+
+export function uploadFileHttp(url, params) {
+    return new Promise((resolve, reject) => {
+        axios
+            .post(url, params, {"responseType":'blob'})
             .then(response => {
                 resolve(response.data);
             })

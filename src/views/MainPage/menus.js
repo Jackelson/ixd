@@ -4,7 +4,7 @@
  * @Autor: hjw
  * @Date: 2023-05-06 20:32:21
  * @LastEditors: hjw
- * @LastEditTime: 2023-05-09 10:38:14
+ * @LastEditTime: 2023-08-01 14:46:03
  */
 export const menuList = [
    
@@ -19,6 +19,12 @@ export const menuList = [
                 name: '应用信息管理',
                 icon: '轮播图管理',
                 path: '/application'
+            },
+            {
+                id: '201',
+                name: '应用待办管理',
+                icon: '轮播图管理',
+                path: '/approved'
             },
         ]
     },

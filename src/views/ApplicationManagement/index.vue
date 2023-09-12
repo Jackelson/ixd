@@ -1,3 +1,11 @@
+<!--
+ * @Description: 
+ * @Version: 2.0
+ * @Autor: hjw
+ * @Date: 2023-05-08 10:25:38
+ * @LastEditors: hjw
+ * @LastEditTime: 2023-08-11 09:43:54
+-->
 <template>
   <div class="applicationStyle">
     <el-row style="width: 99%; margin-left: 0.5%; height: calc(100% - 0vh)" class="switch-search">
@@ -8,7 +16,7 @@
             <el-input v-model="filterData.appName" style="width:200px"></el-input>
             <span style="font-size: calc(100vw / 1920 * 14);margin-left: 10px;">应用状态：</span>
             <!-- <el-input v-model="filterData.appCheckStatus" style="width:200px"></el-input> -->
-            <el-select v-model="filterData.appCheckStatus"  style="width:200px" clearable>
+            <el-select v-model="filterData.appCheckStatus" style="width:200px" clearable>
               <el-option label="删除" value="-1"></el-option>
               <el-option label="未提交" value="0"></el-option>
               <el-option label="提交审批" value="1"></el-option>
@@ -21,7 +29,7 @@
               <el-option label="申请上架" value="8"></el-option>
             </el-select>
             <span style="font-size: calc(100vw / 1920 * 14);margin-left: 10px;">业务域：</span>
-            
+
             <el-select v-model="filterData.businessType" filterable clearable placeholder="--请选择--" @change="enterSelect"
               style="width:22vh;">
               <el-option v-for="(item, index) in businessTypeList" :key="index" :label="item.optionName"
@@ -30,9 +38,25 @@
             <el-button style="margin-left: 10px;" @click="searchList">查询</el-button>
           </el-col>
         </el-row>
-        <el-table :data="tableList" v-loading="tableLoading" height="calc(100% - 12vh)"
+        <div class="application-btn">
+          <el-button type="primary" @click="handleAdd">应用注册</el-button>
+          <el-button type="primary" @click="handleSubmit" :disabled="isSubmit">应用提交</el-button>
+          <el-button type="primary" @click="handleRevoke" :disabled="isRevoke">撤销</el-button>
+          <el-button type="primary" @click="handleGrounding" :disabled="isGrounding">应用上架</el-button>
+          <el-button type="primary" @click="handleOff" :disabled="isOff">应用下架</el-button>
+          <el-button type="primary" @click="handleDeleteApp" :disabled="multipleSelection.length == 0">删除应用</el-button>
+          <el-button type="primary" @click="handleUpdateSave" :disabled="isOff">上传安全测试报告</el-button>
+          <el-button type="primary" @click="handleDownSave" :disabled="isOff">下载安全测试报告</el-button>
+          <el-button type="primary" @click="handleUpdateZip" :disabled="isOff">上传压缩包</el-button>
+          <el-button type="primary" @click="handleDownZip" :disabled="isOff">下载压缩包</el-button>
+          <el-button @click="handleDeleteFile" :disabled="multipleSelection.length == 0" type="primary">删除文件</el-button>
+
+        </div>
+        <el-table :data="tableList" v-loading="tableLoading"
           :header-cell-style="{ background: '#11ac9b !important', color: '#ffffff', }" :row-class-name="tableRowClassName"
-          style="width: 100%" size="mini" ref="table" class="appTableSty">
+          style="width: 100%" size="mini" ref="table" class="appTableSty" @selection-change="handleSelectionChange"
+          @select="handlerSelect" @row-click="rowClickHandle">
+          <el-table-column type="selection" width="55" />
           <el-table-column label="序号" align="center" type="index" :index="recordFormat" width="80px" min-width="80px" />
           <el-table-column v-for="item in tableHeader" :key="item.key" :prop="item.key" :label="item.label"
             show-overflow-tooltip align="center" :min-width="item.minWidth" :width="item.width">
@@ -70,6 +94,37 @@
 
     <!--弹框部分-->
     <Configuration title="用户配置" v-model:show="dialogAdd" :temp1="temp" :menuList="menuList" :source="chooseNum" />
+
+    <el-dialog :title="title" class="aboutDialog" v-model="addDialog" width="50%" @close="addDialog = false">
+      <applicationAddDialong @handleCancel="handleCancel" @reFresh="reFresh" v-if="addDialog" />
+    </el-dialog>
+    <el-dialog title="上传安全测试报告" v-model="dialogUploadSave" width="30%">
+      <el-upload class="upload-demo" action="#" :on-preview="handlePreview" :on-change="handleAvatarSuccess"
+        :on-remove="handleRemove" :on-exceed="handleExceed" accept=".pdf" :auto-upload="false" :show-file-list="false">
+        <el-button type="primary">点击上传</el-button>
+        <template #tip>
+          <div class="el-upload__tip">
+            只能上传pdf格式
+          </div>
+        </template>
+      </el-upload>
+    </el-dialog>
+    <el-dialog title="上传zip压缩包" v-model="dialogUploadZip" width="30%">
+      <el-upload class="upload-demo" action="#" :on-preview="handlePreview" :on-change="handleAvatarSuccessZip"
+        :on-remove="handleRemove" :on-exceed="handleExceed" accept=".zip" :auto-upload="false" :show-file-list="false">
+        <el-button type="primary">点击上传</el-button>
+        <template #tip>
+          <div class="el-upload__tip">
+            只能上传zip格式
+          </div>
+        </template>
+      </el-upload>
+    </el-dialog>
+    <el-dialog title="删除文件" v-model="dialogDelete" width="30%">
+      <el-button :disabled="!multipleSelection[0].securityTestingFileId"
+        @click="handleDelete('securityTestingFileId')">删除安全测试报告</el-button>
+      <el-button :disabled="!multipleSelection[0].frontFileId" @click="handleDelete('frontFileId')">删除压缩包</el-button>
+    </el-dialog>
   </div>
 </template>
 
@@ -80,7 +135,10 @@ import * as api from "@/api/dashBoard"
 import { Share, Tools } from '@element-plus/icons-vue'
 import ApplicationDialog from "./component/applicationDialog.vue";
 import Configuration from "./component/configuration.vue";
-import {  ElMessageBox } from 'element-plus'
+import { ElMessageBox, ElMessage } from 'element-plus'
+import applicationAddDialong from "./component/applicationAddDialong.vue";
+import { startProcessInstance, updateState, revokeSubmit, uploadFile, updateApp, updateFile, downloadFile, deleteFile } from "@/api/application"
+import moment from "moment"
 export default {
   // eslint-disable-next-line vue/multi-word-component-names
   name: 'Application',
@@ -88,12 +146,16 @@ export default {
     Share,
     Tools,
     ApplicationDialog,
-    Configuration
+    Configuration,
+    applicationAddDialong
   },
   data() {
     return {
+      title: "",
       tableLoading: true,
       dialogTableVisible: false,
+      dialogUploadSave: false,
+      dialogUploadZip: false,
       tableData: {},
       tableList: [
         // { appId: '11', status: '已上架', address: '无', leader: 'user4', phone: '', operate: '测试链接 用户配置' },
@@ -130,7 +192,17 @@ export default {
       menuList: [],
       chooseNum: [],
       businessTypeList: [],
-      businessType: ''
+      businessType: '',
+      addDialog: false,
+      multipleSelection: [],
+      isSubmit: true,
+      isRevoke: true,
+      isGrounding: true,
+      isOff: true,
+      isEdit: true,
+      fileListPdf: [
+      ],
+      dialogDelete: false,
     }
   },
   watch: {
@@ -143,9 +215,462 @@ export default {
     // this.selectMenuTree()
   },
   mounted() {
-
+    // this.connectWebsocket();
   },
   methods: {
+    handleDeleteApp() {
+      console.log('mm',this.multipleSelection[0])
+      if (this.multipleSelection[0].state == '上架') {
+        return this.$message({
+          type: 'warning',
+          message: "app已上架,请先下架"
+        })
+      }
+      let list = [
+        {
+          id: this.multipleSelection[0].id,
+          state: -1,
+        },
+      ];
+      updateState(list).then((res) => {
+        if (res.code == 200) {
+          this.$message({
+            type: 'success',
+            message: "删除成功"
+          })
+          this.requestData()
+        }
+      });
+    },
+    connectWebsocket() {
+      let websocket;
+      if (typeof WebSocket === "undefined") {
+        console.log("您的浏览器不支持WebSocket");
+        return;
+      } else {
+        // let protocol = "ws";
+        let url = "";
+        // if (window.localtion.protocol == "https:") {
+        //   protocol = "wss";
+        // }
+        // `${protocol}://window.location.host/echo`;
+        url = `ws://localhost:9000/example1/ws`;
+
+        // 打开一个websocket
+        websocket = new WebSocket(url);
+        // 建立连接
+        websocket.onopen = () => {
+          // 发送数据
+          websocket.send("发送数据");
+          console.log("websocket发送数据中");
+        };
+        // 客户端接收服务端返回的数据
+        websocket.onmessage = evt => {
+          console.log("websocket返回的数据：", evt.data);
+        };
+        // 发生错误时
+        websocket.onerror = evt => {
+          console.log("websocket错误：", evt);
+        };
+        // 关闭连接
+        websocket.onclose = evt => {
+          console.log("websocket关闭：", evt);
+        };
+      }
+    },
+    handleDelete(type) {
+      const params = [
+        this.multipleSelection[0][type]
+      ]
+      deleteFile(params).then((res) => {
+        if (res.code == 200) {
+
+          let params = {
+            id: this.multipleSelection[0].id
+          }
+          params[type] = ''
+          updateApp(params).then((res) => {
+            if (res.code == 200) {
+              this.$message({
+                type: "success",
+                message: '删除成功'
+              })
+            }
+          })
+          this.multipleSelection[0][type] = ''
+        }
+      })
+    },
+    handleDeleteFile() {
+      if (this.multipleSelection.length == 0) {
+        return this.$message({
+          type: 'warning',
+          message: "请选择app"
+        })
+      }
+      this.dialogDelete = true;
+    },
+    handleDownSave() {
+      if (!this.multipleSelection[0].securityTestingFileId || this.multipleSelection[0].securityTestingFileId == '') {
+        this.$message({
+          type: 'warning',
+          message: '当前app没有上传安全测试报告'
+        })
+        return
+      }
+      const params = {
+        fileId: this.multipleSelection[0].securityTestingFileId
+      }
+      downloadFile(params).then((res) => {
+        const fileName = "安全测试报告. pdf";
+        const blob = new Blob([res]);
+        let dom = document.createElement("a");
+        let url = window.URL.createObjectURL(blob);
+        dom.href = url;
+        dom.download = decodeURI(fileName);
+        dom.style.display = "none";
+        document.body.appendChild(dom);
+        dom.click();
+        dom.parentNode.removeChild(dom);
+        window.URL.revokeObjectURL(url);
+      })
+    },
+    handleDownZip() {
+      if (!this.multipleSelection[0].frontFileId || this.multipleSelection[0].frontFileId == '') {
+        this.$message({
+          type: 'warning',
+          message: '当前app没有上传压缩包'
+        })
+        return
+      }
+      const params = {
+        fileId: this.multipleSelection[0].frontFileId
+      }
+      downloadFile(params).then((res) => {
+        const fileName = this.multipleSelection[0].appIndexUrl.substring(0, this.multipleSelection[0].appIndexUrl.indexOf('/')) + ".zip";
+        console.log(this.multipleSelection[0].appIndexUrl.substring(0, this.multipleSelection[0].appIndexUrl.indexOf('/')), '123123')
+        const blob = new Blob([res]);
+        let dom = document.createElement("a");
+        let url = window.URL.createObjectURL(blob);
+        dom.href = url;
+        dom.download = decodeURI(fileName);
+        dom.style.display = "none";
+        document.body.appendChild(dom);
+        dom.click();
+        dom.parentNode.removeChild(dom);
+        window.URL.revokeObjectURL(url);
+      })
+    },
+    handleAvatarSuccessZip(file) {
+      console.log('file', file)
+      let fileType = file.name.substring(file.name.indexOf('.') + 1)
+      let fileName = file.name.substring(0, file.name.indexOf('.'))
+      let appUrl = this.multipleSelection[0].appIndexUrl.substring(0, this.multipleSelection[0].appIndexUrl.indexOf('/'))
+      console.log(appUrl, 'appurl')
+      if (fileType != 'zip') {
+        return this.$message.warning('请上传zip文件')
+      }
+      if (appUrl != fileName) {
+        return this.$message.warning('请根据首页地址更改压缩包名称')
+      }
+      let formData = new FormData()
+      formData.set('userId', localStorage.getItem('createById'))
+      formData.set('appId', this.multipleSelection[0].id)
+      formData.set('uploadFile', file.raw)
+      if (this.multipleSelection[0].frontFileId && this.multipleSelection[0].frontFileId != '') {
+        formData.set("id", this.multipleSelection[0].id)
+        updateFile(formData).then((res) => {
+          if (res.code == 200) {
+            const params = {
+              frontFileId: this.multipleSelection[0].frontFileId,
+              id: this.multipleSelection[0].id
+            }
+            updateApp(params).then((res) => {
+              if (res.code == 200) {
+                this.$message({
+                  type: 'success',
+                  message: "上传成功"
+                })
+                this.dialogUploadZip = false
+              }
+            })
+          }
+        })
+        return
+      }
+      uploadFile(formData).then((res) => {
+        if (res.code == 200) {
+          // this.fileId = res.data
+          const params = {
+            frontFileId: res.data,
+            id: this.multipleSelection[0].id
+          }
+          updateApp(params).then((res) => {
+            console.log(res, 'rs')
+            this.$message({
+              type: 'success',
+              message: "上传成功"
+            })
+            this.dialogUploadZip = false
+            this.requestData()
+          })
+        }
+      })
+    },
+    handleAvatarSuccess(file) {
+      console.log('file', file)
+      let fileType = file.name.substring(file.name.indexOf('.') + 1)
+      if (fileType != 'pdf') {
+        return this.$message.warning('请上传pdf格式文件')
+      }
+      let formData = new FormData()
+      formData.set('userId', localStorage.getItem('createById'))
+      formData.set('appId', this.multipleSelection[0].id)
+      formData.set('uploadFile', file.raw)
+      if (this.multipleSelection[0].securityTestingFileId && this.multipleSelection[0].securityTestingFileId != '') {
+        formData.set("id", this.multipleSelection[0].id)
+        updateFile(formData).then((res) => {
+          if (res.code == 200) {
+            const params = {
+              securityTestingFileId: this.multipleSelection[0].securityTestingFileId,
+              id: this.multipleSelection[0].id
+            }
+            updateApp(params).then((res) => {
+              if (res.code == 200) {
+                this.$message({
+                  type: 'success',
+                  message: "上传成功"
+                })
+                this.dialogUploadSave = false
+              }
+            })
+          }
+        })
+        return
+      }
+      uploadFile(formData).then((res) => {
+        if (res.code == 200) {
+          // this.fileId = res.data
+          const params = {
+            securityTestingFileId: res.data,
+            id: this.multipleSelection[0].id
+          }
+          updateApp(params).then((res) => {
+            console.log(res, 'rs')
+            this.$message({
+              type: 'success',
+              message: "上传成功"
+            })
+            this.dialogUploadSave = false
+            this.requestData()
+          })
+        }
+      })
+    },
+    handleRemove(file, uploadFiles) {
+      console.log(file, uploadFiles)
+    },
+
+    handlePreview(uploadFile) {
+      console.log(uploadFile)
+    },
+
+    handleExceed(files, uploadFiles) {
+      ElMessage.warning(
+        `The limit is 3, you selected ${files.length} files this time, add up to ${files.length + uploadFiles.length
+        } totally`
+      )
+    },
+
+    beforeRemove(uploadFile, uploadFiles) {
+      return ElMessageBox.confirm(
+        `Cancel the transfer of ${uploadFile.name, uploadFiles} ?`
+      ).then(
+        () => true,
+        () => false
+      )
+    },
+    handleUpdateSave() {
+      this.dialogUploadSave = true;
+    },
+    handleUpdateZip() {
+      this.dialogUploadZip = true;
+    },
+    checkBtn() {
+      this.isSubmit = this.multipleSelection.filter(item => {
+        return item.state == '未提交'
+      }).length > 0 ? false : true;
+      this.isRevoke = this.multipleSelection.filter(item => {
+        return item.state == '提交审批' || item.state == '申请下架'
+      }).length > 0 ? false : true;
+      this.isGrounding = this.multipleSelection.filter(item => {
+        return item.state == '下架'
+      }).length > 0 ? false : true;
+      this.isOff = this.multipleSelection.filter(item => {
+        return item.state == '上架'
+      }).length > 0 ? false : true;
+      this.isEdit = this.multipleSelection.filter(item => {
+        return item.state == '审批驳回'
+      }).length > 0 ? false : true;
+    },
+    handleRevoke() {
+      let params = {
+        businessId: this.multipleSelection[0].id,
+      };
+      let list = [
+        {
+          id: this.multipleSelection[0].id,
+          state: 6,
+        },
+      ];
+      revokeSubmit(params).then((res) => {
+        if (res.code == 200) {
+          updateState(list).then((res) => {
+            if (res.code == 200) {
+              this.$message({
+                type: 'success',
+                message: "撤销成功"
+              })
+              this.requestData()
+            }
+          });
+        }
+      });
+    },
+    handleGrounding() {
+      let data = {
+        processName: "App_Registration_approval",
+        createTime: moment(new Date()).format("YYYY-MM-DD HH:mm:ss"),
+        senderId: localStorage.getItem("createById"),
+        senderName: localStorage.getItem("userName"),
+        map: {
+          id: this.multipleSelection[0].id,
+        },
+      };
+      startProcessInstance(data).then((res) => {
+        if (res.code == 200) {
+          this.$message({
+            type: 'success',
+            message: "正在上架中..."
+          })
+          let params = this.multipleSelection.map((item) => {
+            let obj = {
+              id: item.id,
+              state: 1,
+            };
+            return obj;
+          });
+          updateState(params).then((res) => {
+            if (res.code == 200) {
+              this.requestData()
+            }
+          });
+        }
+      });
+    },
+    handleOff() {
+      let data = {
+        processName: "Off_Shelf_approval",
+        createTime: moment(new Date()).format("YYYY-MM-DD HH:mm:ss"),
+        senderId: localStorage.getItem("createById"),
+        senderName: localStorage.getItem("userName"),
+        map: {
+          id: this.multipleSelection[0].id,
+        },
+      };
+      startProcessInstance(data).then((res) => {
+        if (res.code == 200) {
+          this.$message({
+            type: 'success',
+            message: "正在下架中..."
+          })
+          let params = this.multipleSelection.map((item) => {
+            let obj = {
+              id: item.id,
+              state: 7,
+            };
+            return obj;
+          });
+          updateState(params).then((res) => {
+            if (res.code == 200) {
+              this.requestData();
+            }
+          });
+        }
+      });
+    },
+    handleEdit() {
+      this.title = '应用修改'
+      this.addDialog = true;
+    },
+    // 当用户手动勾选数据行的 Checkbox 时触发的事件
+    handlerSelect(selection, row) {
+
+      // 清除 所有勾选项
+      this.$refs.table.clearSelection()
+      if (selection.length == 0) return
+      this.$refs.table.toggleRowSelection(row, true)
+    },
+    // 当选择项发生变化时会触发该事件
+    handleSelectionChange(val) {
+      this.multipleSelection = val
+      this.multipleSelection = this.multipleSelection.length > 1 ? [this.multipleSelection[1]] : this.multipleSelection
+
+      this.checkBtn()
+    },
+    rowClickHandle(row) {
+      const selectData = this.multipleSelection;
+      this.$refs.table.clearSelection();
+      if (selectData.length == 1) {
+        const [item] = selectData;
+        const shouldSelect = item !== row;
+        this.$refs.table.toggleRowSelection(row, shouldSelect);
+      } else {
+        this.$refs.table.toggleRowSelection(row, true);
+      }
+    },
+    handleSubmit() {
+      if (this.multipleSelection.length > 1) {
+        return this.$message({
+          type: 'warning',
+          message: "只能选择一个app"
+        })
+      }
+      let proceData = {
+        processName: "App_Registration_approval",
+        createTime: moment(new Date()).format("YYYY-MM-DD HH:mm:ss"),
+        senderId: localStorage.getItem("createById"),
+        senderName: localStorage.getItem("userName"),
+        map: {
+          id: this.multipleSelection[0].id,
+        },
+      };
+      let list = [
+        {
+          id: this.multipleSelection[0].id,
+          state: 1,
+        },
+      ];
+      updateState(list).then(res => {
+        if (res.code == 200) {
+          startProcessInstance(proceData).then((res) => {
+            if (res.code == 200) {
+              this.$message({
+                type: 'success',
+                message: "提交成功"
+              })
+              this.requestData()
+            }
+          })
+        }
+      })
+
+
+
+    },
+    reFresh() {
+      this.requestData()
+    },
     SysSelectDictionary() {
       let param = {
         selectFlag: "business_type"
@@ -254,8 +779,8 @@ export default {
       }
       !this.filterData.appName ? null : param.appName = this.filterData.appName
       // !this.filterData.appCheckStatus ? null : param.state = this.getState2(this.filterData.appCheckStatus)
-      console.log(this.filterData,'filterData')
-      param.state= this.filterData.appCheckStatus
+      console.log(this.filterData, 'filterData')
+      param.state = this.filterData.appCheckStatus
       !this.filterData.businessType ? null : param.businessType = this.filterData.businessType
 
       this.tableLoading = true
@@ -317,7 +842,7 @@ export default {
         // autofocus: false,
         confirmButtonText: 'OK',
         callback: () => {
-          
+
         },
       })
     },
@@ -325,6 +850,13 @@ export default {
       // this.$refs.hostDetailPage.reloadDate()
       this.dialogTableVisible = false
     },
+    handleAdd() {
+      this.addDialog = true
+      this.title = '应用注册'
+    },
+    handleCancel() {
+      this.addDialog = false;
+    }
   }
 }
 </script>
@@ -471,5 +1003,9 @@ export default {
       }
     }
   }
+}
+
+.application-btn {
+  margin: 20px;
 }
 </style>

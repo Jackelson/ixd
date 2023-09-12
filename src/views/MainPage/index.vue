@@ -14,6 +14,13 @@
             <div>
               <svg-icon icon="江苏电力公司" class="user-logo"></svg-icon>专责人员
             </div>
+            <div style="padding-top:7px;cursor: pointer;" @click="handleClick">
+              <el-badge :value="taskNumber">
+                <el-icon>
+                  <Bell />
+                </el-icon>
+              </el-badge>
+            </div>
             <div @click="loginOut" style="cursor: pointer;">
               <svg-icon icon="退出" class="user-logo"></svg-icon>
             </div>
@@ -71,6 +78,7 @@
 import { defineComponent, ref, onMounted, reactive } from 'vue';
 import { useRouter } from "vue-router";
 import { menuList } from "./menus"
+import { approvedList } from "@/api/application"
 export default defineComponent({
   name: 'MainPage',
   setup() {
@@ -78,6 +86,7 @@ export default defineComponent({
     const handleMenu = () => {
       isCollapse.value = !isCollapse.value
     }
+    const taskNumber = ref(0)
     const router = useRouter()
     function loginOut() {
       localStorage.clear('createById')
@@ -111,7 +120,7 @@ export default defineComponent({
           }
           menus.push(obj)
         })
-        console.log('menus',menus)
+        console.log('menus', menus)
         return
       }
       me.forEach((item) => {
@@ -136,17 +145,37 @@ export default defineComponent({
           menus.push(obj)
         }
       })
-      console.log('menus',menus)
+      console.log('menus', menus)
+    }
+    const handleClick = ()=>{
+      router.push({ path: '/approved' })
+    }
+    const getTask = () => {
+      let params = {
+        processInstanceId: "",
+        businessKey: "",
+        assignee: localStorage.getItem('userName'),
+        pageNum: 1,
+        pageSize: 10,
+      }
+      approvedList(params).then((res) => {
+        taskNumber.value = res.data.totalNum
+        console.log('taskNumber',taskNumber.value)
+      })
     }
     onMounted(() => {
       getUserMenus();
+      getTask();
     })
     return {
       isCollapse,
       menus,
       loginOut,
       handleMenu,
-      getUserMenus
+      getUserMenus,
+      getTask,
+      taskNumber,
+      handleClick
     }
   }
 })
@@ -273,7 +302,7 @@ export default defineComponent({
           color: rgba(51, 51, 51, 1);
           font-size: 26px;
           font-weight: 600;
-          margin:20px 0;
+          margin: 20px 0;
         }
       }
 
