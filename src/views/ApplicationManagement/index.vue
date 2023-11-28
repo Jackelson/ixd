@@ -74,6 +74,7 @@
             v-for="n in buttonList"
             :key="n.name"
             :type="n.type"
+            :disabled="n.disabled"
             @click="n.event"
             style="margin-left: 10px; margin-top: 15px"
             >{{ n.name }}</el-button
@@ -320,6 +321,7 @@ export default {
       isGrounding: true,
       isOff: true,
       isEdit: true,
+      isDeleteApp: true,
       fileListPdf: [],
       dialogDelete: false,
     };
@@ -361,7 +363,7 @@ export default {
           type: "primary",
           name: "删除应用",
           event: this.handleDeleteApp,
-          disabled: this.multipleSelection.length == 0,
+          disabled: this.multipleSelection.length <= 0 || this.isDeleteApp,
         },
         {
           type: "primary",
@@ -413,6 +415,18 @@ export default {
         return this.$message({
           type: "warning",
           message: "app已上架,请先下架",
+        });
+      }
+      if (this.multipleSelection[0].state == "申请下架") {
+        return this.$message({
+          type: "warning",
+          message: "申请下架状态不能删除",
+        });
+      }
+      if (this.multipleSelection[0].state == "审批驳回") {
+        return this.$message({
+          type: "warning",
+          message: "驳回状态不能删除",
         });
       }
       let list = [
@@ -742,6 +756,16 @@ export default {
         }).length > 0
           ? false
           : true;
+      this.isDeleteApp =
+        this.multipleSelection.filter((item) => {
+          return (
+            item.state == "上架" ||
+            item.state == "申请下架" ||
+            item.state == "审批驳回"
+          );
+        }).length > 0
+          ? true
+          : false;
     },
     handleRevoke() {
       let params = {
@@ -1007,7 +1031,9 @@ export default {
         : (param.appName = this.filterData.appName);
       // !this.filterData.appCheckStatus ? null : param.state = this.getState2(this.filterData.appCheckStatus)
       console.log(this.filterData, "filterData");
-      param.state = this.filterData.appCheckStatus;
+      this.filterData.appCheckStatus == ""
+        ? ""
+        : (param.state = this.filterData.appCheckStatus);
       !this.filterData.businessType
         ? null
         : (param.businessType = this.filterData.businessType);
