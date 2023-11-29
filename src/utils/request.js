@@ -17,7 +17,8 @@ axios.defaults.headers.post["Content-Type"] =
 axios.defaults.baseURL = "ixdpc";
 axios.defaults.withCredentials = true;
 axios.defaults.headers = { "X-Requested-With": "XMLHttpRequest" }; //请求头
-// POST传参序列化
+axios.defaults.maxRedirects = 0;
+
 axios.interceptors.request.use(
   (config) => {
     if (config.url != "/SysUser/login") {
@@ -29,15 +30,17 @@ axios.interceptors.request.use(
     return config;
   },
   (error) => {
-    console.log(error, "error");
-    return Promise.reject();
+    return Promise.reject(error);
   }
 );
 
 // 返回状态判断
 axios.interceptors.response.use(
   (response) => {
-    console.log(response);
+    console.log(response, "请求成功");
+    if (response.response.status == 302) {
+      window.location.href = response.response.headers.location;
+    }
     if (response.status === 200) {
       return response;
     } else {
@@ -45,9 +48,19 @@ axios.interceptors.response.use(
     }
   },
   (error) => {
-    console.log(error);
-    if (error.response.status == 302) {
-      window.location.href(error.response.headers.Location);
+    if (error.response.status == 401) {
+      try {
+        console.log(error.response.headers, "响应头");
+        const redirecturl =
+          JSON.parse(error.response.data || "").redirectUrl || "";
+        if (redirecturl == "") {
+          return;
+        }
+        window.location.href = redirecturl;
+      } catch (error) {
+        window.location.href =
+          "http://userauth.js,sgcc.Com.cn/UALogin/login?APPID-130000061133388TRAGEURL=http://28.78.81.28:18091";
+      }
     }
     if (error.response.status == 401) {
       ElMessage.warning("登录过期，请重新登录");
