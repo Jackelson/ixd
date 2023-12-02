@@ -20,6 +20,23 @@
               v-model="filterData.appName"
               style="width: 200px"
             ></el-input>
+            <el-select
+              v-model="value"
+              multiple
+              filterable
+              remote
+              reserve-keyword
+              placeholder="请输入"
+              :remote-method="remoteMethod"
+              :loading="searchLoading"
+            >
+              <el-option
+                v-for="item in searchRecords"
+                :key="item"
+                :label="item.label"
+                :value="item.value"
+              />
+            </el-select>
             <span style="font-size: calc(100vw / 1920 * 14); margin-left: 10px"
               >应用状态：</span
             >
@@ -257,6 +274,7 @@ import {
   updateFile,
   downloadFile,
   deleteFile,
+  getSeachRecord,
 } from "@/api/application";
 import moment from "moment";
 export default {
@@ -324,6 +342,8 @@ export default {
       isDeleteApp: true,
       fileListPdf: [],
       dialogDelete: false,
+      searchRecords: [],
+      searchLoading: false,
     };
   },
   computed: {
@@ -397,6 +417,11 @@ export default {
         },
       ];
     },
+    searchData: function () {
+      return {
+        // userId
+      };
+    },
   },
   watch: {},
   created() {
@@ -409,6 +434,24 @@ export default {
     // this.connectWebsocket();
   },
   methods: {
+    // 搜索历史记录
+    async remoteMethod() {
+      this.searchLoading = true;
+      const res = await getSeachRecord();
+      if (res.code == 200) {
+        this.searchRecords = res.data;
+      }
+      // const res =
+    },
+    // 增加历史记录
+    async addRecord() {
+      this.searchLoading = true;
+      const res = await getSeachRecord();
+      if (res.code == 200) {
+        this.searchRecords = res.data;
+      }
+      // const res =
+    },
     handleDeleteApp() {
       console.log("mm", this.multipleSelection[0]);
       if (this.multipleSelection[0].state == "上架") {
