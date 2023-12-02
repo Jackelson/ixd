@@ -14,39 +14,49 @@ function getUrlParams(url) {
   let urlStr = url.split("?")[1];
   // 创建空对象存储参数
   let obj = {};
-  // 再通过 & 将每一个参数单独分割出来
-  let paramsArr = urlStr.split("&");
-  for (let i = 0, len = paramsArr.length; i < len; i++) {
-    // 再通过 = 将每一个参数分割为 key:value 的形式
-    let arr = paramsArr[i].split("=");
-    obj[arr[0]] = arr[1];
+  if (urlStr) {
+    // 再通过 & 将每一个参数单独分割出来
+    let paramsArr = urlStr.split("&");
+    for (let i = 0, len = paramsArr.length; i < len; i++) {
+      // 再通过 = 将每一个参数分割为 key:value 的形式
+      let arr = paramsArr[i].split("=");
+      obj[arr[0]] = arr[1];
+    }
+    return obj;
+  } else {
+    return {
+      token: null,
+    };
   }
-  return obj;
 }
 
-router.beforeEach(async (to, from, next) => {
+router.beforeEach((to, from, next) => {
   console.log(to, "路由跳转前的参数");
-  const hasToken = localStorage.getItem("createById");
-  console.log(hasToken, "token");
-  if (hasToken) {
-    next();
-  } else {
-    console.log(to, "没有token的路由参数");
-    if (to.path === "/dashBoard") {
-      const currentUrl = window.location.href;
-      const params = getUrlParams(currentUrl);
-      console.log(params, "路由参数");
-      if (params?.token) {
-        localStorage.setItem("createById", params.token);
-        next();
+  try {
+    const hasToken = localStorage.getItem("createById");
+    console.log(hasToken, "token");
+    if (hasToken) {
+      next();
+    } else {
+      console.log(to, "没有token的路由参数");
+      if (to.path == "/dashBoard") {
+        const currentUrl = window.location.href;
+        const params = getUrlParams(currentUrl);
+        console.log(params, "路由参数");
+        if (params.token) {
+          localStorage.setItem("createById", params.token);
+          next();
+        } else {
+          window.location.href =
+            "http://userauth.js.sgcc.com.cn:80/UALogin/login?APPID=13000006113330&TRAGEURL=http://20.47.91.28:18091/ixdpc/isc/login";
+        }
       } else {
         window.location.href =
           "http://userauth.js.sgcc.com.cn:80/UALogin/login?APPID=13000006113330&TRAGEURL=http://20.47.91.28:18091/ixdpc/isc/login";
       }
-    } else {
-      window.location.href =
-        "http://userauth.js.sgcc.com.cn:80/UALogin/login?APPID=13000006113330&TRAGEURL=http://20.47.91.28:18091/ixdpc/isc/login";
     }
+  } catch (error) {
+    console.log(error);
   }
 
   // if (hasToken) {
