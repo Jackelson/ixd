@@ -67,7 +67,6 @@
             font-size: 18px;
             font-weight: 500;
           "
-          round
           @click.prevent="handleLogin"
           >登&emsp;&emsp;录</el-button
         >
@@ -85,16 +84,16 @@ export default {
       if (!value) {
         callback(new Error("用户名不能为空"));
       } else {
-        callback();;
+        callback();
       }
-    };;
+    };
     const validatePassword = (rule, value, callback) => {
       if (value.length < 6) {
         callback(new Error("密码不能小于6位"));
       } else {
-        callback();;
+        callback();
       }
-    };;
+    };
     return {
       loginForm: {
         userName: "",
@@ -116,8 +115,8 @@ export default {
       otherQuery: {},
       // userImg: require('../../assets/2107_images/navbar_images/人物-人.png'),
       // lockImg: require('../../assets/2107_images/login_lock.png'),
-      checked: false,, // 是否记住密码
-    };;
+      checked: false, // 是否记住密码
+    };
   },
   watch: {
     // $route: {
@@ -151,13 +150,13 @@ export default {
         this.passwordType = "password";
       }
       this.$nextTick(() => {
-        this.$refs.password.focus();;
-      });;
+        this.$refs.password.focus();
+      });
     },
     handleLogin() {
-      this.$refs.loginForm.validate(((valid)) => {
+      this.$refs.loginForm.validate((valid) => {
         if (valid) {
-          this.loading = true;;
+          this.loading = true;
 
           api
             .login({
@@ -187,15 +186,15 @@ export default {
               // setPage(1)
               // resolve()
             })
-            .catch(((error)) => {
+            .catch((error) => {
               console.error(error);
-              this.loading = false;;
-            });;
+              this.loading = false;
+            });
         } else {
           console.log("error submit!!");
           return false;
         }
-      });;
+      });
     },
     getOtherQuery(query) {
       return Object.keys(query).reduce((acc, cur) => {
