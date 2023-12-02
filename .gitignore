@@ -1,7 +1,7 @@
 .DS_Store
 node_modules
 /dist
-
+/ixd_pc
 
 # local env files
 .env.local
