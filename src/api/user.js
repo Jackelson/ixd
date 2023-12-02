@@ -44,3 +44,7 @@ export function selectUserByDeptId(params) {
 export function selectAppUsers(params) {
   return post("/SysUser/selectAppUsers", params);
 }
+
+export function getUserInfoData() {
+  return get("/isc/getUserInfoByToken");
+}

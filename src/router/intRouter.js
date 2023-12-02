@@ -8,7 +8,8 @@
  */
 import router from "@/router";
 // var whiteList = ["/login", "/auth-redirect", "/config/control/index"]; // no redirect whitelist
-// import { upLine } from "@/api/user";
+import { getUserInfoData } from "@/api/user";
+// import store from "@/store/index";
 function getUrlParams(url) {
   // 通过 ? 分割获取后面的参数字符串
   let urlStr = url.split("?")[1];
@@ -33,7 +34,7 @@ function getUrlParams(url) {
 router.beforeEach((to, from, next) => {
   console.log(to, "路由跳转前的参数");
   try {
-    const hasToken = localStorage.getItem("createById");
+    const hasToken = localStorage.getItem("token");
     console.log(hasToken, "token");
     if (hasToken) {
       next();
@@ -44,8 +45,21 @@ router.beforeEach((to, from, next) => {
         const params = getUrlParams(currentUrl);
         console.log(params, "路由参数");
         if (params.token) {
-          localStorage.setItem("createById", params.token);
-          next();
+          localStorage.setItem("token", params.token);
+          getUserInfoData().then((res) => {
+            console.log(res);
+            localStorage.setItem("createById", res.data.sysUser.userId);
+            localStorage.setItem(
+              "createByRole",
+              res.data.sysUser.roles[0].roleId
+            );
+            localStorage.setItem("updateBy", res.data.sysUser.dept.updateBy);
+            localStorage.setItem("remark", res.data.sysUser.dept.remark);
+            localStorage.setItem("menus", res.data.permissions);
+            localStorage.setItem("userName", res.data.sysUser.userName);
+            // store.commit("setUserDetail", res.data);
+            window.location.reload();
+          });
         } else {
           window.location.href =
             "http://userauth.js.sgcc.com.cn:80/UALogin/login?APPID=13000006113330&TRAGEURL=http://20.47.91.28:18091/ixdpc/isc/login";
