@@ -6,10 +6,7 @@
  * @LastEditors: hjw
  * @LastEditTime: 2023-06-15 21:56:25
  */
-import {
-  // get,
-  post,
-} from "../utils/request";
+import { get, post } from "../utils/request";
 
 export function insertUserData(params) {
   return post("/SysUser/insert", params);
@@ -37,7 +34,7 @@ export function login(params) {
 }
 
 export function upLine(params) {
-  return post("/isc/login", params);
+  return get("/isc/login", params);
 }
 
 export function selectUserByDeptId(params) {

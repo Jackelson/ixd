@@ -8,7 +8,7 @@
  */
 import router from "@/router";
 // var whiteList = ["/login", "/auth-redirect", "/config/control/index"]; // no redirect whitelist
-import { upLine } from "@/api/user";
+// import { upLine } from "@/api/user";
 function getUrlParams(url) {
   // 通过 ? 分割获取后面的参数字符串
   let urlStr = url.split("?")[1];
@@ -25,37 +25,59 @@ function getUrlParams(url) {
 }
 
 router.beforeEach(async (to, from, next) => {
-  if (to.path === "/") {
-    const hasToken = localStorage.getItem("createById");
-    if (hasToken) {
-      next();
-    } else {
-      const currentUrl = window.location.href;
-      console.log(currentUrl);
-      const params = getUrlParams(currentUrl);
-      const res = await upLine(params);
-      if (res.code == 200) {
-        localStorage.setItem("createById", res.data.sysUser.userId);
-        localStorage.setItem("createByRole", res.data.sysUser.roles[0].roleId);
-        localStorage.setItem("updateBy", res.data.sysUser.dept.updateBy);
-        localStorage.setItem("remark", res.data.sysUser.dept.remark);
-        localStorage.setItem("remark", res.data.sysUser.dept.remark);
-        localStorage.setItem("menus", res.data.permissions);
-        localStorage.setItem("userName", res.data.sysUser.userName);
-        localStorage.setItem("token", res.data.toekn);
-        this.$store.commit("setUserDetail", res.data);
-      }
-    }
-  } else {
+  const hasToken = localStorage.getItem("createById");
+  if (hasToken) {
     next();
+  } else {
+    if (to.path === "/dashBoard") {
+      const currentUrl = window.location.href;
+      const params = getUrlParams(currentUrl);
+      if (params?.token) {
+        localStorage.setItem("createById", params.token);
+        next();
+      } else {
+        window.location.href =
+          "http://userauth.js.sgcc.com.cn:80/UALogin/login?APPID=13000006113330&TRAGEURL=http://20.47.91.28:18091/ixdpc/isc/login";
+      }
+    } else {
+      window.location.href =
+        "http://userauth.js.sgcc.com.cn:80/UALogin/login?APPID=13000006113330&TRAGEURL=http://20.47.91.28:18091/ixdpc/isc/login";
+    }
   }
-  //   const hasToken = localStorage.getItem("createById");
-  //   if (hasToken) {
-  //     const hasRoles = "this.$store.getters.getUserDetail";
-  //     if (hasRoles) {
-  //       next();
-  //     }
+
+  // if (hasToken) {
+  //   const hasRoles = "this.$store.getters.getUserDetail";
+  //   if (hasRoles) {
+  //     next();
   //   }
+  // }
+  // if (to.path === "/dashBoard") {
+  //   next();
+  //   if (hasToken) return;
+  //   const currentUrl = window.location.href;
+  //   const params = getUrlParams(currentUrl);
+  //   const r = window.confirm(currentUrl);
+  //   if (!r) return;
+  //   const res = await upLine(params);
+  //   if (res.code == 200) {
+  //     const d = window.confirm(res);
+  //     if (!d) return;
+  //     localStorage.setItem("createById", res.data.sysUser.userId);
+  //     localStorage.setItem("createByRole", res.data.sysUser.roles[0].roleId);
+  //     localStorage.setItem("updateBy", res.data.sysUser.dept.updateBy);
+  //     localStorage.setItem("remark", res.data.sysUser.dept.remark);
+  //     localStorage.setItem("remark", res.data.sysUser.dept.remark);
+  //     localStorage.setItem("menus", res.data.permissions);
+  //     localStorage.setItem("userName", res.data.sysUser.userName);
+  //     localStorage.setItem("token", res.data.toekn);
+  //     this.$store.commit("setUserDetail", res.data);
+  //     window.reload();
+  //   }
+  // } else if (hasToken) {
+  //   next();
+  // } else {
+  //   next("/dashBoard");
+  // }
 });
 
 // router.beforeEach((to, from, next) => {

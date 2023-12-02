@@ -37,10 +37,6 @@ axios.interceptors.request.use(
 // 返回状态判断
 axios.interceptors.response.use(
   (response) => {
-    console.log(response, "请求成功");
-    if (response.response.status == 302) {
-      window.location.href = response.response.headers.location;
-    }
     if (response.status === 200) {
       return response;
     } else {
@@ -51,15 +47,16 @@ axios.interceptors.response.use(
     if (error.response.status == 401) {
       try {
         console.log(error.response.headers, "响应头");
-        const redirecturl =
-          JSON.parse(error.response.data || "").redirectUrl || "";
+        console.log(error.response.data);
+        const redirecturl = error.response.data.redirectUrl || "";
         if (redirecturl == "") {
           return;
         }
         window.location.href = redirecturl;
       } catch (error) {
-        window.location.href =
-          "http://userauth.js,sgcc.Com.cn/UALogin/login?APPID-130000061133388TRAGEURL=http://28.78.81.28:18091";
+        console.log(error);
+        // window.location.href =
+        //   "http://userauth.js,sgcc.Com.cn/UALogin/login?APPID-130000061133388TRAGEURL=http://28.78.81.28:18091";
       }
     }
     if (error.response.status == 401) {
@@ -109,18 +106,23 @@ export function post(url, params) {
   }
 }
 
-export function get(url, params) {
-  const pwdKey = "71B3CC7F6035D9BC1E430D997C88A6BF";
-  const sm4 = require("sm-crypto").sm4;
-  let data = {
-    message: sm4.encrypt(JSON.stringify(params), pwdKey, {
-      mode: "cbc",
-      iv: "15D05CC8DD7045F4BF096B8661300CE1",
-    }),
-  };
+export function get(url, data) {
+  let params = {};
+  if (url != "/isc/login") {
+    const pwdKey = "71B3CC7F6035D9BC1E430D997C88A6BF";
+    const sm4 = require("sm-crypto").sm4;
+    data = {
+      message: sm4.encrypt(JSON.stringify(params), pwdKey, {
+        mode: "cbc",
+        iv: "15D05CC8DD7045F4BF096B8661300CE1",
+      }),
+    };
+  } else {
+    params = data;
+  }
   return new Promise((resolve, reject) => {
     axios
-      .get(url, { data })
+      .get(url, { params })
       .then((response) => {
         resolve(response.data);
       })
