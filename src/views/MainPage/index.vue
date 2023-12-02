@@ -105,8 +105,9 @@ export default defineComponent({
     const taskNumber = ref(0);
     const router = useRouter();
     function loginOut() {
-      localStorage.clear("createById");
-      router.push({ path: "/login" });
+      window.localStorage.clear();
+      window.location.reload();
+      // router.push({ path: "/login" });
     }
     let menus = reactive([
       {
