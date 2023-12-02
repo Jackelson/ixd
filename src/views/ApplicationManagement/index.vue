@@ -15,69 +15,80 @@
       <el-card class="app-card">
         <el-row class="formRow">
           <el-col :span="24" class="formSty">
-            <span>应用名称：</span>
-            <el-input
-              v-model="filterData.appName"
-              style="width: 200px"
-            ></el-input>
-            <el-select
-              v-model="value"
-              multiple
-              filterable
-              remote
-              reserve-keyword
-              placeholder="请输入"
-              :remote-method="remoteMethod"
-              :loading="searchLoading"
-            >
-              <el-option
-                v-for="item in searchRecords"
-                :key="item"
-                :label="item.label"
-                :value="item.value"
-              />
-            </el-select>
-            <span style="font-size: calc(100vw / 1920 * 14); margin-left: 10px"
-              >应用状态：</span
-            >
-            <!-- <el-input v-model="filterData.appCheckStatus" style="width:200px"></el-input> -->
-            <el-select
-              v-model="filterData.appCheckStatus"
-              style="width: 200px"
-              clearable
-            >
-              <el-option label="删除" value="-1"></el-option>
-              <el-option label="未提交" value="0"></el-option>
-              <el-option label="提交审批" value="1"></el-option>
-              <el-option label="上架" value="2"></el-option>
-              <el-option label="审批驳回" value="3"></el-option>
-              <el-option label="流程删除" value="4"></el-option>
-              <el-option label="下架" value="5"></el-option>
-              <el-option label="已撤销" value="6"></el-option>
-              <el-option label="申请下架" value="7"></el-option>
-              <el-option label="申请上架" value="8"></el-option>
-            </el-select>
-            <span style="font-size: calc(100vw / 1920 * 14); margin-left: 10px"
-              >业务域：</span
-            >
-
-            <el-select
-              v-model="filterData.businessType"
-              filterable
-              clearable
-              placeholder="--请选择--"
-              @change="enterSelect"
-              style="width: 22vh"
-            >
-              <el-option
-                v-for="(item, index) in businessTypeList"
-                :key="index"
-                :label="item.optionName"
-                :value="item.id"
-              ></el-option>
-            </el-select>
-            <el-button style="margin-left: 10px" @click="searchList"
+            <div v-if="isCheckString.indexOf('appName') >= 0">
+              <span>应用名称：</span>
+              <el-select
+                style="width: 200px"
+                v-model="filterData.appName"
+                filterable
+                remote
+                :clearable="true"
+                reserve-keyword
+                allow-create
+                placeholder="请输入"
+                :remote-method="() => {}"
+                :loading="searchLoading"
+              >
+                <el-option
+                  v-for="item in searchRecords"
+                  :key="item.selectContentList"
+                  :label="item.selectContentList"
+                  :value="item.selectContentList"
+                />
+              </el-select>
+            </div>
+            <div v-if="isCheckString.indexOf('appCheckStatus') >= 0">
+              <span
+                style="font-size: calc(100vw / 1920 * 14); margin-left: 10px"
+                >应用状态：</span
+              >
+              <!-- <el-input v-model="filterData.appCheckStatus" style="width:200px"></el-input> -->
+              <el-select
+                v-model="filterData.appCheckStatus"
+                style="width: 200px"
+                clearable
+              >
+                <el-option label="删除" value="-1"></el-option>
+                <el-option label="未提交" value="0"></el-option>
+                <el-option label="提交审批" value="1"></el-option>
+                <el-option label="上架" value="2"></el-option>
+                <el-option label="审批驳回" value="3"></el-option>
+                <el-option label="流程删除" value="4"></el-option>
+                <el-option label="下架" value="5"></el-option>
+                <el-option label="已撤销" value="6"></el-option>
+                <el-option label="申请下架" value="7"></el-option>
+                <el-option label="申请上架" value="8"></el-option>
+              </el-select>
+            </div>
+            <div v-if="isCheckString.indexOf('businessType') >= 0">
+              <span
+                style="font-size: calc(100vw / 1920 * 14); margin-left: 10px"
+                >业务域：</span
+              >
+              <el-select
+                v-model="filterData.businessType"
+                filterable
+                clearable
+                placeholder="--请选择--"
+                @change="enterSelect"
+                style="width: 22vh"
+              >
+                <el-option
+                  v-for="(item, index) in businessTypeList"
+                  :key="index"
+                  :label="item.optionName"
+                  :value="item.id"
+                ></el-option>
+              </el-select>
+            </div>
+            <el-button
+              v-if="isCheckString != ''"
+              style="margin-left: 10px"
+              @click="searchList"
               >查询</el-button
+            >
+            <el-button style="margin-left: 10px" @click="checkSeach"
+              >选择筛选框</el-button
             >
           </el-col>
         </el-row>
@@ -191,7 +202,13 @@
       :menuList="menuList"
       :source="chooseNum"
     />
-
+    <!-- 筛选输入框 -->
+    <pickModel
+      ref="pickRef"
+      :data="searchData"
+      :isCheck="isCheckString"
+      @reload="reFresh"
+    />
     <el-dialog
       :title="title"
       class="aboutDialog"
@@ -265,6 +282,7 @@ import ApplicationDialog from "./component/applicationDialog.vue";
 import Configuration from "./component/configuration.vue";
 import { ElMessageBox, ElMessage } from "element-plus";
 import applicationAddDialong from "./component/applicationAddDialong.vue";
+import pickModel from "./component/pickModel.vue";
 import {
   startProcessInstance,
   updateState,
@@ -275,6 +293,8 @@ import {
   downloadFile,
   deleteFile,
   getSeachRecord,
+  addSeachRecord,
+  getFilterCon,
 } from "@/api/application";
 import moment from "moment";
 export default {
@@ -286,9 +306,12 @@ export default {
     ApplicationDialog,
     Configuration,
     applicationAddDialong,
+    pickModel,
   },
   data() {
     return {
+      // 已经选择的输入框
+      isCheckString: "appName,appCheckStatus,businessType",
       title: "",
       tableLoading: true,
       dialogTableVisible: false,
@@ -419,14 +442,17 @@ export default {
     },
     searchData: function () {
       return {
-        // userId
+        userId: localStorage.getItem("createById"),
+        menuId: this.$route.path,
       };
     },
   },
   watch: {},
   created() {
+    console.log(this.$route.path);
     this.requestData();
     this.SysSelectDictionary();
+    this.remoteMethod();
     // 获取菜单tree
     // this.selectMenuTree()
   },
@@ -434,19 +460,33 @@ export default {
     // this.connectWebsocket();
   },
   methods: {
+    // 获取筛选输入框
+    async getFilterNum() {
+      const res = await getFilterCon(this.searchData);
+      if (res.code == 200) {
+        console.log(res);
+      }
+    },
+    // 选择筛选框
+    checkSeach() {
+      this.$refs.pickRef.open();
+    },
     // 搜索历史记录
-    async remoteMethod() {
+    async remoteMethod(selectKey = "appName") {
       this.searchLoading = true;
-      const res = await getSeachRecord();
+      const data = { ...this.searchData, selectKey };
+      console.log(data);
+      const res = await getSeachRecord(data);
+      this.searchLoading = false;
       if (res.code == 200) {
         this.searchRecords = res.data;
       }
-      // const res =
     },
     // 增加历史记录
-    async addRecord() {
+    async addRecord(selectKey, selectContentList) {
       this.searchLoading = true;
-      const res = await getSeachRecord();
+      const data = { ...this.searchData, selectKey, selectContentList };
+      const res = await addSeachRecord(data);
       if (res.code == 200) {
         this.searchRecords = res.data;
       }
@@ -965,6 +1005,7 @@ export default {
       });
     },
     reFresh() {
+      this.getFilterNum();
       this.requestData();
     },
     SysSelectDictionary() {
@@ -1091,6 +1132,9 @@ export default {
         });
         this.total = res.data.total;
         this.tableLoading = false;
+      });
+      this.addRecord("appName", this.filterData.appName).then(() => {
+        this.remoteMethod();
       });
     },
     requestData() {

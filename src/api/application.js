@@ -79,5 +79,19 @@ export async function deleteFile(params) {
 
 // 查询搜索记录
 export async function getSeachRecord(params) {
-  return await post("file/delete", params);
+  return await post("/SysUserSelectContentLog/select", params);
+}
+
+// 添加搜索记录
+export async function addSeachRecord(params) {
+  return await post("/SysUserSelectContentLog/insert", params);
+}
+
+// 筛选框修改
+export async function editFilterCon(params) {
+  return await post("/SysUserSelectHabitLog/insert", params);
+}
+// 筛选框获取
+export async function getFilterCon(params) {
+  return await post("/SysUserSelectHabitLog/select", params);
 }
