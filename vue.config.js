@@ -34,7 +34,7 @@ module.exports = defineConfig({
       "/ixdpc": {
         target: "https://6x54604q10.zicp.fun", //反向代理地址 开发
         // target: "http://121.36.73.70:18085", //反向代理地址 外网
-        // target: "http://localhost:18085", //反向代理地址  内网
+        // // target: "http://localhost:18085", //反向代理地址  内网
         changeOrigin: true,
         pathRewrite: {
           "^/ixdpc": "",

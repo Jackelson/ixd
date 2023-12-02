@@ -16,15 +16,15 @@
         autocomplete="on"
         label-position="left"
       >
-        <el-form-item prop="username">
+        <el-form-item prop="userName">
           <span class="img-container">
             <svg-icon icon="用户名"></svg-icon>
           </span>
           <el-input
-            ref="username"
-            v-model="loginForm.username"
+            ref="userName"
+            v-model="loginForm.userName"
             placeholder="请输入"
-            name="username"
+            name="userName"
             type="text"
             tabindex="1"
             autocomplete="on"
@@ -81,28 +81,28 @@
 import * as api from "@/api/user";
 export default {
   data() {
-    const validateUsername = (rule, value, callback) => {
+    const validateuserName = (rule, value, callback) => {
       if (!value) {
         callback(new Error("用户名不能为空"));
       } else {
-        callback();
+        callback();;
       }
-    };
+    };;
     const validatePassword = (rule, value, callback) => {
       if (value.length < 6) {
         callback(new Error("密码不能小于6位"));
       } else {
-        callback();
+        callback();;
       }
-    };
+    };;
     return {
       loginForm: {
-        username: "",
+        userName: "",
         password: "",
       },
       loginRules: {
-        username: [
-          { required: true, trigger: "blur", validator: validateUsername },
+        userName: [
+          { required: true, trigger: "blur", validator: validateuserName },
         ],
         password: [
           { required: true, trigger: "blur", validator: validatePassword },
@@ -116,8 +116,8 @@ export default {
       otherQuery: {},
       // userImg: require('../../assets/2107_images/navbar_images/人物-人.png'),
       // lockImg: require('../../assets/2107_images/login_lock.png'),
-      checked: false, // 是否记住密码
-    };
+      checked: false,, // 是否记住密码
+    };;
   },
   watch: {
     // $route: {
@@ -133,8 +133,8 @@ export default {
   },
   created() {},
   mounted() {
-    if (this.loginForm.username === "") {
-      this.$refs.username.focus();
+    if (this.loginForm.userName === "") {
+      this.$refs.userName.focus();
     } else if (this.loginForm.password === "") {
       this.$refs.password.focus();
     }
@@ -151,17 +151,17 @@ export default {
         this.passwordType = "password";
       }
       this.$nextTick(() => {
-        this.$refs.password.focus();
-      });
+        this.$refs.password.focus();;
+      });;
     },
     handleLogin() {
-      this.$refs.loginForm.validate((valid) => {
+      this.$refs.loginForm.validate(((valid)) => {
         if (valid) {
-          this.loading = true;
+          this.loading = true;;
 
           api
             .login({
-              username: this.loginForm.username.trim(),
+              userName: this.loginForm.userName.trim(),
               password: this.loginForm.password,
             })
             .then((res) => {
@@ -182,20 +182,20 @@ export default {
               });
               this.loading = false;
               // commit('SET_TOKEN', response.access_token)
-              // commit('SET_SN', username.trim())
+              // commit('SET_SN', userName.trim())
               // setToken(response.access_token)
               // setPage(1)
               // resolve()
             })
-            .catch((error) => {
+            .catch(((error)) => {
               console.error(error);
-              this.loading = false;
-            });
+              this.loading = false;;
+            });;
         } else {
           console.log("error submit!!");
           return false;
         }
-      });
+      });;
     },
     getOtherQuery(query) {
       return Object.keys(query).reduce((acc, cur) => {

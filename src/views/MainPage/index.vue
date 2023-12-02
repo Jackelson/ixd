@@ -9,19 +9,21 @@
         <div class="user-info-container">
           <div class="user-action">
             <div>
-              <svg-icon icon="电力公司" class="user-logo"></svg-icon>国网无锡电力
+              <svg-icon icon="电力公司" class="user-logo"></svg-icon
+              >国网无锡电力
             </div>
             <div>
-              <svg-icon icon="江苏电力公司" class="user-logo"></svg-icon>专责人员
+              <svg-icon icon="江苏电力公司" class="user-logo"></svg-icon
+              >专责人员
             </div>
-            <div style="padding-top:7px;cursor: pointer;" @click="handleClick">
+            <div style="padding-top: 7px; cursor: pointer" @click="handleClick">
               <el-badge :value="taskNumber">
                 <el-icon>
                   <Bell />
                 </el-icon>
               </el-badge>
             </div>
-            <div @click="loginOut" style="cursor: pointer;">
+            <div @click="loginOut" style="cursor: pointer">
               <svg-icon icon="退出" class="user-logo"></svg-icon>
             </div>
           </div>
@@ -32,23 +34,37 @@
       <el-container class="T-main-container">
         <el-aside :width="isCollapse ? '64px' : '200px'" class="T-aSide">
           <div class="T-side-container">
-            <el-menu :default-active="'0'" class="T-menu" :collapse="isCollapse" router @open="handleOpen"
-              @close="handleClose">
+            <el-menu
+              :default-active="'0'"
+              class="T-menu"
+              :collapse="isCollapse"
+              router
+              @open="handleOpen"
+              @close="handleClose"
+            >
               <template v-for="item in menus" :key="item.id">
                 <el-sub-menu v-if="item.children" :index="item.path">
                   <template #title>
                     <!-- <el-icon><setting /></el-icon> -->
                     <svg-icon :icon="item.icon" class="svgIcon"></svg-icon>
-                    <span style="margin-left: 5px;">{{ item.name }}</span>
+                    <span style="margin-left: 5px">{{ item.name }}</span>
                   </template>
-                  <el-menu-item v-for="subItem in item.children" :key="subItem.id" :index="subItem.path">
+                  <el-menu-item
+                    v-for="subItem in item.children"
+                    :key="subItem.id"
+                    :index="subItem.path"
+                  >
                     <svg-icon :icon="subItem.icon" class="svgIcon"></svg-icon>
-                    <span style="margin-left: 5px;">{{ subItem.name }}</span>
+                    <span style="margin-left: 5px">{{ subItem.name }}</span>
                   </el-menu-item>
                 </el-sub-menu>
-                <el-menu-item class="firstMenu" v-if="!item.children" :index="item.path">
+                <el-menu-item
+                  class="firstMenu"
+                  v-if="!item.children"
+                  :index="item.path"
+                >
                   <svg-icon :icon="item.icon" class="svgIcon"></svg-icon>
-                  <span style="margin-left: 5px;">{{ item.name }}</span>
+                  <span style="margin-left: 5px">{{ item.name }}</span>
                 </el-menu-item>
               </template>
             </el-menu>
@@ -75,53 +91,55 @@
 
 <script>
 // import MenuPart from './MenuPart.vue';
-import { defineComponent, ref, onMounted, reactive } from 'vue';
+import { defineComponent, ref, onMounted, reactive } from "vue";
 import { useRouter } from "vue-router";
-import { menuList } from "./menus"
-import { approvedList } from "@/api/application"
+import { menuList } from "./menus";
+import { approvedList } from "@/api/application";
 export default defineComponent({
-  name: 'MainPage',
+  name: "MainPage",
   setup() {
     const isCollapse = ref(false);
     const handleMenu = () => {
-      isCollapse.value = !isCollapse.value
-    }
-    const taskNumber = ref(0)
-    const router = useRouter()
+      isCollapse.value = !isCollapse.value;
+    };
+    const taskNumber = ref(0);
+    const router = useRouter();
     function loginOut() {
-      localStorage.clear('createById')
-      router.push({ path: '/login' })
+      localStorage.clear("createById");
+      router.push({ path: "/login" });
     }
-    let menus = reactive([{
-      id: '0',
-      name: '首页',
-      icon: '首页',
-      path: '/dashBoard',
-    },]);
+    let menus = reactive([
+      {
+        id: "0",
+        name: "首页",
+        icon: "首页",
+        path: "/dashBoard",
+      },
+    ]);
     const getUserMenus = () => {
-      const userMenus = localStorage.getItem("menus")
-      const me = JSON.parse(JSON.stringify(menuList))
-      if (userMenus == '*:*:*') {
-        me.forEach(item => {
+      const userMenus = localStorage.getItem("menus");
+      const me = JSON.parse(JSON.stringify(menuList));
+      if (userMenus == "*:*:*") {
+        me.forEach((item) => {
           const obj = {
             id: item.id,
             name: item.name,
             path: item.path,
             icon: item.icon,
-            children: []
-          }
+            children: [],
+          };
           if (item.children && item.children.length > 0) {
-            item.children.forEach(v => {
-              obj.children.push(v)
-            })
+            item.children.forEach((v) => {
+              obj.children.push(v);
+            });
           }
           if (obj.children.length == 0) {
-            delete obj.children
+            delete obj.children;
           }
-          menus.push(obj)
-        })
-        console.log('menus', menus)
-        return
+          menus.push(obj);
+        });
+        console.log("menus", menus);
+        return;
       }
       me.forEach((item) => {
         if (userMenus.includes(item.id)) {
@@ -130,43 +148,43 @@ export default defineComponent({
             name: item.name,
             path: item.path,
             icon: item.icon,
-            children: []
-          }
+            children: [],
+          };
           if (item.children && item.children.length > 0) {
-            item.children.forEach(v => {
+            item.children.forEach((v) => {
               if (userMenus.includes(v.id)) {
-                obj.children.push(v)
+                obj.children.push(v);
               }
-            })
+            });
           }
           if (obj.children.length == 0) {
-            delete obj.children
+            delete obj.children;
           }
-          menus.push(obj)
+          menus.push(obj);
         }
-      })
-      console.log('menus', menus)
-    }
-    const handleClick = ()=>{
-      router.push({ path: '/approved' })
-    }
+      });
+      console.log("menus", menus);
+    };
+    const handleClick = () => {
+      router.push({ path: "/approved" });
+    };
     const getTask = () => {
       let params = {
         processInstanceId: "",
         businessKey: "",
-        assignee: localStorage.getItem('userName'),
+        assignee: localStorage.getItem("userName"),
         pageNum: 1,
         pageSize: 10,
-      }
+      };
       approvedList(params).then((res) => {
-        taskNumber.value = res.data.totalNum
-        console.log('taskNumber',taskNumber.value)
-      })
-    }
+        taskNumber.value = res.data.totalNum;
+        console.log("taskNumber", taskNumber.value);
+      });
+    };
     onMounted(() => {
       getUserMenus();
       getTask();
-    })
+    });
     return {
       isCollapse,
       menus,
@@ -175,10 +193,10 @@ export default defineComponent({
       getUserMenus,
       getTask,
       taskNumber,
-      handleClick
-    }
-  }
-})
+      handleClick,
+    };
+  },
+});
 </script>
 
 <style lang="scss">
@@ -245,7 +263,7 @@ export default defineComponent({
         position: relative;
 
         &::before {
-          content: '';
+          content: "";
           display: block;
           position: absolute;
           width: 0;
@@ -263,7 +281,7 @@ export default defineComponent({
           height: 30px;
           background: #d4f0ee;
 
-          >div {
+          > div {
             position: relative;
             font-size: 16px;
             padding: 0 8px;
