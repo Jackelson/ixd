@@ -44,6 +44,7 @@ axios.interceptors.response.use(
     }
   },
   (error) => {
+    console.log(error, "接口请求报错");
     if (error.response.status == 401) {
       try {
         console.log(error.response.headers, "响应头");

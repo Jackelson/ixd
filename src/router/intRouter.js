@@ -25,13 +25,17 @@ function getUrlParams(url) {
 }
 
 router.beforeEach(async (to, from, next) => {
+  console.log(to, "路由跳转前的参数");
   const hasToken = localStorage.getItem("createById");
+  console.log(hasToken, "token");
   if (hasToken) {
     next();
   } else {
+    console.log(to, "没有token的路由参数");
     if (to.path === "/dashBoard") {
       const currentUrl = window.location.href;
       const params = getUrlParams(currentUrl);
+      console.log(params, "路由参数");
       if (params?.token) {
         localStorage.setItem("createById", params.token);
         next();
