@@ -92,7 +92,7 @@
 <script>
 // import MenuPart from './MenuPart.vue';
 import { defineComponent, ref, onMounted, reactive } from "vue";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 import { menuList } from "./menus";
 import { approvedList } from "@/api/application";
 export default defineComponent({
@@ -104,6 +104,7 @@ export default defineComponent({
     };
     const taskNumber = ref(0);
     const router = useRouter();
+    const route = useRoute();
     function loginOut() {
       window.localStorage.clear();
       window.location.reload();
@@ -184,6 +185,7 @@ export default defineComponent({
     };
     onMounted(() => {
       getUserMenus();
+      if (route.path == "/userManagement") return;
       getTask();
     });
     return {

@@ -1,111 +1,178 @@
 <template>
   <!--弹框部分-->
-  <el-dialog :title="title" v-model="groupVisible" class="editDialog" :close-on-click-modal="false"
-    @close="closeGroupVisible">
-    <el-form ref="dataform" label-width="120px" label-position="right" :rules="rules" :model="temp" class="editForm"
-      v-if="groupVisible">
+  <el-dialog
+    :title="title"
+    v-model="groupVisible"
+    class="editDialog"
+    :close-on-click-modal="false"
+    @close="closeGroupVisible"
+  >
+    <el-form
+      ref="dataform"
+      label-width="120px"
+      label-position="right"
+      :rules="rules"
+      :model="temp"
+      class="editForm"
+      v-if="groupVisible"
+    >
       <div v-for="(item, index) in formHeader" :key="index">
         <el-form-item :label="item.label" :prop="item.key">
-          <el-input v-if="item.key === 'menu'" v-model="temp[item.key]" style="width:90%" />
-          <el-radio-group v-else-if="item.key === 'menuCheckStrictly'" v-model="temp[item.key]">
+          <el-input
+            v-if="item.key === 'menu'"
+            v-model="temp[item.key]"
+            style="width: 90%"
+          />
+          <el-radio-group
+            v-else-if="item.key === 'menuCheckStrictly'"
+            v-model="temp[item.key]"
+          >
             <el-radio :label="true">选择</el-radio>
             <el-radio :label="false">不选择</el-radio>
           </el-radio-group>
-          <el-radio-group v-else-if="item.key === 'deptCheckStrictly'" v-model="temp[item.key]">
+          <el-radio-group
+            v-else-if="item.key === 'deptCheckStrictly'"
+            v-model="temp[item.key]"
+          >
             <el-radio :label="true">选择</el-radio>
             <el-radio :label="false">不选择</el-radio>
           </el-radio-group>
-          <el-select v-else-if="item.key === 'deptIds'" v-model="form.treeData" placeholder="请选择" multiple
-            style="width: 90%;" @change="selectChange">
-            <el-option :value="treeDataValue" style="height: auto;">
-              <el-tree ref="tree" draggable :data="groupList" :props="defaultProps" :accordion="false" node-key="id"
-                :auto-expand-parent="false" :highlight-current="true" :default-expand-all="true"
-                :expand-on-click-node="false" :filter-node-method="filterNode"
-                style="color:#666;font-family: Microsoft YaHei;" />
+          <el-select
+            v-else-if="item.key === 'deptIds'"
+            v-model="form.treeData"
+            placeholder="请选择"
+            multiple
+            style="width: 90%"
+            @change="selectChange"
+          >
+            <el-option :value="treeDataValue" style="height: auto">
+              <el-tree
+                ref="tree"
+                draggable
+                :data="groupList"
+                :props="defaultProps"
+                :accordion="false"
+                node-key="id"
+                :auto-expand-parent="false"
+                :highlight-current="true"
+                :default-expand-all="true"
+                :expand-on-click-node="false"
+                :filter-node-method="filterNode"
+                style="color: #666; font-family: Microsoft YaHei"
+              />
             </el-option>
           </el-select>
-          <el-select v-else-if="item.key === 'menuIds'" v-model="form.menuTreeData" placeholder="请选择" multiple
-            style="width: 90%;" @change="selectChange">
-            <el-option :value="menuDataValue" style="height: auto;">
-              <el-tree ref="tree" draggable :data="menuList" :props="defaultProps" :accordion="false" node-key="id"
-                @node-click="handleMenuClick" :auto-expand-parent="false" :highlight-current="true"
-                :default-expand-all="true" :expand-on-click-node="false" :filter-node-method="filterNode"
-                style="color:#666;font-family: Microsoft YaHei;" show-checkbox @check-change="handleCheckChange"
-                :check-strictly="true" />
+          <el-select
+            v-else-if="item.key === 'menuIds'"
+            v-model="form.menuTreeData"
+            placeholder="请选择"
+            multiple
+            style="width: 90%"
+            @change="selectChange"
+          >
+            <el-option :value="menuDataValue" style="height: auto">
+              <el-tree
+                ref="tree"
+                draggable
+                :data="menuList"
+                :props="defaultProps"
+                :accordion="false"
+                node-key="id"
+                @node-click="handleMenuClick"
+                :auto-expand-parent="false"
+                :highlight-current="true"
+                :default-expand-all="true"
+                :expand-on-click-node="false"
+                :filter-node-method="filterNode"
+                style="color: #666; font-family: Microsoft YaHei"
+                show-checkbox
+                @check-change="handleCheckChange"
+                :check-strictly="true"
+              />
             </el-option>
           </el-select>
-          <el-input v-else v-model="temp[item.key]" style="width:90%" />
+          <el-input v-else v-model="temp[item.key]" style="width: 90%" />
         </el-form-item>
       </div>
     </el-form>
-    <div style="display: flex; justify-content: flex-end;" class="dialog-footer">
+    <div style="display: flex; justify-content: flex-end" class="dialog-footer">
       <el-button @click="cancelAdd">取 消</el-button>
-      <el-button v-if="dialogStatus === 'create'" type="primary" @click="createData">提 交</el-button>
-      <el-button v-if="dialogStatus === 'update'" type="primary" @click="updateData">提 交</el-button>
+      <el-button
+        v-if="dialogStatus === 'create'"
+        type="primary"
+        @click="createData"
+        >提 交</el-button
+      >
+      <el-button
+        v-if="dialogStatus === 'update'"
+        type="primary"
+        @click="updateData"
+        >提 交</el-button
+      >
     </div>
   </el-dialog>
 </template>
 <script>
-import * as roleApi from "@/api/role"
+import * as roleApi from "@/api/role";
 
 export default {
-  name: 'TaskList',
+  name: "TaskList",
   props: {
     temp1: {
       require: true,
       type: Object,
-      default: null
+      default: null,
     },
     groupList: {
       require: true,
       type: Array,
-      default: null
+      default: null,
     },
     menuList: {
       require: true,
       type: Array,
-      default: null
+      default: null,
     },
     show: {
       type: Boolean,
-      default: false
+      default: false,
     },
     source: {
       type: String,
-      default: ''
+      default: "",
     },
     title: {
       type: String,
       require: true,
-      default: ''
+      default: "",
     },
     dialogStatus: {
       type: String,
       require: true,
-      default: ''
-    }
+      default: "",
+    },
   },
   data() {
     return {
       groupVisible: this.show, // 引入页面弹窗的状态值一定要设置
       formHeader: [
         // { label: '角色编号', key: 'roleKey' },
-        { label: '角色名称', key: 'roleName' },
-        { label: '角色排序', key: 'roleSort' },
+        { label: "角色名称", key: "roleName" },
+        { label: "角色排序", key: "roleSort" },
         // { label: '组织', key: 'deptIds' },
-        { label: '菜单权限', key: 'menuIds' },
+        { label: "菜单权限", key: "menuIds" },
         // { label: '数据分数', key: 'dataScope' },
         // { label: '菜单选中', key: 'menuCheckStrictly' },
         // { label: '组织选中', key: 'deptCheckStrictly' },
-        { label: '备注', key: 'remark' },
+        { label: "备注", key: "remark" },
       ],
       rules: {
         roleName: [
-          { required: true, message: '请输入菜单名称', trigger: 'blur' },
-          { min: 1, max: 16, message: '菜单名称长度1-16', trigger: 'blur' },
+          { required: true, message: "请输入菜单名称", trigger: "blur" },
+          { min: 1, max: 16, message: "菜单名称长度1-16", trigger: "blur" },
         ],
         roleSort: [
-          { required: true, message: '请输入角色排序', trigger: 'blur' },
+          { required: true, message: "请输入角色排序", trigger: "blur" },
           // {
           //   required: true,
           //   pattern: "^[0-9]*$",//eslint-disable-line
@@ -114,7 +181,7 @@ export default {
           // }
         ],
         menuIds: [
-          { required: true, message: '请选择菜单权限', trigger: 'blur' },
+          { required: true, message: "请选择菜单权限", trigger: "blur" },
         ],
       },
       temp: {
@@ -136,110 +203,109 @@ export default {
       },
       listQuery: {
         _page: 0,
-        _page_size: 15
+        _page_size: 15,
       },
-      dialogTitle: '', // 弹框标题
+      dialogTitle: "", // 弹框标题
       // dialogStatus: '',
       defaultProps: {
         children: "children",
         label: "label",
-        id: 'id'
+        id: "id",
       },
       treeDataValue: "",
-      menuDataValue: '',
+      menuDataValue: "",
       form: {
         treeData: [], // 多选
         treeId: [],
         menuTreeData: [], // 多选
-        menuTreeId: []
+        menuTreeId: [],
       },
-    }
+    };
   },
   watch: {
     show: {
       handler(newValue) {
-        this.groupVisible = newValue
-        this.temp = this.temp1
+        this.groupVisible = newValue;
+        this.temp = this.temp1;
         if (this.dialogStatus == "update") {
-          this.getRoleMenu(this.temp.roleId)
+          this.getRoleMenu(this.temp.roleId);
           this.form = {
             treeData: [], // 多选
             treeId: [],
             menuTreeData: [], // 多选
-            menuTreeId: []
-          }
+            menuTreeId: [],
+          };
         }
         if (this.dialogStatus == "create") {
-          this.temp = {}
+          this.temp = {};
           this.form = {
             treeData: [], // 多选
             treeId: [],
             menuTreeData: [], // 多选
-            menuTreeId: []
-          }
+            menuTreeId: [],
+          };
         }
-        console.log(this.dialogStatus, 'status')
+        console.log(this.dialogStatus, "status");
       },
-      deep: true
-    }
+      deep: true,
+    },
   },
-  created() {
-  },
-  mounted() { },
+  created() {},
+  mounted() {},
   methods: {
     //根据角色id查询角色菜单权限
     getRoleMenu(roleId) {
       const params = {
-        roleId: roleId
-      }
-      roleApi.selectMenuTreeByRoleId(params).then(res => {
+        roleId: roleId,
+      };
+      roleApi.selectMenuTreeByRoleId(params).then((res) => {
         if (res.code == 200) {
           // this.form.menuTreeData = res.data.checkedKeys
-          this.temp.menuIds = res.data.checkedKeys
-          this.getSelectValue(res.data.menus)
+          this.temp.menuIds = res.data.checkedKeys;
+          this.getSelectValue(res.data.menus);
           this.selectChange();
         }
-      })
+      });
     },
     //勾选树节点，获取id
     handleCheckChange() {
-      this.temp.menuIds = this.$refs.tree[0].getHalfCheckedKeys().concat(this.$refs.tree[0].getCheckedKeys())
+      this.temp.menuIds = this.$refs.tree[0]
+        .getHalfCheckedKeys()
+        .concat(this.$refs.tree[0].getCheckedKeys());
       this.form.menuTreeData = [];
-      this.getSelectValue(this.menuList)
+      this.getSelectValue(this.menuList);
     },
     //递归去拿label拼接给下拉框展示
     getSelectValue(menuList) {
-      menuList.forEach(item => {
+      menuList.forEach((item) => {
         if (this.temp.menuIds.includes(item.id)) {
-          this.form.menuTreeData.push(item.label)
+          this.form.menuTreeData.push(item.label);
         }
         if (item.children && item.children.length > 0) {
-          this.getSelectValue(item.children)
+          this.getSelectValue(item.children);
         }
-      })
+      });
     },
     //下拉框删除节点，树对应删除
     selectChange() {
       const menuIds = [];
-      this.menuList.forEach(item => {
+      this.menuList.forEach((item) => {
         if (this.form.menuTreeData.includes(item.label)) {
-          menuIds.push(item.id)
+          menuIds.push(item.id);
         }
         if (item.children && item.children.length > 0) {
-          item.children.forEach(v => {
+          item.children.forEach((v) => {
             if (this.form.menuTreeData.includes(v.label)) {
-              menuIds.push(v.id)
+              menuIds.push(v.id);
             }
-          })
+          });
         }
-      })
-      this.$refs.tree[0].setCheckedKeys(menuIds, true)
-      console.log(menuIds, 'menuIdsmenuIds')
+      });
+      this.$refs.tree[0].setCheckedKeys(menuIds, true);
+      console.log(menuIds, "menuIdsmenuIds");
     },
     //删除树对应节点的选中
-    deleteCheckTree() {
-
-    },
+    deleteCheckTree() {},
     // 点击树节点
     handleNodeClick(data, node, nodeData) {
       // select 多选（判重后添加到选择结果数组中）
@@ -255,49 +321,47 @@ export default {
       //   this.form.treeData.push(data.label)
       //   this.form.treeId.push(data.deptId)
       // }
-      console.log(data, node, nodeData, this.form, 'sssssssssss');
-
+      console.log(data, node, nodeData, this.form, "sssssssssss");
     },
     handleMenuClick(data, node, nodeData) {
       // select 多选（判重后添加到选择结果数组中）
-      this.menuTreeDataValue = data
+      this.menuTreeDataValue = data;
       let num = 0;
-      this.form.menuTreeData.forEach(item => {
+      this.form.menuTreeData.forEach((item) => {
         item == data.label ? num++ : num;
-      })
-      this.form.menuTreeId.forEach(item => {
+      });
+      this.form.menuTreeId.forEach((item) => {
         item == data.id ? num++ : num;
-      })
+      });
       if (num == 0) {
-        this.form.menuTreeData.push(data.label)
-        this.form.menuTreeId.push(data.id)
+        this.form.menuTreeData.push(data.label);
+        this.form.menuTreeId.push(data.id);
       }
-      console.log(data, node, nodeData, this.form, 'sssssssssss');
-
+      console.log(data, node, nodeData, this.form, "sssssssssss");
     },
 
     closeGroupVisible() {
-      this.$emit('update:show', false)
-      if (this.dialogStatus === 'create') {
-        this.resetSelect()
-        this.groupVisible = false
+      this.$emit("update:show", false);
+      if (this.dialogStatus === "create") {
+        this.resetSelect();
+        this.groupVisible = false;
       } else {
-        this.groupVisible = false
-        this.resetSelect()
+        this.groupVisible = false;
+        this.resetSelect();
       }
     },
     // 清空已选项数组，且置空所有选择
     resetSelect() {
       // this.selectRows = []
-      this.temp = {}
+      this.temp = {};
     },
     // 取消新增
     cancelAdd() {
-      if (this.dialogStatus === 'create') {
-        this.resetSelect()
-        this.groupVisible = false
+      if (this.dialogStatus === "create") {
+        this.resetSelect();
+        this.groupVisible = false;
       } else {
-        this.groupVisible = false
+        this.groupVisible = false;
       }
     },
 
@@ -305,19 +369,30 @@ export default {
     checkMenuSon() {
       let flag = true;
       for (let i = 0; i < this.menuList.length; i++) {
-        if (this.form.menuTreeData.includes(this.menuList[i].label) && (this.menuList[i].children && this.menuList[i].children.length > 0)) {
+        if (
+          this.form.menuTreeData.includes(this.menuList[i].label) &&
+          this.menuList[i].children &&
+          this.menuList[i].children.length > 0
+        ) {
           for (let j = 0; j < this.menuList[i].children.length; j++) {
-            if (this.form.menuTreeData.includes(this.menuList[i].children[j].label)) {
+            if (
+              this.form.menuTreeData.includes(
+                this.menuList[i].children[j].label
+              )
+            ) {
               flag = false;
               break;
             }
           }
-        } else if (this.form.menuTreeData.includes(this.menuList[i].label) && !this.menuList[i].children) {
+        } else if (
+          this.form.menuTreeData.includes(this.menuList[i].label) &&
+          !this.menuList[i].children
+        ) {
           flag = true;
           return flag;
         }
       }
-      return flag
+      return flag;
     },
     //验证勾选了子菜单是否勾选了父菜单
     checkMenuParent() {
@@ -325,10 +400,14 @@ export default {
       for (let i = 0; i < this.menuList.length; i++) {
         if (this.menuList[i].children && this.menuList[i].children.length > 0) {
           for (let j = 0; j < this.menuList[i].children.length; j++) {
-            if (this.form.menuTreeData.includes(this.menuList[i].children[j].label)) {
+            if (
+              this.form.menuTreeData.includes(
+                this.menuList[i].children[j].label
+              )
+            ) {
               if (!this.form.menuTreeData.includes(this.menuList[i].label)) {
                 flag = true;
-                return flag
+                return flag;
               }
             }
           }
@@ -339,14 +418,15 @@ export default {
     createData() {
       const flag = this.checkMenuSon();
       // const flag2 = this.checkMenuParent();
-      console.log(flag, 'flag')
-      if (flag) return this.$message({ message: "请正确勾选菜单", type: "warning" })
+      console.log(flag, "flag");
+      if (flag)
+        return this.$message({ message: "请正确勾选菜单", type: "warning" });
       // if (flag2) return this.$message({ message: "请勾选子菜单对应的父菜单", type: "warning" })
-      this.$refs['dataform'].validate((valid) => {
+      this.$refs["dataform"].validate((valid) => {
         if (valid) {
-          const data = Object.assign({}, this.temp)
-          const uuid = require('uuid')
-          data.roleKey = uuid.v1()
+          const data = Object.assign({}, this.temp);
+          const uuid = require("uuid");
+          data.roleKey = uuid.v1();
           // data.menuCheckStrictly = true
           // data.deptCheckStrictly = true
           // data.deptIds = this.form.treeId
@@ -354,43 +434,45 @@ export default {
           // data.updateTime = null
           // data.updateBy = ''
           // data.dataScope = '1'
-          data.createBy = localStorage.getItem('createById')
-          console.log(data, 'data')
-          roleApi.insertRoleData(data).then(res => {
-            if (res.code === 200) {
-              this.$parent.getList()
-              console.log(res, 'res');
-              this.form = {
-                treeData: [],
-                treeId: []
+          data.createBy = localStorage.getItem("createById");
+          console.log(data, "data");
+          roleApi
+            .insertRoleData(data)
+            .then((res) => {
+              if (res.code === 200) {
+                this.$parent.getList();
+                console.log(res, "res");
+                this.form = {
+                  treeData: [],
+                  treeId: [],
+                };
+                this.groupVisible = false;
+                this.$message({
+                  message: "更新成功！",
+                  type: "success",
+                });
+              } else {
+                this.groupVisible = false;
+                this.$message({
+                  message: res.msg,
+                  type: "",
+                });
               }
-              this.groupVisible = false
-              this.$message({
-                message: '更新成功！',
-                type: 'success'
-              })
-            } else {
-              this.groupVisible = false
-              this.$message({
-                message: res.msg,
-                type: ''
-              })
-            }
-
-          }).catch(err => {
-            this.$message({
-              message: err,
-              // type: 'success'
             })
-          })
+            .catch((err) => {
+              this.$message({
+                message: err,
+                // type: 'success'
+              });
+            });
         }
-      })
+      });
     },
     // 编辑提交
     updateData() {
-      this.$refs['dataform'].validate((valid) => {
+      this.$refs["dataform"].validate((valid) => {
         if (valid) {
-          const data = Object.assign({}, this.temp)
+          const data = Object.assign({}, this.temp);
           // let { roleId, remark, roleName, roleKey, status, delFlag, update_by } = data
           // let params = { roleId, remark, roleName, roleKey, status, delFlag, update_by }
           let params = {
@@ -399,23 +481,23 @@ export default {
             updateBy: localStorage.getItem("createById"),
             roleSort: data.roleSort,
             menuIds: data.menuIds,
-            remark: data.remark
-          }
-          console.log(data, 'data')
-          roleApi.updateRoleData(params).then(res => {
-            this.$parent.getList()
-            console.log(res, 'res');
-            this.groupVisible = false
+            remark: data.remark,
+          };
+          console.log(data, "data");
+          roleApi.updateRoleData(params).then((res) => {
+            this.$parent.getList();
+            console.log(res, "res");
+            this.groupVisible = false;
             this.$message({
-              message: '更新成功！',
-              type: 'success'
-            })
-          })
+              message: "更新成功！",
+              type: "success",
+            });
+          });
         }
-      })
+      });
     },
-  }
-}
+  },
+};
 </script>
 <style lang="scss">
 /*增加，编辑弹窗*/
