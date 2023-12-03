@@ -432,12 +432,12 @@ export default {
           event: this.handleDownZip,
           disabled: this.isOff,
         },
-        {
-          type: "primary",
-          name: "删除文件",
-          event: this.handleDeleteFile,
-          disabled: this.multipleSelection.length == 0,
-        },
+        // {
+        //   type: "primary",
+        //   name: "删除文件",
+        //   event: this.handleDeleteFile,
+        //   disabled: this.multipleSelection.length == 0,
+        // },
       ];
     },
     searchData: function () {
