@@ -42,7 +42,7 @@ module.exports = defineConfig({
       },
     },
   },
-  outputDir: "dist", //打包文件名称
+  outputDir: "ixd_pc", //打包文件名称
 });
 
 // const { defineConfig } = require("@vue/cli-service");
