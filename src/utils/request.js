@@ -17,7 +17,8 @@ axios.defaults.headers.post["Content-Type"] =
 axios.defaults.baseURL = "ixdpc";
 axios.defaults.withCredentials = true;
 axios.defaults.headers = { "X-Requested-With": "XMLHttpRequest" }; //请求头
-// POST传参序列化
+axios.defaults.maxRedirects = 0;
+
 axios.interceptors.request.use(
   (config) => {
     if (config.url != "/SysUser/login") {
@@ -29,8 +30,7 @@ axios.interceptors.request.use(
     return config;
   },
   (error) => {
-    console.log(error, "error");
-    return Promise.reject();
+    return Promise.reject(error);
   }
 );
 
@@ -38,17 +38,32 @@ axios.interceptors.request.use(
 axios.interceptors.response.use(
   (response) => {
     if (response.status === 200) {
-      if (response.data.code == "200") {
-        return response;
-      } else {
-        ElMessage.warning(response.data?.msg || "失败");
-        return response;
-      }
+      return response;
     } else {
       Promise.reject();
     }
   },
   (error) => {
+    console.log(error, "接口请求报错");
+    if (error.response.status == 401) {
+      const token = localStorage.getItem("token");
+      if (token) {
+        delete localStorage["token"];
+      }
+      try {
+        console.log(error.response.headers, "响应头");
+        console.log(error.response.data);
+        const redirecturl = error.response.data.redirectUrl || "";
+        if (redirecturl == "") {
+          return;
+        }
+        window.location.href = redirecturl;
+      } catch (error) {
+        console.log(error);
+        // window.location.href =
+        //   "http://userauth.js,sgcc.Com.cn/UALogin/login?APPID-130000061133388TRAGEURL=http://28.78.81.28:18091";
+      }
+    }
     if (error.response.status == 401) {
       ElMessage.warning("登录过期，请重新登录");
       router.push("/login");
@@ -96,18 +111,23 @@ export function post(url, params) {
   }
 }
 
-export function get(url, params) {
-  const pwdKey = "71B3CC7F6035D9BC1E430D997C88A6BF";
-  const sm4 = require("sm-crypto").sm4;
-  let data = {
-    message: sm4.encrypt(JSON.stringify(params), pwdKey, {
-      mode: "cbc",
-      iv: "15D05CC8DD7045F4BF096B8661300CE1",
-    }),
-  };
+export function get(url, data) {
+  let params = {};
+  if (url != "/isc/login") {
+    const pwdKey = "71B3CC7F6035D9BC1E430D997C88A6BF";
+    const sm4 = require("sm-crypto").sm4;
+    data = {
+      message: sm4.encrypt(JSON.stringify(params), pwdKey, {
+        mode: "cbc",
+        iv: "15D05CC8DD7045F4BF096B8661300CE1",
+      }),
+    };
+  } else {
+    params = data;
+  }
   return new Promise((resolve, reject) => {
     axios
-      .get(url, { data })
+      .get(url, { params })
       .then((response) => {
         resolve(response.data);
       })

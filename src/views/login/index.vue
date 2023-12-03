@@ -67,7 +67,6 @@
             font-size: 18px;
             font-weight: 500;
           "
-          round
           @click.prevent="handleLogin"
           >登&emsp;&emsp;录</el-button
         >
