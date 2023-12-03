@@ -119,7 +119,7 @@ export default defineComponent({
       },
     ]);
     const getUserMenus = () => {
-      const userMenus = localStorage.getItem("menus");
+      const userMenus = localStorage.getItem("menus").split(",");
       const me = JSON.parse(JSON.stringify(menuList));
       if (userMenus == "*:*:*") {
         me.forEach((item) => {
@@ -144,7 +144,10 @@ export default defineComponent({
         return;
       }
       me.forEach((item) => {
+        console.log(item.id, userMenus, "路由对比");
         if (userMenus.includes(item.id)) {
+          console.log("查看原因", userMenus.includes("1"));
+          console.log(item, userMenus, "路由对比");
           const obj = {
             id: item.id,
             name: item.name,
@@ -165,7 +168,6 @@ export default defineComponent({
           menus.push(obj);
         }
       });
-      console.log("menus", menus);
     };
     const handleClick = () => {
       router.push({ path: "/approved" });
@@ -185,7 +187,8 @@ export default defineComponent({
     };
     onMounted(() => {
       getUserMenus();
-      if (route.path == "/userManagement") return;
+      console.log(route);
+      // if (route.path == "/userManagement") return;
       getTask();
     });
     return {
