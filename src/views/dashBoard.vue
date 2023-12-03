@@ -59,23 +59,6 @@
     <el-row style="height: calc(36%); margin: 1vh 0">
       <el-card class="box-card">
         <el-row type="flex" class="barRow">
-          <el-col :span="24" class="barCol">
-            <div class="barContent">
-              <span>子应用缺陷统计图</span>
-              <div class="barDiv">
-                <Bar
-                  :chart-data="appDefectLogCount"
-                  chartName="appDefectLogCount"
-                ></Bar>
-              </div>
-            </div>
-          </el-col>
-        </el-row>
-      </el-card>
-    </el-row>
-    <el-row style="height: calc(36%); margin: 1vh 0">
-      <el-card class="box-card">
-        <el-row type="flex" class="barRow">
           <el-col :span="12" class="barCol">
             <div class="barContent">
               <span>子应用在线用户统计图</span>
@@ -101,6 +84,24 @@
         </el-row>
       </el-card>
     </el-row>
+    <el-row style="height: calc(36%); margin: 1vh 0">
+      <el-card class="box-card">
+        <el-row type="flex" class="barRow">
+          <el-col :span="24" class="barCol">
+            <div class="barContent">
+              <span>子应用缺陷统计图</span>
+              <div class="barDiv">
+                <Bar
+                  :chart-data="appDefectLogCount"
+                  chartName="appDefectLogCount"
+                ></Bar>
+              </div>
+            </div>
+          </el-col>
+        </el-row>
+      </el-card>
+    </el-row>
+
     <el-row style="width: 100%; height: calc(26% - 2vh)">
       <el-table
         :data="tableList"
