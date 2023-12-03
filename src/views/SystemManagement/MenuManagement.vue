@@ -1,9 +1,13 @@
 <template>
   <div class="app-container">
-    <el-row style="height:40px;line-height:40px;" type="flex">
-      <el-col :span="10">
+    <el-row style="height: 40px; line-height: 40px" type="flex">
+      <el-col :span="8">
         <span>搜索菜单：</span>
-        <el-input v-model="menuName" style="width:70%"></el-input>
+        <el-input
+          :clearable="true"
+          v-model="menuName"
+          style="width: 70%"
+        ></el-input>
       </el-col>
       <el-col class="edit" :span="14">
         <el-button @click="queryMenu">查询</el-button>
@@ -13,13 +17,38 @@
     <!-- 表格 -->
     <el-row style="height: calc(100% - 40px)">
       <el-card class="role-card">
-        <el-table ref="multipleTable" :data="list" height="calc(100% - 5vh)"
-          :header-cell-style="{ background: '#11ac9b !important', color: '#ffffff', }" :highlight-current-row="highlight"
-          style="width: 100%" :row-style="rowStyle" row-key="menuId" @select="handerChange">
+        <el-table
+          ref="multipleTable"
+          :data="list"
+          height="calc(100% - 5vh)"
+          :header-cell-style="{
+            background: '#11ac9b !important',
+            color: '#ffffff',
+          }"
+          :highlight-current-row="highlight"
+          style="width: 100%"
+          :row-style="rowStyle"
+          row-key="menuId"
+          @select="handerChange"
+        >
           <el-table-column type="selection" width="55" />
-          <el-table-column label="序号" align="center" type="index" :index="recordFormat" width="80px" min-width="80px" />
-          <el-table-column v-for="item in tableHeader" :key="item.key" :label="item.label" show-overflow-tooltip
-            align="center" :min-width="item.minWidth" :width="item.width">
+          <el-table-column
+            label="序号"
+            align="center"
+            type="index"
+            :index="recordFormat"
+            width="80px"
+            min-width="80px"
+          />
+          <el-table-column
+            v-for="item in tableHeader"
+            :key="item.key"
+            :label="item.label"
+            show-overflow-tooltip
+            align="center"
+            :min-width="item.minWidth"
+            :width="item.width"
+          >
             <template v-slot="scope">
               <span v-if="item.key === 'operate'">
                 <el-button type="text" @click="openShareDialog(scope.row)">
@@ -50,8 +79,14 @@
     </el-row>
 
     <!--弹框部分-->
-    <MenuDialog :title="dialogTitle" :dialog-status="dialogStatus" v-model:show="dialogAdd" :temp1="temp" source="task"
-      :parentId="parentId" />
+    <MenuDialog
+      :title="dialogTitle"
+      :dialog-status="dialogStatus"
+      v-model:show="dialogAdd"
+      :temp1="temp"
+      source="task"
+      :parentId="parentId"
+    />
 
     <!--删除 角色 弹框部分-->
     <!-- <el-dialog title="删除角色" v-model="dialogDelRole" class="confirmDialog" :close-on-click-modal="false">
@@ -69,17 +104,17 @@
   </div>
 </template>
 <script>
-import { Edit, Tools } from '@element-plus/icons-vue'
+import { Edit, Tools } from "@element-plus/icons-vue";
 import MenuDialog from "./component/menuDialog.vue";
-import * as menuApi from "@/api/menu"
-import { ElMessage, ElMessageBox } from 'element-plus'
+import * as menuApi from "@/api/menu";
+import { ElMessage, ElMessageBox } from "element-plus";
 export default {
-  name: 'TaskDistribute',
+  name: "TaskDistribute",
   components: { MenuDialog, Edit, Tools },
   data() {
     return {
-      menuName: '',
-      menuId: '',
+      menuName: "",
+      menuId: "",
       serviceTotal: 0,
       filterData: {
         appName: "",
@@ -88,7 +123,7 @@ export default {
       userid: "",
       page: 1,
       pageSize: 10,
-      selectRows: [],//勾选列表数据
+      selectRows: [], //勾选列表数据
       list: [
         // { component: '002', menuName: '张三', orderNum: '1', createTime: '2022-12-33' },
         // { component: '002', menuName: '李四', orderNum: '1', createTime: '2022-12-33' },
@@ -96,83 +131,81 @@ export default {
         // { component: '002', menuName: '张三', orderNum: '1', createTime: '2022-12-33' },
       ],
       tableHeader: [
-        { label: '菜单名称', key: 'menuName' },
-        { label: '菜单排序', key: 'orderNum' },
-        { label: '菜单路径', key: 'component' },
-        { label: '创建时间', key: 'createTime' },
-        { label: '操作', key: 'operate' },
+        { label: "菜单名称", key: "menuName" },
+        { label: "菜单排序", key: "orderNum" },
+        { label: "菜单路径", key: "component" },
+        { label: "创建时间", key: "createTime" },
+        { label: "操作", key: "operate" },
       ],
       multipleSelection: [],
       statusOptions: [],
       temp: {},
       highlight: true,
       dialogDelRole: false,
-      dialogTitle: '', // 弹框标题
-      dialogStatus: '',
+      dialogTitle: "", // 弹框标题
+      dialogStatus: "",
       dialogAdd: false,
       height: document.documentElement.clientHeight,
       parentId: 0,
-    }
+    };
   },
   created() {
-    this.userid = localStorage.getItem('createById')
+    this.userid = localStorage.getItem("createById");
     this.getList();
   },
-  mounted() {
-  },
+  mounted() {},
   methods: {
     handerChange(row, select) {
       if (select.parentId == 0) {
         if (this.parentId == select.menuId) {
-          this.$refs.multipleTable.toggleRowSelection(select, false)
+          this.$refs.multipleTable.toggleRowSelection(select, false);
           this.parentId = 0;
           return;
         }
         this.parentId = select.menuId;
-        this.$refs.multipleTable.clearSelection()
-        this.$refs.multipleTable.toggleRowSelection(select, true)
-        row.forEach(item => {
+        this.$refs.multipleTable.clearSelection();
+        this.$refs.multipleTable.toggleRowSelection(select, true);
+        row.forEach((item) => {
           if (item.parentId != 0) {
-            this.$refs.multipleTable.toggleRowSelection(item, false)
+            this.$refs.multipleTable.toggleRowSelection(item, false);
           }
-        })
+        });
       } else {
-        this.$refs.multipleTable.toggleRowSelection(select, false)
+        this.$refs.multipleTable.toggleRowSelection(select, false);
         this.$message({
           type: "warning",
-          message: "不能选择二级菜单"
-        })
+          message: "不能选择二级菜单",
+        });
       }
     },
     openShareDialog(val) {
-      console.log(val, 'ssss');
+      console.log(val, "ssss");
       this.temp = val;
       this.tableData = val;
       this.dialogAdd = true;
-      this.dialogStatus = 'update'
+      this.dialogStatus = "update";
     },
     getList() {
       let params = {
-        menuName: this.menuName
-      }
-      menuApi.selectAllMenu(params).then(res => {
+        menuName: this.menuName,
+      };
+      menuApi.selectAllMenu(params).then((res) => {
         // this.list = res.data.rows;
         this.list = [];
-        res.data.rows.forEach(item => {
+        res.data.rows.forEach((item) => {
           if (item.parentId == 0) {
             this.list.push(item);
           } else {
             for (let i = 0; i < this.list.length; i++) {
               if (item.parentId == this.list[i].menuId) {
-                this.list[i].children.push(item)
+                this.list[i].children.push(item);
               }
             }
           }
-        })
+        });
         this.menuId = res.data.rows.menuId;
-        this.serviceTotal = res.data.total
-      })
-
+        this.serviceTotal = res.data.total;
+      });
     },
     queryMenu() {
       this.getList();
@@ -180,58 +213,53 @@ export default {
 
     //删除
     deleteData(val) {
-      this.dialogDelRole = true
-      this.menuId = val.menuId
-      ElMessageBox.confirm(
-        `确定删除${val.menuName}吗?`,
-        'Warning',
-        {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning',
-        }
-      )
+      this.dialogDelRole = true;
+      this.menuId = val.menuId;
+      ElMessageBox.confirm(`确定删除${val.menuName}吗?`, "Warning", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
         .then(() => {
-          this.deleteDataRole()
+          this.deleteDataRole();
         })
         .catch(() => {
           ElMessage({
-            type: 'info',
-            message: '已取消删除',
-          })
-        })
+            type: "info",
+            message: "已取消删除",
+          });
+        });
     },
 
     deleteDataRole() {
       let params = {
-        menuId: this.menuId
-      }
+        menuId: this.menuId,
+      };
       // let params = {
       //   "menuId":menuId
       // }
       // console.log(menuId, 'params');
-      menuApi.deleteMenuData(params).then(res => {
-        console.log(res, 'deleteData');
+      menuApi.deleteMenuData(params).then((res) => {
+        console.log(res, "deleteData");
         if (res.code == 200) {
-          this.dialogDelRole = false
-          this.getList()
+          this.dialogDelRole = false;
+          this.getList();
           this.$message({
-            message: '删除成功！',
-            type: 'success'
-          })
-        }else {
+            message: "删除成功！",
+            type: "success",
+          });
+        } else {
           this.$message({
             message: res.msg,
-            type: 'error'
-          })
+            type: "error",
+          });
         }
-
-      })
+      });
     },
     // 分页查询
     handleCurrentChange(val) {
       console.log(val);
-      this.getList()
+      this.getList();
     },
     recordFormat(index) {
       const page = this.page;
@@ -246,22 +274,21 @@ export default {
 
     // 清空已选项数组，且置空所有选择
     resetSelect() {
-      this.selectRows = []
-      this.temp = {}
-      this.$refs.multipleTable.clearSelection()
+      this.selectRows = [];
+      this.temp = {};
+      this.$refs.multipleTable.clearSelection();
     },
 
     // 新增角色
     addDialog() {
-      this.highlight = false
-      this.temp = {}
-      this.dialogTitle = '新增菜单'
-      this.dialogStatus = 'create'
-      this.dialogAdd = true
+      this.highlight = false;
+      this.temp = {};
+      this.dialogTitle = "新增菜单";
+      this.dialogStatus = "create";
+      this.dialogAdd = true;
     },
-
-  }
-}
+  },
+};
 </script>
 <style lang="scss">
 .role-card {
@@ -308,4 +335,3 @@ export default {
   }
 }
 </style>
-

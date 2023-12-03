@@ -697,7 +697,7 @@ export default {
       this.highlight = false;
       // this.temp = {}
       this.resetSelect();
-      this.dialogTitle = "新增图片";
+      // this.dialogTitle = "新增图片";
       this.dialogTitle = "新增轮播图";
       this.dialogStatus = "create";
       this.dialogAdd = true;
