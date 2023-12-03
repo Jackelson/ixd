@@ -48,7 +48,7 @@
                 style="width: 200px"
                 clearable
               >
-                <el-option label="删除" value="-1"></el-option>
+                <!-- <el-option label="删除" value="-1"></el-option> -->
                 <el-option label="未提交" value="0"></el-option>
                 <el-option label="提交审批" value="1"></el-option>
                 <el-option label="上架" value="2"></el-option>
@@ -850,7 +850,8 @@ export default {
           return (
             item.state == "上架" ||
             item.state == "申请下架" ||
-            item.state == "审批驳回"
+            item.state == "审批驳回" ||
+            item.state == "提交审批"
           );
         }).length > 0
           ? true
