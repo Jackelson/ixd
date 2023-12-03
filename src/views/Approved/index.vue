@@ -46,6 +46,7 @@ import { onMounted, ref } from "vue";
 import ApprovedList from "./components/approvedList.vue";
 import AppList from "./components/appList.vue";
 import { appList, approvedList } from "@/api/application";
+
 const activeName = ref("first");
 const state = ref(1);
 const stateObj = {

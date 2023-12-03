@@ -23,6 +23,11 @@
           <el-button @click="handleClick(scope.row)">审批</el-button>
         </template>
       </el-table-column>
+      <el-table-column label="流程图">
+        <template v-slot="scope">
+          <el-button @click="viewFlow(scope.row)">查看</el-button>
+        </template>
+      </el-table-column>
     </el-table>
     <el-pagination
       style="margin-top: 20px; display: flex; justify-content: center"
@@ -80,10 +85,12 @@
         </div>
       </div>
     </el-dialog>
+    <showImg ref="imgRef" :src="flowSrc" />
   </div>
 </template>
 <script setup>
 import { defineProps, ref, defineEmits } from "vue";
+import showImg from "./showImg.vue";
 import {
   getDetail,
   approvedTask,
@@ -269,6 +276,20 @@ const handleError = () => {
         message: "已取消",
       });
     });
+};
+
+// 查看流程图
+const imgRef = ref();
+const flowSrc = ref("");
+const viewFlow = (row) => {
+  if (row.taskName == "应用下架审批") {
+    flowSrc.value = require("../../../assets/unline.png");
+  } else if (row.taskName == "应用上架审批") {
+    flowSrc.value = require("../../../assets/online.jpg");
+  } else {
+    flowSrc.value = require("../../../assets/register.jpg");
+  }
+  imgRef.value.open();
 };
 </script>
 <style lang="scss" scoped>
