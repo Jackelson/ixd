@@ -1,7 +1,7 @@
 <template>
   <el-dialog v-model="visible" title="选择筛选框">
     <template #default>
-      <div>
+      <div v-if="data.menuId == '/application'">
         <el-checkbox-group v-model="checkList">
           <el-checkbox label="appName">
             <div class="label">应用名称输入搜索框</div>
@@ -11,6 +11,16 @@
           </el-checkbox>
           <el-checkbox label="businessType">
             <div class="label">业务域选择框</div>
+          </el-checkbox>
+        </el-checkbox-group>
+      </div>
+      <div v-if="data.menuId == '/userManagement'">
+        <el-checkbox-group v-model="checkList">
+          <el-checkbox label="userName">
+            <div class="label">用户名</div>
+          </el-checkbox>
+          <el-checkbox label="roleId">
+            <div class="label">角色</div>
           </el-checkbox>
         </el-checkbox-group>
       </div>
@@ -25,7 +35,7 @@
 </template>
 
 <script setup>
-import { ref, defineExpose, defineProps, defineEmits, watch } from "vue";
+import { ref, defineExpose, defineProps, defineEmits, watchEffect } from "vue";
 import { editFilterCon } from "@/api/application";
 
 const props = defineProps({
@@ -45,14 +55,17 @@ const open = () => {
   visible.value = true;
 };
 // checkList.value = props.isCheck.split(",");
-watch(
-  () => props.isCheck,
-  (n, o) => {
-    console.log(n, o);
-    checkList.value = props.isCheck.split(",");
-  },
-  { immediate: true }
-);
+// watch(
+//   () => props.isCheck,
+//   (n, o) => {
+//     console.log(n, o);
+//     checkList.value = props.isCheck.split(",");
+//   },
+//   { immediate: true }
+// );
+watchEffect(() => {
+  checkList.value = props.isCheck.split(",");
+});
 const save = async () => {
   const paramslist = checkList.value.join(",");
   const data = {

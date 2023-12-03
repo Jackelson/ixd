@@ -63,37 +63,64 @@
           <!--右侧栏-->
           <el-col :span="19" style="border-left: 1px solid #ebeef5">
             <el-row class="formRow">
-              <el-col :span="24" class="formSty">
-                <span
-                  style="font-size: calc(100vw / 1920 * 14); margin-left: 10px"
-                  >用户名：</span
-                >
-                <el-input
-                  v-model="filterData.userName"
-                  style="width: 200px"
-                ></el-input>
-                <span
-                  style="font-size: calc(100vw / 1920 * 14); margin-left: 10px"
-                  >角色：</span
-                >
-                <el-select
-                  v-model="filterData.roleId"
-                  filterable
-                  clearable
-                  placeholder="--请选择用户角色--"
-                  @change="filterChange(2)"
-                  class="search-select"
-                >
-                  <el-option
-                    v-for="(item, index) in userTypeList"
-                    :key="index"
-                    :label="item.label"
-                    :value="item.key"
-                  ></el-option>
-                </el-select>
+              <el-col
+                v-if="isCheckString.indexOf('userName') >= 0"
+                :span="5"
+                class="formSty"
+              >
+                <div>
+                  <span
+                    style="
+                      font-size: calc(100vw / 1920 * 14);
+                      margin-left: 10px;
+                    "
+                    >用户名：</span
+                  >
+                  <searchLog
+                    style="width: 200px"
+                    ref="searchLogRef"
+                    v-model:modelValue="filterData.userName"
+                    :searchData="searchData"
+                    selectKey="userName"
+                  ></searchLog>
+                </div>
+              </el-col>
+              <el-col v-if="isCheckString.indexOf('roleId') >= 0" :span="5">
+                <div>
+                  <span
+                    style="
+                      font-size: calc(100vw / 1920 * 14);
+                      margin-left: 10px;
+                    "
+                    >角色：</span
+                  >
+                  <el-select
+                    v-model="filterData.roleId"
+                    filterable
+                    clearable
+                    placeholder="--请选择用户角色--"
+                    @change="filterChange(2)"
+                    class="search-select"
+                  >
+                    <el-option
+                      v-for="(item, index) in userTypeList"
+                      :key="index"
+                      :label="item.label"
+                      :value="item.key"
+                    ></el-option>
+                  </el-select>
+                </div>
                 <!-- <el-input v-model="filterData.roleId" style="width:200px"></el-input> -->
-                <el-button style="margin-left: 10px" @click="searchList"
+              </el-col>
+              <el-col :span="5">
+                <el-button
+                  v-if="isCheckString != ''"
+                  style="margin-left: 10px"
+                  @click="searchList"
                   >查询</el-button
+                >
+                <el-button style="margin-left: 10px" @click="checkSeach"
+                  >选择筛选框</el-button
                 >
               </el-col>
             </el-row>
@@ -370,6 +397,12 @@
         <el-button type="primary" @click="deleteDataRole">确 认</el-button>
       </el-row>
     </el-dialog>
+    <pickModel
+      ref="pickRef"
+      :data="searchData"
+      :isCheck="isCheckString"
+      @reload="getFilterNum"
+    />
   </div>
 </template>
 
@@ -378,10 +411,14 @@ import { transTree } from "@/api/transTree_.js";
 import * as systemApi from "@/api/system";
 import * as api from "@/api/user";
 import * as roleApi from "@/api/role";
+import searchLog from "@/views/components/searchLog.vue";
+import { getFilterCon } from "@/api/application";
+import pickModel from "../ApplicationManagement/component/pickModel.vue";
 export default {
-  components: {},
+  components: { searchLog, pickModel },
   data() {
     return {
+      isCheckString: "userName,roleId",
       dialogTableVisible: false,
       tableLoading: true,
       dialogTitle: "",
@@ -549,6 +586,12 @@ export default {
     btnStatus() {
       return false;
     },
+    searchData: function () {
+      return {
+        userId: localStorage.getItem("createById"),
+        menuId: this.$route.path,
+      };
+    },
   },
   created() {
     this.getGroup();
@@ -588,6 +631,10 @@ export default {
         (this.updataNodeStatus = true),
         (this.deleteNodeStatus = true),
         (this.highlightBoolean = false);
+      console.log(this.$refs.searchLogRef);
+      this.$refs.searchLogRef.addRecord().then(() => {
+        this.$refs.searchLogRef.remoteMethod();
+      });
       this.getList(param);
     },
     // 查询表单
@@ -852,6 +899,22 @@ export default {
         }
       });
     },
+    // 查询搜索框
+    checkSeach() {
+      this.$refs.pickRef.open();
+    },
+    // 获取筛选输入框
+    async getFilterNum() {
+      const res = await getFilterCon(this.searchData);
+      if (res.code == 200) {
+        console.log(res);
+        res.data.forEach((item) => {
+          if (item.menuId == this.searchData.menuId) {
+            this.isCheckString = item.paramslist;
+          }
+        });
+      }
+    },
     // 删除部门
     deleteDataNode() {
       systemApi.deleteData({ deptId: this.selectGroupId }).then((res) => {
@@ -905,7 +968,7 @@ export default {
     handleSelectionChange(val) {
       this.multipleSelection = val;
       this.temp = Object.assign({}, this.multipleSelection[0]);
-      this.temp.roleId = this.temp.roles ? this.temp.roles[0].roleId : null;
+      this.temp.roleId = this.temp.roles ? this.temp.roles[0]?.roleId : null;
       console.log(this.multipleSelection, this.temp, "val");
     },
     // 选中某行
