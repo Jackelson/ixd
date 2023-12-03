@@ -25,8 +25,8 @@
 </template>
 
 <script setup>
-import { ref, defineExpose, defineProps, defineEmits } from "vue";
-import { getFilterCon } from "@/api/application";
+import { ref, defineExpose, defineProps, defineEmits, watch } from "vue";
+import { editFilterCon } from "@/api/application";
 
 const props = defineProps({
   data: {
@@ -40,19 +40,29 @@ const props = defineProps({
 const emits = defineEmits(["reload"]);
 const visible = ref(false);
 const checkList = ref([]);
-checkList.value = props.isCheck.split(",");
+
 const open = () => {
   visible.value = true;
 };
+// checkList.value = props.isCheck.split(",");
+watch(
+  () => props.isCheck,
+  (n, o) => {
+    console.log(n, o);
+    checkList.value = props.isCheck.split(",");
+  },
+  { immediate: true }
+);
 const save = async () => {
   const paramslist = checkList.value.join(",");
   const data = {
     ...props.data,
     paramslist,
   };
-  const res = await getFilterCon(data);
+  const res = await editFilterCon(data);
   if (res.code == 200) {
     emits("reload");
+    visible.value = false;
   }
   console.log(res);
 };

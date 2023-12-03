@@ -453,6 +453,7 @@ export default {
     this.requestData();
     this.SysSelectDictionary();
     this.remoteMethod();
+    this.getFilterNum();
     // 获取菜单tree
     // this.selectMenuTree()
   },
@@ -465,6 +466,11 @@ export default {
       const res = await getFilterCon(this.searchData);
       if (res.code == 200) {
         console.log(res);
+        res.data.forEach((item) => {
+          if (item.menuId == this.searchData.menuId) {
+            this.isCheckString = item.paramslist;
+          }
+        });
       }
     },
     // 选择筛选框
