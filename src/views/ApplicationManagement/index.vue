@@ -485,7 +485,10 @@ export default {
       const res = await getSeachRecord(data);
       this.searchLoading = false;
       if (res.code == 200) {
-        this.searchRecords = res.data;
+        this.searchRecords = res.data.filter(
+          (item) =>
+            item.selectContentList != null && item.selectContentList !== ""
+        );
       }
     },
     // 增加历史记录
