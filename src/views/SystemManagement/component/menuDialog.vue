@@ -1,82 +1,113 @@
 <template>
   <!--弹框部分-->
-  <el-dialog :title="title" v-model="groupVisible" class="editDialog" :close-on-click-modal="false"
-    @close="closeGroupVisible">
-    <el-form ref="dataform" label-width="120px" label-position="right" :rules="rules" :model="temp" class="editForm">
+  <el-dialog
+    :title="title"
+    v-model="groupVisible"
+    class="editDialog"
+    :close-on-click-modal="false"
+    @close="closeGroupVisible"
+  >
+    <el-form
+      ref="dataform"
+      label-width="120px"
+      label-position="right"
+      :rules="rules"
+      :model="temp"
+      class="editForm"
+    >
       <div v-for="(item, index) in formHeader" :key="index">
         <el-form-item :label="item.label" :prop="item.key">
-          <el-input v-if="item.key === 'menu'" v-model="temp[item.key]" style="width:90%" />
-          <el-input v-else v-model="temp[item.key]" style="width:90%" />
+          <el-input
+            v-if="item.key === 'menu'"
+            v-model="temp[item.key]"
+            style="width: 90%"
+            :type="item.type"
+          />
+          <el-input
+            v-else
+            v-model="temp[item.key]"
+            style="width: 90%"
+            :type="item.type"
+          />
         </el-form-item>
       </div>
     </el-form>
-    <div style="display: flex; justify-content: flex-end;" class="dialog-footer">
+    <div style="display: flex; justify-content: flex-end" class="dialog-footer">
       <el-button @click="cancelAdd">取 消</el-button>
-      <el-button v-if="dialogStatus === 'create'" type="primary" @click="createData">提 交</el-button>
-      <el-button v-if="dialogStatus === 'update'" type="primary" @click="updateData">提 交</el-button>
+      <el-button
+        v-if="dialogStatus === 'create'"
+        type="primary"
+        @click="createData"
+        >提 交</el-button
+      >
+      <el-button
+        v-if="dialogStatus === 'update'"
+        type="primary"
+        @click="updateData"
+        >提 交</el-button
+      >
     </div>
   </el-dialog>
 </template>
 <script>
-import * as menuApi from "@/api/menu"
+import * as menuApi from "@/api/menu";
 
 export default {
-  name: 'TaskList',
+  name: "TaskList",
   props: {
     temp1: {
       require: true,
       type: Object,
-      default: null
+      default: null,
     },
     show: {
       type: Boolean,
-      default: false
+      default: false,
     },
     source: {
       type: String,
-      default: ''
+      default: "",
     },
     title: {
       type: String,
       require: true,
-      default: ''
+      default: "",
     },
     dialogStatus: {
       type: String,
       require: true,
-      default: ''
+      default: "",
     },
     parentId: {
       type: Number,
       require: true,
-      default: 0
-    }
+      default: 0,
+    },
   },
   data() {
     return {
       groupVisible: this.show, // 引入页面弹窗的状态值一定要设置
       formHeader: [
-        { label: '菜单名称', key: 'menuName', require: true },
-        { label: '菜单排序', key: 'orderNum', require: true },
-        { label: '菜单路径', key: 'component', require: true },
-        { label: '创建者', key: 'createBy', require: false },
-        { label: '备注', key: 'remark', require: false },
-        { label: '路由地址', key: 'path', require: true },
-        { label: '是否为外链', key: 'isFrame', require: false },
-        { label: '菜单类型', key: 'menuType', require: false },
-        { label: '是否缓存', key: 'isCache', require: false },
-        { label: '权限标识', key: 'perms', require: false },
-        { label: '菜单图标', key: 'icon', require: false },
+        { label: "菜单名称", key: "menuName", require: true, type: "text" },
+        { label: "菜单排序", key: "orderNum", require: true, type: "number" },
+        { label: "菜单路径", key: "component", require: true, type: "text" },
+        { label: "创建者", key: "createBy", require: false, type: "text" },
+        { label: "备注", key: "remark", require: false, type: "text" },
+        { label: "路由地址", key: "path", require: true, type: "text" },
+        { label: "是否为外链", key: "isFrame", require: false, type: "text" },
+        { label: "菜单类型", key: "menuType", require: false, type: "text" },
+        { label: "是否缓存", key: "isCache", require: false, type: "text" },
+        { label: "权限标识", key: "perms", require: false, type: "text" },
+        // { label: '菜单图标', key: 'icon', require: false },
         // { label: '父菜单ID', key: 'parentId' },
-
       ],
       rules: {
         menuName: [
-          { required: true, message: '请输入菜单名称', trigger: 'blur' },
-          { min: 1, max: 16, message: '菜单名称长度1-16', trigger: 'blur' },
+          { required: true, message: "请输入菜单名称", trigger: "blur" },
+          { min: 1, max: 16, message: "菜单名称长度1-16", trigger: "blur" },
         ],
         orderNum: [
-          { required: true, message: '请输入菜单排序', trigger: 'blur' },
+          { required: true, message: "请输入菜单排序", trigger: "blur" },
           // {
           //   required: true,
           //   pattern: "^[0-9]*$",//eslint-disable-line
@@ -85,76 +116,71 @@ export default {
           // }
         ],
         component: [
-          { required: true, message: '请输入菜单路径', trigger: 'blur' },
+          { required: true, message: "请输入菜单路径", trigger: "blur" },
         ],
-        path: [
-          { required: true, message: '请输入路由地址', trigger: 'blur' },
-
-        ],
+        path: [{ required: true, message: "请输入路由地址", trigger: "blur" }],
         createBy: [
-          { required: true, message: '请输入创建者', trigger: 'blur' },
-
-        ]
+          { required: true, message: "请输入创建者", trigger: "blur" },
+        ],
       },
       temp: {},
       listQuery: {
         _page: 0,
-        _page_size: 15
+        _page_size: 15,
       },
-      dialogTitle: '', // 弹框标题
+      dialogTitle: "", // 弹框标题
       // dialogStatus: '',
       userOptions: [], // 人员下拉选择
       stationOptions: [], // 集输站下拉选择
       wellOptions: [], // 油井下拉选择
       truckOptions: [], // 车辆下拉选择
       driverOptions: [], // 司机下拉选择
-      keyOptions: [] // 钥匙下拉选择
-    }
+      keyOptions: [], // 钥匙下拉选择
+    };
   },
   watch: {
     show: {
       handler(newValue) {
-        this.groupVisible = newValue
+        this.groupVisible = newValue;
         if (Object.keys(this.temp1).length > 0) {
-          this.temp = this.temp1
+          this.temp = this.temp1;
         }
       },
-      deep: true
-    }
+      deep: true,
+    },
   },
-  created() {
-  },
-  mounted() { },
+  created() {},
+  mounted() {},
   methods: {
     closeGroupVisible() {
-      this.$emit('update:show', false)
-      if (this.dialogStatus === 'create') {
-        this.resetSelect()
-        this.groupVisible = false
+      this.$emit("update:show", false);
+      if (this.dialogStatus === "create") {
+        this.resetSelect();
+        this.groupVisible = false;
       } else {
-        this.groupVisible = false
-        this.resetSelect()
+        this.groupVisible = false;
+        this.resetSelect();
       }
     },
     // 清空已选项数组，且置空所有选择
     resetSelect() {
       // this.selectRows = []
-      this.temp = {}
+      this.temp = {};
     },
     // 取消新增
     cancelAdd() {
-      if (this.dialogStatus === 'create') {
-        this.resetSelect()
-        this.groupVisible = false
+      if (this.dialogStatus === "create") {
+        this.resetSelect();
+        this.groupVisible = false;
       } else {
-        this.groupVisible = false
+        this.groupVisible = false;
       }
     },
     // 新增提交
     createData() {
-      this.$refs['dataform'].validate((valid) => {
+      this.$refs["dataform"].validate((valid) => {
         if (valid) {
-          const data = Object.assign({}, this.temp)
+          const data = Object.assign({}, this.temp);
           // const data = {
           //   createBy:"1asd321",
           //   remark:"13awda",
@@ -169,43 +195,43 @@ export default {
           //   perms:"",
           //   icon:"system"
           // }
-          data.parentId = this.parentId
-          menuApi.insertMenuData(data).then(res => {
+          data.parentId = this.parentId;
+          menuApi.insertMenuData(data).then((res) => {
             this.$parent.getList();
-            console.log(res, 'res');
-            this.groupVisible = false
+            console.log(res, "res");
+            this.groupVisible = false;
             this.$message({
-              message: '更新成功！',
-              type: 'success'
-            })
-          })
+              message: "更新成功！",
+              type: "success",
+            });
+          });
         }
-      })
+      });
     },
     // 编辑提交
     updateData() {
-      this.$refs['dataform'].validate((valid) => {
+      this.$refs["dataform"].validate((valid) => {
         if (valid) {
-          const data = Object.assign({}, this.temp)
+          const data = Object.assign({}, this.temp);
           console.log(data, "44444444");
 
-          menuApi.updateMenuData(data).then(res => {
+          menuApi.updateMenuData(data).then((res) => {
             this.$parent.getList();
-            console.log(res, 'res');
-            this.groupVisible = false
+            console.log(res, "res");
+            this.groupVisible = false;
             this.$message({
-              message: '更新成功！',
-              type: 'success'
-            })
-          })
+              message: "更新成功！",
+              type: "success",
+            });
+          });
         }
-      })
+      });
     },
     applicantChange(id) {
-      this.temp.org_id = this._.find(this.userOptions, { id }).org_id
-    }
-  }
-}
+      this.temp.org_id = this._.find(this.userOptions, { id }).org_id;
+    },
+  },
+};
 </script>
 <style lang="scss">
 /*增加，编辑弹窗*/
