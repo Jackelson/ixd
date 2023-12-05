@@ -49,6 +49,7 @@
               v-else-if="item.key == 'noticeType'"
               v-model="temp[item.key]"
               style="width: 90%"
+              :disabled="item.disabled"
             >
               <el-option value="2" label="公告"></el-option>
               <el-option value="1" label="通知"></el-option>
@@ -159,13 +160,18 @@ export default {
   },
   computed: {
     formNoticeHeader: function () {
+      console.log(this.dialogTitle);
       return [
         { label: "标题", key: "noticeTitle" },
         {
           label: this.labelName,
           key: "noticeContent",
         },
-        { label: "类别", key: "noticeType" },
+        {
+          label: "类别",
+          key: "noticeType",
+          disabled: this.title == "修改公告",
+        },
         { label: "备注", key: "remark" },
         {
           label: "app名称",
