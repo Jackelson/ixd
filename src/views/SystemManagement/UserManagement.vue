@@ -457,7 +457,7 @@ export default {
         { label: "电子邮箱", key: "email" },
         { label: "手机号码", key: "phonenumber" },
         { label: "性别", key: "sex" },
-        { label: "密码", key: "password" },
+        // { label: "密码", key: "password" },
         { label: "备注", key: "remark" },
       ],
       rulesForm: {
