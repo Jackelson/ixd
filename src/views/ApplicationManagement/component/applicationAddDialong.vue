@@ -299,6 +299,9 @@ export default {
         contactPerson: [
           { required: true, message: "请输入负责人姓名", trigger: "blur" },
         ],
+        appPersonContact: [
+          { required: true, message: "请选择是否关联用户", trigger: "blur" },
+        ],
         contactPersonTel: [
           { required: true, message: "请输入负责人联系方式", trigger: "blur" },
           { validator: isMobilePhone, trigger: "blur" },

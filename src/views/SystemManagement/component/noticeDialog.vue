@@ -177,6 +177,7 @@ export default {
           label: "app名称",
           key: "app_id",
           hidden: this.temp.noticeType == "2" || this.temp.noticeType == "3",
+          disabled: this.title == "修改通知",
         },
         // { label: '开始时间', key: 'dateStart' },
         // { label: '结束时间', key: 'dateEnd' },

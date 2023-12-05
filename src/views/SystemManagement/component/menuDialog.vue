@@ -23,6 +23,14 @@
             style="width: 90%"
             :type="item.type"
           />
+
+          <el-radio-group
+            v-else-if="item.key == 'isCache' || item.key == 'isFrame'"
+            v-model="temp[item.key]"
+          >
+            <el-radio :label="0">是</el-radio>
+            <el-radio :label="6">否</el-radio>
+          </el-radio-group>
           <el-input
             v-else
             v-model="temp[item.key]"

@@ -1,310 +1,216 @@
-<!--
- * @Description: 
- * @Version: 2.0
- * @Autor: hjw
- * @Date: 2023-05-06 17:25:25
- * @LastEditors: hjw
- * @LastEditTime: 2023-06-18 19:15:50
--->
 <template>
-  <div class="app-container">
-    <el-row>
-      <el-form :inline="true">
-        <el-form-item label="图片名称">
-          <el-input v-model="imgQuery.imageName" clearable />
-        </el-form-item>
-        <el-form-item label="图片状态">
-          <el-select v-model="imgQuery.state" clearable>
-            <el-option value="0" label="待展示"></el-option>
-            <el-option value="1" label="已展示"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="创建人">
-          <el-input v-model="imgQuery.createName" clearable />
-        </el-form-item>
-        <el-form-item label="图片介绍">
-          <el-input v-model="imgQuery.imageDesc" clearable />
-        </el-form-item>
-        <el-form-item>
-          <el-button @click="getList('query')">查询</el-button>
-        </el-form-item>
-      </el-form>
-    </el-row>
-    <el-row style="height: 40px; line-height: 40px" type="flex">
-      <el-col class="edit" :span="16">
-        <el-button @click="addDialog">新增</el-button>
-        <!-- <el-button @click="handleUpdate">修改</el-button> -->
-        <el-button @click="handleStop(-1)">删除</el-button>
-        <el-button @click="handleUpdateStatus(1)">展示</el-button>
-        <el-button @click="handleUpdateStatus(0)">取消展示</el-button>
-      </el-col>
-    </el-row>
-
-    <!-- 表格 -->
-    <el-row>
-      <el-card class="role-card">
-        <el-table
-          ref="multipleTable"
-          :data="tableList"
-          height="450px"
-          :header-cell-style="{
-            background: '#11ac9b !important',
-            color: '#ffffff',
-          }"
-          :highlight-current-row="highlight"
-          style="width: 100%"
-          :row-style="rowStyle"
-          @row-click="rowClick"
-          @selection-change="handleSelectionChange"
+  <div class="wrape">
+    <el-card>
+      <el-row>
+        <el-form :inline="true">
+          <el-form-item label="图片名称">
+            <el-input v-model="imgQuery.imageName" clearable />
+          </el-form-item>
+          <el-form-item label="图片状态">
+            <el-select v-model="imgQuery.state" clearable>
+              <el-option value="0" label="待展示"></el-option>
+              <el-option value="1" label="已展示"></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="创建人">
+            <el-input v-model="imgQuery.createName" clearable />
+          </el-form-item>
+          <el-form-item label="图片介绍">
+            <el-input v-model="imgQuery.imageDesc" clearable />
+          </el-form-item>
+          <el-form-item>
+            <el-button @click="getList('query')">查询</el-button>
+          </el-form-item>
+        </el-form>
+      </el-row>
+    </el-card>
+    <el-card>
+      <el-table
+        ref="multipleTable"
+        :data="tableList"
+        height="450px"
+        :header-cell-style="{
+          background: '#11ac9b !important',
+          color: '#ffffff',
+        }"
+        :highlight-current-row="highlight"
+        style="width: 100%"
+        :row-style="rowStyle"
+        @row-click="rowClick"
+        @selection-change="handleSelectionChange"
+      >
+        <el-table-column type="selection" width="55"></el-table-column>
+        <el-table-column
+          label="序号"
+          align="center"
+          type="index"
+          :index="recordFormat"
+          width="80px"
+          min-width="80px"
+        />
+        <el-table-column
+          v-for="item in tableHeader"
+          :key="item.key"
+          :label="item.label"
+          show-overflow-tooltip
+          align="center"
+          :min-width="item.minWidth"
+          :width="item.width"
         >
-          <!-- @select="onTableSelect" -->
-          <!-- <el-table
-          ref="multipleTable"
-          v-loading="tableLoading"
-          :data="tableList"
-          :header-cell-style="{ background: '#11ac9b !important', color: '#ffffff', }"
-          :highlight-current-row="highlight"
-          style="width: 100%;max-height:500px;"
-          :row-style="rowStyle"
-          @row-click="rowClick"
-          @selection-change="handleSelectionChange"
-        > -->
-          <!-- @select="onTableSelect" -->
-          <el-table-column type="selection" width="55"></el-table-column>
-          <el-table-column
-            label="序号"
-            align="center"
-            type="index"
-            :index="recordFormat"
-            width="80px"
-            min-width="80px"
+          <template v-slot="scope">
+            <span v-if="item.key === 'operate'">
+              <el-button type="text" @click="openImage(scope.row)">
+                <span>查看</span>
+              </el-button>
+            </span>
+            <span>{{ scope.row[item.key] }}</span>
+          </template>
+        </el-table-column>
+      </el-table>
+      <el-row justify="end">
+        <el-col :span="8">
+          <el-pagination
+            :current-page="page"
+            :page-sizes="[10, 20, 50, 100]"
+            :page-size="pageSize"
+            layout="total, sizes, prev, pager, next, jumper"
+            :total="imgTotal"
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
           />
-          <el-table-column
-            v-for="item in tableHeader"
-            :key="item.key"
-            :label="item.label"
-            show-overflow-tooltip
-            align="center"
-            :min-width="item.minWidth"
-            :width="item.width"
-          >
-            <template v-slot="scope">
-              <span v-if="item.key === 'operate'">
-                <el-button type="text" @click="openImage(scope.row)">
-                  <span>查看</span>
-                </el-button>
-              </span>
-              <span>{{ scope.row[item.key] }}</span>
-            </template>
-          </el-table-column>
-        </el-table>
+        </el-col>
+      </el-row>
+      <RotationDialog
+        :title="dialogTitle"
+        :dialog-status="dialogStatus"
+        v-model:show="dialogAdd"
+        :temp1="temp"
+        source="task"
+      />
 
-        <!--分页查询-->
-        <el-row justify="end">
-          <el-col :span="8">
-            <el-pagination
-              :current-page="page"
-              :page-sizes="[10, 20, 50, 100]"
-              :page-size="pageSize"
-              layout="total, sizes, prev, pager, next, jumper"
-              :total="imgTotal"
-              @size-change="handleSizeChange"
-              @current-change="handleCurrentChange"
-            />
-          </el-col>
+      <!--终止、下发、结单 弹框部分-->
+      <el-dialog
+        title="删除"
+        v-model="dialogDel"
+        class="confirmDialog"
+        :close-on-click-modal="false"
+      >
+        <el-row type="flex" justify="center">
+          <div class="img-tip" />
         </el-row>
-      </el-card>
-    </el-row>
-
-    <!-- <el-row>
-      <el-form :model="form">
+        <el-row type="flex" justify="center" style="margin: 20px 0">
+          <span class="message">{{ deleteTxt }}</span>
+        </el-row>
+        <div class="dialog-footer">
+          <el-button @click="dialogDel = false">取 消</el-button>
+          <el-button type="primary" @click="stopData">确 认</el-button>
+        </div>
+      </el-dialog>
+    </el-card>
+    <el-card>
+      <el-form :inline="true">
         <el-form-item label="公告标题">
-          <el-input v-model="form.noticeTitle"></el-input>
+          <el-input v-model="form.noticeTitle" clearable />
         </el-form-item>
-        <el-form-item label="公告内容">
-          <el-input type="textarea" v-model="form.noticeContent"></el-input>
-        </el-form-item>
-        <el-form-item label="公告类型">
-          <el-select v-model="form.region">
-            <el-option label="公告" value="1"></el-option>
-            <el-option label="通知" value="2"></el-option>
+        <el-form-item label="公告状态">
+          <el-select v-model="form.status" clearable>
+            <el-option value="0" label="待发布"></el-option>
+            <el-option value="1" label="已发布"></el-option>
+            <el-option value="2" label="撤回"></el-option>
           </el-select>
         </el-form-item>
-      </el-form>      
-    </el-row> -->
-
-    <!--弹框部分-->
-    <RotationDialog
-      :title="dialogTitle"
-      :dialog-status="dialogStatus"
-      v-model:show="dialogAdd"
-      :temp1="temp"
-      source="task"
-    />
-
-    <!--终止、下发、结单 弹框部分-->
-    <el-dialog
-      title="删除"
-      v-model="dialogDel"
-      class="confirmDialog"
-      :close-on-click-modal="false"
-    >
-      <el-row type="flex" justify="center">
-        <div class="img-tip" />
-      </el-row>
-      <el-row type="flex" justify="center" style="margin: 20px 0">
-        <span class="message">{{ deleteTxt }}</span>
-      </el-row>
-      <div class="dialog-footer">
-        <el-button @click="dialogDel = false">取 消</el-button>
-        <el-button type="primary" @click="stopData">确 认</el-button>
-      </div>
-    </el-dialog>
-  </div>
-  <el-row style="margin-top: 60px">
-    <el-form :inline="true">
-      <el-form-item label="公告标题">
-        <el-input v-model="form.noticeTitle" clearable />
-      </el-form-item>
-      <el-form-item label="公告状态">
-        <el-select v-model="form.status" clearable>
-          <el-option value="0" label="待发布"></el-option>
-          <el-option value="1" label="已发布"></el-option>
-          <el-option value="2" label="撤回"></el-option>
-        </el-select>
-      </el-form-item>
-      <!-- <el-form-item label="创建人">
+        <!-- <el-form-item label="创建人">
         <el-input v-model="form.createName" clearable/>
       </el-form-item> -->
-      <el-form-item label="公告类别">
-        <el-select v-model="form.noticeType" clearable>
-          <el-option value="2" label="公告"></el-option>
-          <el-option value="1" label="通知"></el-option>
-          <el-option value="3" label="新闻资讯"></el-option>
-        </el-select>
-      </el-form-item>
-      <el-form-item>
-        <el-button @click="getNotice('query')">查询</el-button>
-      </el-form-item>
-    </el-form>
-  </el-row>
-  <div class="app-container">
-    <el-row style="height: 40px; line-height: 40px" type="flex">
-      <el-col class="edit" :span="16">
-        <el-button @click="addNoticeDialog">新增</el-button>
-        <el-button @click="noticeUpdate">修改</el-button>
-        <el-button @click="fabuNotice">发布</el-button>
-        <el-button @click="chNotice">撤回</el-button>
-        <el-button @click="deleteNo">删除</el-button>
-        <!-- <el-button @click="getNotice">查询</el-button> -->
-      </el-col>
-    </el-row>
-    <!-- 表格 -->
-    <el-row>
-      <el-card class="role-card">
-        <el-table
-          ref="multipleTable"
-          :data="noticeList"
-          height="450px"
-          :header-cell-style="{
-            background: '#11ac9b !important',
-            color: '#ffffff',
-          }"
-          :highlight-current-row="highlight"
-          style="width: 100%"
-          :row-style="rowStyle"
-          @row-click="rowClick"
-          @selection-change="handleSelectionChange2"
+        <el-form-item label="公告类别">
+          <el-select v-model="form.noticeType" clearable>
+            <el-option value="2" label="公告"></el-option>
+            <el-option value="1" label="通知"></el-option>
+            <el-option value="3" label="新闻资讯"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item>
+          <el-button @click="getNotice('query')">查询</el-button>
+        </el-form-item>
+      </el-form>
+    </el-card>
+    <el-card>
+      <el-table
+        ref="multipleTable"
+        :data="noticeList"
+        height="450px"
+        :header-cell-style="{
+          background: '#11ac9b !important',
+          color: '#ffffff',
+        }"
+        :highlight-current-row="highlight"
+        style="width: 100%"
+        :row-style="rowStyle"
+        @row-click="rowClick"
+        @selection-change="handleSelectionChange2"
+      >
+        <el-table-column type="selection" width="55"></el-table-column>
+        <el-table-column
+          label="序号"
+          align="center"
+          type="index"
+          :index="recordFormat"
+          width="80px"
+          min-width="80px"
+        />
+        <el-table-column
+          v-for="item in noticeHeader"
+          :key="item.key"
+          :label="item.label"
+          show-overflow-tooltip
+          align="center"
+          :min-width="item.minWidth"
+          :width="item.width"
         >
-          <el-table-column type="selection" width="55"></el-table-column>
-          <el-table-column
-            label="序号"
-            align="center"
-            type="index"
-            :index="recordFormat"
-            width="80px"
-            min-width="80px"
+          <template v-slot="scope">
+            <span v-if="item.key == 'noticeType'">{{
+              scope.row[item.key] == 1
+                ? "通知"
+                : scope.row[item.key] == 2
+                ? "公告"
+                : scope.row[item.key] == 3
+                ? "新闻资讯"
+                : ""
+            }}</span>
+            <span v-else>{{ scope.row[item.key] }}</span>
+          </template>
+        </el-table-column>
+      </el-table>
+      <el-row justify="end">
+        <el-col span="9">
+          <el-pagination
+            :current-page="notPage"
+            :page-sizes="[10, 20, 50, 100]"
+            :page-size="notSize"
+            layout="total, sizes, prev, pager, next, jumper"
+            :total="noticeTotal"
+          ></el-pagination>
+        </el-col>
+      </el-row>
+      <el-row justify="end">
+        <el-col :span="8">
+          <el-pagination
+            :current-page="notPage"
+            :page-sizes="[10, 20, 50, 100]"
+            :page-size="notSize"
+            layout="total, sizes, prev, pager, next, jumper"
+            :total="Number(noticeTotal)"
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
           />
-          <el-table-column
-            v-for="item in noticeHeader"
-            :key="item.key"
-            :label="item.label"
-            show-overflow-tooltip
-            align="center"
-            :min-width="item.minWidth"
-            :width="item.width"
-          >
-            <template v-slot="scope">
-              <span v-if="item.key == 'noticeType'">{{
-                scope.row[item.key] == 1
-                  ? "通知"
-                  : scope.row[item.key] == 2
-                  ? "公告"
-                  : scope.row[item.key] == 3
-                  ? "新闻资讯"
-                  : ""
-              }}</span>
-              <span v-else>{{ scope.row[item.key] }}</span>
-            </template>
-          </el-table-column>
-        </el-table>
-        <el-row justify="end">
-          <el-col :span="8">
-            <el-pagination
-              :current-page="notPage"
-              :page-sizes="[10, 20, 50, 100]"
-              :page-size="notSize"
-              layout="total, sizes, prev, pager, next, jumper"
-              :total="noticeTotal"
-              @size-change="handleSizeChang2"
-              @current-change="handleCurrentChange2"
-            />
-          </el-col>
-        </el-row>
-      </el-card>
-    </el-row>
-
-    <!--弹框部分-->
-    <NoticeDialog
-      :title="dialogTitle"
-      :dialogStatus="dialogNoticeStatus"
-      v-model:show="dialogNotice"
-      :temp1="temp"
-      source="task"
-    />
-
-    <!--删除公告-->
-    <el-dialog
-      title="删除"
-      v-model="dialogDel"
-      class="confirmDialog"
-      :close-on-click-modal="false"
-    >
-      <el-row type="flex" justify="center">
-        <div class="img-tip" />
+        </el-col>
       </el-row>
-      <el-row type="flex" justify="center" style="margin: 20px 0">
-        <span class="message">{{ deleteTxt }}</span>
-      </el-row>
-      <div class="dialog-footer">
-        <el-button @click="dialogDel = false">取 消</el-button>
-        <el-button type="primary" @click="stopNotice">确 认</el-button>
-      </div>
-    </el-dialog>
-    <el-dialog
-      title="查看图片"
-      v-model="dialogShow"
-      :close-on-click-modal="false"
-      style="width: 500px"
-    >
-      <img
-        v-if="dialogShow"
-        :src="imgSrc"
-        style="width: 460px; height: 300px"
-      />
-    </el-dialog>
+    </el-card>
+    <RotationDialog />
+    <NoticeDialog />
   </div>
 </template>
+
 <script>
 import * as api from "@/api/appCarousel";
 import RotationDialog from "./component/rotationDialog.vue";
@@ -535,14 +441,15 @@ export default {
     getList(type) {
       let params = {
         pageNum: this.page,
-        ...this.imgQuery,
         pageSize: this.pageSize,
+        ...this.imgQuery,
       };
       params.userId = localStorage.getItem("createById");
       // this.tableLoading = true
       if (type == "query") {
         params.pageNum = 1;
       }
+      console.log("pppppppppppppp", params);
       api.selectData(params).then((res) => {
         console.log(res, "res");
         this.tableList = res.data.rows;
@@ -610,12 +517,12 @@ export default {
     handleSizeChange(pageSize) {
       this.page = 1;
       this.pageSize = pageSize;
-      this.getNotice();
+      this.getList();
     },
     handleSizeChang2(pageSize) {
       this.notPage = 1;
       this.notSize = pageSize;
-      this.getNotice();
+      this.getList();
     },
 
     // 清空已选项数组，且置空所有选择
@@ -867,93 +774,5 @@ export default {
   },
 };
 </script>
-<style lang="scss" scoped>
-.app-container {
-  // height: 70%;
-}
 
-// .app-bottom {
-//   height: 30%;
-// }
-
-.select {
-  color: #909399;
-  font: 12px;
-
-  .select_label {
-    display: inline-block;
-    font-size: 14px;
-    color: #666666;
-    line-height: 24px;
-    margin-right: 10px;
-  }
-
-  .select_box {
-    .el-input--medium .el-input__inner {
-      height: 24px;
-      background: #ffffff;
-      border: 2px solid #797f8d;
-      border-radius: 15px;
-    }
-  }
-}
-
-/* 二次确认弹出框*/
-
-.confirmDialog {
-  .el-dialog__body {
-    padding: 0px 10px !important;
-  }
-
-  .message {
-    font-size: 16px;
-    font-family: Microsoft YaHei;
-    color: #666666;
-    font-weight: bold;
-  }
-
-  .el-dialog {
-    margin-top: 30vh !important;
-    width: 330px;
-    border-radius: 40px;
-
-    .el-dialog__header {
-      padding: 9px;
-      border-radius: 32px 32px 0 0;
-    }
-
-    .el-dialog__title {
-      // 标题
-      color: #fff;
-    }
-
-    .el-dialog__headerbtn .el-dialog__close {
-      // 右侧关闭按钮
-      font-size: 20px;
-    }
-  }
-
-  .dialog-footer {
-    display: flex;
-    justify-content: flex-end;
-    padding: 0px 41px 10px 0px;
-  }
-}
-</style>
-<style lang="scss">
-.role-card {
-  width: 100%;
-  // .el-card__body {
-  //   padding: 5px;
-  //   height: 100%;
-  // }
-}
-
-.el-table .change-row {
-  background: #e4f4f3 !important;
-}
-
-.el-table .change-row-2 {
-  background: #f9fafa !important;
-}
-</style>
+<style lang="scss" scoped></style>

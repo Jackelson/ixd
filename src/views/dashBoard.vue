@@ -56,7 +56,7 @@
         </el-row>
       </el-card>
     </el-row>
-    <el-row style="height: calc(36%); margin: 1vh 0">
+    <!-- <el-row style="height: calc(36%); margin: 1vh 0">
       <el-card class="box-card">
         <el-row type="flex" class="barRow">
           <el-col :span="12" class="barCol">
@@ -100,7 +100,7 @@
           </el-col>
         </el-row>
       </el-card>
-    </el-row>
+    </el-row> -->
 
     <el-row style="width: 100%; height: calc(26% - 2vh)">
       <el-table
@@ -156,7 +156,7 @@
 import * as api from "@/api/dashBoard";
 import PieChart from "./components/pieChart.vue";
 import LineChart from "./components/lineChart.vue";
-import Bar from "./components/bar.vue";
+// import Bar from "./components/bar.vue";
 import VisitsChart from "./components/visitsChart.vue";
 import DownloadChart from "./components/downloadChart.vue";
 
@@ -167,7 +167,7 @@ export default {
     LineChart,
     VisitsChart,
     DownloadChart,
-    Bar,
+    // Bar,
   },
   data() {
     return {
