@@ -100,6 +100,12 @@
           ></el-option>
         </el-select>
       </el-form-item>
+      <el-form-item prop="appPersonContact" label="是否关联用户:">
+        <el-radio-group v-model="formData.appPersonContact" class="ml-4">
+          <el-radio label="0" size="large">是</el-radio>
+          <el-radio label="1" size="large">否</el-radio>
+        </el-radio-group>
+      </el-form-item>
       <el-form-item prop="businessType" label="业务域:">
         <el-select
           v-model="formData.businessType"
@@ -219,6 +225,19 @@ export default {
         }
       }
     };
+    const JudgeTestingUrl = (rule, value, callback) => {
+      if (value == "") {
+        callback(new Error("请输入测试链接地址"));
+      } else if (value.length <= 6) {
+        callback(new Error("请输入完成测试链接地址"));
+      } else {
+        if (value.indexOf("http") == 0 || value.indexOf("https") == 0) {
+          callback();
+        } else {
+          callback(new Error("测试链接地址必须是http或者https开头"));
+        }
+      }
+    };
     const judgeZh = (rule, value, callback) => {
       for (let i = 0; i < value.length; i++) {
         if (value.charCodeAt(i) > 255) {
@@ -260,7 +279,7 @@ export default {
           { required: true, message: "请输入首页地址", trigger: "blur" },
         ],
         cardiacTestingUrl: [
-          { required: true, validator: JudgeHttp, trigger: "change" },
+          { required: true, validator: JudgeTestingUrl, trigger: "change" },
         ],
         applicationDownloadAddress: [
           { required: true, validator: JudgeHttp, trigger: "change" },

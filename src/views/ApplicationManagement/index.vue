@@ -1076,7 +1076,10 @@ export default {
     },
     // 用户配置
     getUserConfiguration(val) {
-      console.log(val, "valll");
+      if (val.appPersonContact == "1") {
+        ElMessage.warning("此应用无需配置");
+        return;
+      }
       this.temp = val;
       this.selectAppUsers(val.id);
       // this.selectAppUsers('APPREGISTERN1a9fe648b8be422d86fc4bcf6efd0b7f')
