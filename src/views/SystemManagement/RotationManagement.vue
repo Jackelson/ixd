@@ -394,6 +394,7 @@ export default {
         { label: "顺序", key: "sort" },
         { label: "名称", key: "imageName" },
         { label: "是否展示", key: "state" },
+        { label: "图片介绍", key: "imageDesc" },
         { label: "查看", key: "operate" },
         { label: "创建时间", key: "createTime" },
         { label: "创建人", key: "createName" },
@@ -630,7 +631,8 @@ export default {
       this.getNotice();
     },
     handleSelectionChange(val) {
-      this.multipleSelection = val;
+      console.log(val);
+      this.multipleSelection = [val];
     },
     handleSelectionChange2(val) {
       this.multipleSelection2 = val;
@@ -659,6 +661,7 @@ export default {
     },
     // 选中某行
     rowClick(row) {
+      debugger;
       this.highlight = true;
       this.temp = Object.assign({}, row);
       console.log(this.temp);
@@ -729,6 +732,12 @@ export default {
       if (this.multipleSelection2.length > 1)
         return this.$message({ type: "error", message: "只能选一个公告" });
       if (this.multipleSelection2.length > 0) {
+        for (let i = 0; i < this.multipleSelection2.length; i++) {
+          if (this.multipleSelection2[i].status == "发布") {
+            this.$message.warning("请先撤回,再进行编辑");
+            return;
+          }
+        }
         this.dialogTitle = "修改公告";
         this.dialogNoticeStatus = "update";
         console.log(this.multipleSelection2[0], "this.multipleSelection2[0]");
@@ -831,7 +840,7 @@ export default {
           } else if (flag == 2) {
             return this.$message({
               type: "warning",
-              message: "勾选的轮播图中包含待展示的",
+              message: "该图片还未展示，展示状态的照片才可以取消展示",
             });
           }
           const params = [];
@@ -860,10 +869,12 @@ export default {
     },
     //删除公告
     deleteNo() {
+      console.log(this.multipleSelection2);
       for (let i = 0; i < this.multipleSelection2.length; i++) {
-        if (this.multipleSelection2[i].status != "2") {
+        if (this.multipleSelection2[i].status == "发布") {
+          debugger;
           this.$message({
-            message: "请先撤回，在进行删除",
+            message: "请先撤回，再进行删除",
             type: "warning",
           });
           return;
