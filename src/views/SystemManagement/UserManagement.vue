@@ -358,6 +358,7 @@
           </el-radio-group>-->
           <el-input
             v-else
+            :placeholder="item.placeholder"
             v-model="temp[item.key]"
             style="width: 90%"
           ></el-input>
@@ -452,17 +453,44 @@ export default {
         appStatusList: [],
       },
       formLabel: [
-        { label: "用户名", key: "userName" },
-        { label: "用户角色", key: "roleId", required: true },
-        { label: "电子邮箱", key: "email" },
-        { label: "手机号码", key: "phonenumber" },
+        {
+          label: "用户账号",
+          key: "userName",
+          placeholder: "账号名称需要与isc名称对应",
+        },
+        {
+          label: "ISC用户id",
+          key: "iscUserId",
+          placeholder: "统一权限用户ID",
+        },
+        {
+          label: "用户昵称",
+          key: "nickName",
+          placeholder: "用户名称",
+        },
+        {
+          label: "用户角色",
+          key: "roleId",
+          required: true,
+          placeholder: "请选择用户角色",
+        },
+        { label: "电子邮箱", key: "email", placeholder: "请输入电子邮箱" },
+        {
+          label: "手机号码",
+          key: "phonenumber",
+          placeholder: "请输入手机号码",
+        },
         { label: "性别", key: "sex" },
         // { label: "密码", key: "password" },
-        { label: "备注", key: "remark" },
+        { label: "备注", key: "remark", placeholder: "请简要备注" },
       ],
       rulesForm: {
         userName: [
           { required: true, message: "请输入用户名", trigger: "blur" },
+        ],
+        iscUserId: [{ required: true, message: "ISC用户id", trigger: "blur" }],
+        nickName: [
+          { required: true, message: "请输入用户昵称", trigger: "blur" },
         ],
         roleId: [
           { required: true, message: "请选择用户角色", trigger: "blur" },
@@ -1077,9 +1105,7 @@ export default {
           data.deptId = this.selectGroupId;
           data.delFlag = "0";
           data.status = "0";
-          data.nickName = data.userName;
           data.createBy = localStorage.getItem("createById");
-          console.log(data, "dfdfdfdfdfdf");
           api.insertUserData(data).then((res) => {
             if (res.code === 200) {
               this.selectUserByDeptId(this.selectGroupId);

@@ -14,7 +14,7 @@
             </div>
             <div>
               <svg-icon icon="江苏电力公司" class="user-logo"></svg-icon
-              >专责人员
+              >{{ nickName }}
             </div>
             <div style="padding-top: 7px; cursor: pointer" @click="handleClick">
               <el-badge :value="taskNumber">
@@ -191,6 +191,7 @@ export default defineComponent({
       // if (route.path == "/userManagement") return;
       getTask();
     });
+    const nickName = localStorage.getItem("nickName");
     return {
       isCollapse,
       menus,
@@ -200,6 +201,7 @@ export default defineComponent({
       getTask,
       taskNumber,
       handleClick,
+      nickName,
     };
   },
 });

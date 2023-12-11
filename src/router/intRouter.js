@@ -57,6 +57,7 @@ if (process.env.NODE_ENV == "production") {
               localStorage.setItem("remark", res.data.sysUser.dept.remark);
               localStorage.setItem("menus", res.data.permissions);
               localStorage.setItem("userName", res.data.sysUser.userName);
+              localStorage.setItem("nickName", res.data.sysUser.nickName);
               // store.commit("setUserDetail", res.data);
               window.location.reload();
             });
