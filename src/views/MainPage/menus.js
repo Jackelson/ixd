@@ -52,6 +52,12 @@ export const menuList = [
         path: "/menuManagement",
       },
       {
+        id: "108",
+        name: "流程管理",
+        icon: "流程管理",
+        path: "/flowMange",
+      },
+      {
         id: "103",
         name: "轮播图公告管理",
         icon: "轮播图管理",

@@ -24,6 +24,13 @@
           </el-checkbox>
         </el-checkbox-group>
       </div>
+      <div v-if="data.menuId == '/flowMange'">
+        <el-checkbox-group v-model="checkList">
+          <el-checkbox label="bpmnName">
+            <div class="label">bpmn中文名称</div>
+          </el-checkbox>
+        </el-checkbox-group>
+      </div>
     </template>
     <template #footer>
       <div class="dialog-footer">

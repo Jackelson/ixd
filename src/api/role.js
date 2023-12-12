@@ -6,7 +6,7 @@ import {
 export function insertRoleData(params) {
   return post("/SysRole/insert", params);
 }
-
+// 获取角色
 export function selectRoleData(params) {
   return post("/SysRole/select", params);
 }

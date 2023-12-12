@@ -52,6 +52,12 @@ const routes = [
         meta: { title: "菜单管理" },
       },
       {
+        path: "/flowMange",
+        name: "flowMange",
+        component: () => import("@/views/SystemManagement/flowMange.vue"),
+        meta: { title: "流程管理" },
+      },
+      {
         path: "/rotationManagement",
         name: "RotationManagement",
         component: () =>

@@ -1,0 +1,877 @@
+<template>
+  <el-dialog
+    title="选择审批人"
+    v-model="dialogVisible"
+    width="50%"
+    :before-close="handleClose"
+  >
+    <div class="applicationStyle">
+      <el-row style="height: calc(100% - 0vh)">
+        <el-card class="role-card">
+          <el-row style="height: calc(100% - 0vh)">
+            <!--左侧栏-->
+            <el-col :span="5">
+              <el-tree
+                ref="tree"
+                draggable
+                :data="groupList"
+                :props="defaultProps"
+                :accordion="false"
+                :auto-expand-parent="false"
+                :highlight-current="highlightBoolean"
+                :default-expand-all="true"
+                :expand-on-click-node="false"
+                :filter-node-method="filterNode"
+                style="color: #666; font-family: Microsoft YaHei"
+                @node-click="handleNodeClick"
+              />
+              <!-- </el-card> -->
+            </el-col>
+            <!--右侧栏-->
+            <el-col :span="19" style="border-left: 1px solid #ebeef5">
+              <!-- <el-row class="formRow">
+                <el-col
+                  v-if="isCheckString.indexOf('userName') >= 0"
+                  :span="5"
+                  class="formSty"
+                >
+                  <div>
+                    <span
+                      style="
+                        font-size: calc(100vw / 1920 * 14);
+                        margin-left: 10px;
+                      "
+                      >用户名：</span
+                    >
+                    <searchLog
+                      style="width: 200px"
+                      ref="searchLogRef"
+                      v-model:modelValue="filterData.userName"
+                      :searchData="searchData"
+                      selectKey="userName"
+                    ></searchLog>
+                  </div>
+                </el-col>
+                <el-col v-if="isCheckString.indexOf('roleId') >= 0" :span="5">
+                  <div>
+                    <span
+                      style="
+                        font-size: calc(100vw / 1920 * 14);
+                        margin-left: 10px;
+                      "
+                      >角色：</span
+                    >
+                    <el-select
+                      v-model="filterData.roleId"
+                      filterable
+                      clearable
+                      placeholder="--请选择用户角色--"
+                      @change="filterChange(2)"
+                      class="search-select"
+                    >
+                      <el-option
+                        v-for="(item, index) in userTypeList"
+                        :key="index"
+                        :label="item.label"
+                        :value="item.key"
+                      ></el-option>
+                    </el-select>
+                  </div>
+                  <el-input v-model="filterData.roleId" style="width:200px"></el-input>
+                </el-col>
+                <el-col :span="5">
+                  <el-button
+                    v-if="isCheckString != ''"
+                    style="margin-left: 10px"
+                    @click="searchList"
+                    >查询</el-button
+                  >
+                </el-col>
+              </el-row> -->
+              <!-- 表格 -->
+              <el-row
+                style="width: 99%; margin-left: 0.5%; height: calc(100% - 40px)"
+              >
+                <!-- <el-card class="role-card"> -->
+                <el-table
+                  ref="multipleTable"
+                  v-loading="tableLoading"
+                  :data="tableList"
+                  height="90%"
+                  :header-cell-style="{
+                    background: '#11ac9b !important',
+                    color: '#ffffff',
+                  }"
+                  style="width: 100%"
+                  class="userTableSty"
+                  :highlight-current-row="highlight"
+                  @row-click="rowClick"
+                  @selection-change="handleSelectionChange"
+                >
+                  <!-- <el-table-column
+                    type="selection"
+                    width="55"
+                  ></el-table-column> -->
+                  <!-- <el-table-column
+                    label="序号"
+                    align="center"
+                    type="index"
+                    :index="recordFormat"
+                    width="80px"
+                    min-width="80px"
+                  /> -->
+                  <el-table-column
+                    v-for="item in tableHeader"
+                    :key="item.key"
+                    :label="item.label"
+                    show-overflow-tooltip
+                    align="center"
+                    :min-width="item.minWidth"
+                    :width="item.width"
+                  >
+                    <template v-slot="scope">
+                      <span>{{ scope.row[item.key] }}</span>
+                    </template>
+                  </el-table-column>
+                </el-table>
+                <el-row
+                  style="
+                    width: 100%;
+                    display: flex;
+                    justify-content: flex-end;
+                    align-items: flex-start;
+                    margin-top: 1vh;
+                  "
+                >
+                  <el-pagination
+                    :current-page="page"
+                    :page-sizes="[10, 20, 50, 100]"
+                    :page-size="pageSize"
+                    layout="total, sizes, prev, pager, next, jumper"
+                    :total="total"
+                    @size-change="handleSizeChange"
+                    @current-change="handleCurrentChange"
+                  />
+                </el-row>
+                <!-- </el-card> -->
+              </el-row>
+            </el-col>
+          </el-row>
+        </el-card>
+      </el-row>
+      <!--删除 角色 弹框部分-->
+      <pickModel
+        ref="pickRef"
+        :data="searchData"
+        :isCheck="isCheckString"
+        @reload="getFilterNum"
+      />
+    </div>
+    <!-- <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="handleClose">取消</el-button>
+        <el-button type="primary" @click="submit"> 确认 </el-button>
+      </span>
+    </template> -->
+  </el-dialog>
+</template>
+
+<script>
+import { transTree } from "@/api/transTree_.js";
+import * as systemApi from "@/api/system";
+import * as api from "@/api/user";
+import * as roleApi from "@/api/role";
+// import searchLog from "@/views/components/searchLog.vue";
+// searchLog
+import { getFilterCon } from "@/api/application";
+import pickModel from "../../ApplicationManagement/component/pickModel.vue";
+export default {
+  components: { pickModel },
+  data() {
+    return {
+      isCheckString: "userName,roleId",
+      dialogTableVisible: false,
+      dialogVisible: false,
+      tableLoading: true,
+      dialogTitle: "",
+      dialogStatus: "create",
+      dialogDelRole: false,
+      tableData: {},
+      multipleSelection: [],
+      highlight: true,
+      temp: {},
+      tableList: [
+        // { userName: '张三', roleId: '管理员', address: '无', email: 'user4', phone: '', remark: '' },
+        // { userName: '张三', roleId: '管理员', address: '无', email: 'user4', phone: '', remark: '' },
+      ],
+      total: 0,
+      page: 1,
+      pageSize: 10,
+      tableHeader: [
+        { label: "用户名", key: "userName" },
+        { label: "用户角色", key: "roleName" },
+        // { label: "单位信息", key: "address" },
+        // { label: "手机号码", key: "phonenumber" },
+        // { label: "电子邮箱", key: "email" },
+        // { label: "备注", key: "remark" },
+      ],
+      filterData: {
+        userName: "",
+        roleId: "",
+      },
+      filterSelection: {
+        appNameList: [],
+        appStatusList: [],
+      },
+      formLabel: [
+        {
+          label: "用户账号",
+          key: "userName",
+          placeholder: "账号名称需要与isc名称对应",
+        },
+        {
+          label: "ISC用户id",
+          key: "iscUserId",
+          placeholder: "统一权限用户ID",
+        },
+        {
+          label: "用户昵称",
+          key: "nickName",
+          placeholder: "用户名称",
+        },
+        {
+          label: "用户角色",
+          key: "roleId",
+          required: true,
+          placeholder: "请选择用户角色",
+        },
+        { label: "电子邮箱", key: "email", placeholder: "请输入电子邮箱" },
+        {
+          label: "手机号码",
+          key: "phonenumber",
+          placeholder: "请输入手机号码",
+        },
+        { label: "性别", key: "sex" },
+        // { label: "密码", key: "password" },
+        { label: "备注", key: "remark", placeholder: "请简要备注" },
+      ],
+      rulesForm: {
+        userName: [
+          { required: true, message: "请输入用户名", trigger: "blur" },
+        ],
+        iscUserId: [{ required: true, message: "ISC用户id", trigger: "blur" }],
+        nickName: [
+          { required: true, message: "请输入用户昵称", trigger: "blur" },
+        ],
+        roleId: [
+          { required: true, message: "请选择用户角色", trigger: "blur" },
+        ],
+        email: [
+          {
+            required: true,
+            message: "请输入正确的电子邮箱",
+            trigger: "blur",
+            pattern: /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/,
+          },
+        ],
+        phonenumber: [
+          {
+            required: true,
+            message: "请输入正确的手机号码",
+            trigger: "blur",
+            pattern: /^1(3[0-9]|5[0-3,5-9]|7[1-3,5-8]|8[0-9])\d{8}$/,
+          },
+        ],
+      },
+      rules: {},
+      formList: {
+        userName: "",
+        treeData: [], // 多选
+        treeId: [],
+        roleId: "",
+      },
+      userTypeList: [],
+      dialogDelNode: false,
+      groupOptions: [], // 获取组织
+      groupList: [
+        // {
+        //   label: '一级 1',
+        //   children: [{
+        //     label: '二级 1-1',
+        //     children: [{
+        //       label: '三级 1-1-1'
+        //     }]
+        //   }]
+        // }, {
+        //   label: '一级 2',
+        //   children: [{
+        //     label: '二级 2-1',
+        //     children: [{
+        //       label: '三级 2-1-1'
+        //     }]
+        //   }, {
+        //     label: '二级 2-2',
+        //     children: [{
+        //       label: '三级 2-2-1'
+        //     }]
+        //   }]
+        // }, {
+        //   label: '一级 3',
+        //   children: [{
+        //     label: '二级 3-1',
+        //     children: [{
+        //       label: '三级 3-1-1'
+        //     }]
+        //   }, {
+        //     label: '二级 3-2',
+        //     children: [{
+        //       label: '三级 3-2-1'
+        //     }]
+        //   }]
+        // }
+      ],
+      menuList: [],
+      groupChildren: 0,
+      selectGroupId: null, // 选中的部门
+      selectGroup: {}, // 选中的部门的信息
+      selectGroup_path: null, // 选中的部门的group_path
+      createNodeStatus: true,
+      updataNodeStatus: true,
+      deleteNodeStatus: true,
+      groupText: {
+        create: "新增部门",
+        update: "编辑部门",
+      },
+      highlightBoolean: true,
+      groupDialogStatus: null,
+      resetStatus: null,
+      defaultProps: {
+        children: "children",
+        label: "label",
+      },
+      groupFormHeader: [
+        { label: "名称", key: "deptName" },
+        { label: "领导", key: "leader" },
+        { label: "手机号码", key: "phone" },
+        { label: "电子邮箱", key: "email" },
+      ],
+      rulesGroup: {
+        deptName: [{ required: true, message: "请输入名称", trigger: "blur" }],
+        leader: [{ required: true, message: "请输入领导", trigger: "blur" }],
+        email: [
+          {
+            required: true,
+            message: "请输入正确的电子邮箱",
+            trigger: "blur",
+            pattern: /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/,
+          },
+        ],
+        phone: [
+          {
+            required: true,
+            message: "请输入正确的手机号码",
+            trigger: "blur",
+            pattern: /^1(3[0-9]|5[0-3,5-9]|7[1-3,5-8]|8[0-9])\d{8}$/,
+          },
+        ],
+      },
+      groupTemp: {},
+      treeDataValue: "",
+    };
+  },
+  watch: {},
+  computed: {
+    btnStatus() {
+      return false;
+    },
+    searchData: function () {
+      return {
+        userId: localStorage.getItem("createById"),
+        menuId: this.$route.path,
+      };
+    },
+  },
+  created() {
+    this.getGroup();
+    this.getList();
+    this.getRoleList();
+  },
+  methods: {
+    handleClose() {
+      this.dialogVisible = false;
+    },
+    open() {
+      this.dialogVisible = true;
+    },
+    // 点击树节点
+    // handleTreeClick(data, node, nodeData) {
+    //   // select 多选（判重后添加到选择结果数组中）
+    //   this.treeDataValue = data
+    //   let num = 0;
+    //   this.formList.treeData.forEach(item => {
+    //     item == data.label ? num++ : num;
+    //   })
+    //   this.formList.treeId.forEach(item => {
+    //     item == data.deptId ? num++ : num;
+    //   })
+    //   if (num == 0) {
+    //     this.formList.treeData.push(data.label)
+    //     this.formList.treeId.push(data.deptId)
+    //   }
+    //   console.log(data, node, nodeData, this.formList, 'sssssssssss');
+
+    // },
+    searchList() {
+      this.page = 1;
+      let param = {
+        userName: this.filterData.userName,
+        roleId: this.filterData.roleId,
+        pageNum: this.page,
+        pageSize: this.pageSize,
+      };
+      // 重置 左侧tree结构
+      this.selectGroupId = null;
+      (this.createNodeStatus = true),
+        (this.updataNodeStatus = true),
+        (this.deleteNodeStatus = true),
+        (this.highlightBoolean = false);
+      console.log(this.$refs.searchLogRef);
+      this.$refs.searchLogRef.addRecord().then(() => {
+        this.$refs.searchLogRef.remoteMethod();
+      });
+      this.getList(param);
+    },
+    // 查询表单
+    getList(val) {
+      let param = val || {};
+      param.pageNum = this.page;
+      param.pageSize = this.pageSize;
+      this.tableLoading = true;
+      api.selectUserData(param).then((res) => {
+        if (res.code === 200) {
+          console.log(res, "res");
+          this.tableList = res.data.rows;
+          this.tableList.forEach((ele) => {
+            if (ele.roles[0]) {
+              ele.roleName = ele.roles[0].roleName;
+            }
+          });
+          this.total = res.data.total;
+          this.tableLoading = false;
+        } else {
+          this.$message({
+            message: res.msg,
+            type: "warning",
+          });
+        }
+      });
+    },
+    selectUserByDeptId(val) {
+      let param = {
+        deptId: String(val),
+        pageNum: this.page,
+        pageSize: this.pageSize,
+      };
+      this.tableLoading = true;
+      api.selectUserData(param).then((res) => {
+        if (res.code === 200) {
+          console.log(res, "res");
+          this.tableList = res.data.rows;
+          this.tableList.forEach((ele) => {
+            if (ele.roles[0]) {
+              ele.roleName = ele.roles[0].roleName;
+            }
+          });
+          this.total = res.data.total;
+          this.tableLoading = false;
+        } else {
+          this.$message({
+            message: res.msg,
+            type: "warning",
+          });
+        }
+      });
+    },
+    // 左侧tree结构
+    getGroup() {
+      let param = {};
+      systemApi.selectData(param).then((res) => {
+        if (res.code === 200) {
+          console.log(res, "res");
+          this.sqGroupOptions = res.data;
+          const groupsData = res.data;
+          // this.groupsData = res.data
+          for (let n = 0; n < groupsData.length; n++) {
+            groupsData[n].label = groupsData[n].deptName;
+          }
+          const jsonDataTree = transTree(
+            groupsData,
+            "deptId",
+            "parentId",
+            "children"
+          );
+          this.groupList = this.dg(jsonDataTree);
+          console.log(groupsData, this.groupList, "8888");
+          this.groupChildren = groupsData.children
+            ? groupsData.children.length
+            : 0;
+        } else {
+          this.$message({
+            message: res.msg,
+            type: "warning",
+          });
+        }
+      });
+    },
+    // 根据树结构节点id从树结构数据中获取节点数据
+    dg(data) {
+      let arr = [];
+      let _this = this;
+      if (data) {
+        data.forEach((item) => {
+          item.label = item.deptName;
+          if (item.children || item.children === null) {
+            item.children.label = item.children.deptName;
+            _this.dg(item.children);
+          }
+          arr.push(item);
+        });
+        return arr;
+      } else {
+        return null;
+      }
+    },
+    // 组织架构的相关信息
+    handleNodeClick(data, node) {
+      this.highlightBoolean = true; // 开启选择高亮
+      this.page = 1;
+      this.selectGroupId = data.deptId;
+      this.selectGroup = data;
+      this.resetSelect();
+      this.groupChildren = data.children ? data.children.length : 0;
+      // 获取节点
+      this.level = node.level;
+      console.log(data, node, this.level, "datatreezzzzzz");
+      if (this.btnStatus === false) {
+        this.updataNodeStatus = false;
+      } else {
+        this.updataNodeStatus = true;
+      }
+
+      if (this.btnStatus === false) {
+        this.createNodeStatus = false;
+      } else {
+        this.createNodeStatus = true;
+      }
+      if (this.groupChildren > 0) {
+        this.deleteNodeStatus = true;
+      } else {
+        if (this.btnStatus === false) {
+          this.deleteNodeStatus = false;
+        } else {
+          this.deleteNodeStatus = true;
+        }
+      }
+      // if (this.level === 1) {
+      // 	console.log(this.level,'sd666666666');
+      //   this.getList()
+      // } else {
+      console.log(this.level, "555555555555");
+      this.selectUserByDeptId(this.selectGroupId);
+
+      // }
+    },
+    // 查询搜索框
+    checkSeach() {
+      this.$refs.pickRef.open();
+    },
+    // 获取筛选输入框
+    async getFilterNum() {
+      const res = await getFilterCon(this.searchData);
+      if (res.code == 200) {
+        console.log(res);
+        res.data.forEach((item) => {
+          if (item.menuId == this.searchData.menuId) {
+            this.isCheckString = item.paramslist;
+          }
+        });
+      }
+    },
+    // 重置数据
+    resetTemp() {
+      this.temp = {};
+      this.groupTemp = {};
+    },
+
+    // 查询角色
+    getRoleList() {
+      let params = {
+        type: 1,
+      };
+      roleApi.selectAllRole(params).then((res) => {
+        if (res.code === 200) {
+          res.data.rows.forEach((ele) => {
+            this.userTypeList.push({ label: ele.roleName, key: ele.roleId });
+          });
+        } else {
+          this.$message({
+            message: res.msg,
+            type: "warning",
+          });
+        }
+      });
+    },
+    filterChange(val) {
+      console.log(val);
+    },
+    handleSelectionChange(val) {
+      this.multipleSelection = val;
+      this.temp = Object.assign({}, this.multipleSelection[0]);
+      this.temp.roleId = this.temp.roles ? this.temp.roles[0]?.roleId : null;
+      console.log(this.multipleSelection, this.temp, "val");
+    },
+    // 选中某行
+    rowClick(row) {
+      this.$emit("picked", row);
+      this.dialogVisible = false;
+    },
+    recordFormat(index) {
+      const page = this.page;
+      const pagesize = this.pageSize;
+      return (page - 1) * pagesize + index + 1;
+    },
+    handleCurrentChange(page) {
+      this.page = page;
+      let param = {
+        pageNum: this.page,
+        pageSize: this.pageSize,
+      };
+      this.selectGroupId
+        ? this.selectUserByDeptId(this.selectGroupId)
+        : this.getList(param);
+    },
+    handleSizeChange(pageSize) {
+      this.page = 1;
+      this.pageSize = pageSize;
+      let param = {
+        pageNum: this.page,
+        pageSize: this.pageSize,
+      };
+      this.selectGroupId
+        ? this.selectUserByDeptId(this.selectGroupId)
+        : this.getList(param);
+    },
+    // 清空已选项数组，且置空所有选择
+    resetSelect() {
+      this.selectRows = [];
+      this.temp = {};
+      this.groupTemp = {};
+      this.$refs.multipleTable.clearSelection();
+    },
+    closeUserDialog() {
+      this.dialogTableVisible = false;
+      this.$refs.dataform.clearValidate();
+    },
+    // 新增角色
+    addDialog() {
+      this.highlight = false;
+      this.resetSelect();
+      this.dialogTitle = "新增用户";
+      this.dialogStatus = "create";
+      this.dialogTableVisible = true;
+      console.log(this.dialogTableVisible);
+    },
+
+    // if (Object.keys(this.temp).length > 0) {
+    //   this.dialogTitle = '修改用户'
+    //   this.dialogStatus = 'update'
+    //   this.dialogTableVisible = true
+    //   this.$refs.multipleTable.clearSelection()
+
+    // } else {
+    //   this.$message({
+    //     message: '请选择要修改的用户！',
+    //     type: 'warning'
+    //   })
+    // }
+  },
+};
+</script>
+<style lang="scss">
+.userTableSty {
+  .el-table__inner-wrapper {
+    height: 100% !important;
+  }
+}
+
+.role-card {
+  width: 100%;
+
+  .el-card__body {
+    padding: 5px;
+    height: 100%;
+  }
+}
+
+// .box-card {
+//   .el-card__body {
+//     padding: 0;
+//     height: 100%;
+//   }
+// }
+
+.el-table .change-row {
+  background: #e4f4f3 !important;
+}
+
+.el-table .change-row-2 {
+  background: #f9fafa !important;
+}
+
+/*关于 弹窗*/
+
+.aboutDialog {
+  .el-dialog__body {
+    padding: 10px 20px;
+    min-height: 120px;
+  }
+
+  .el-dialog {
+    width: 470px;
+    border-radius: 32px;
+
+    .el-dialog__header {
+      display: flex;
+      align-items: center;
+      height: 24px;
+      background-color: #008b8bd9;
+      border-radius: 32px 32px 0 0;
+      padding: 20px;
+    }
+
+    .el-dialog__title {
+      // 标题
+      color: #fff;
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .el-dialog__headerbtn {
+      top: auto;
+    }
+
+    .el-dialog__headerbtn .el-dialog__close {
+      // 右侧关闭按钮
+      color: #fff !important;
+      font-size: 20px;
+      font-weight: 700;
+    }
+  }
+
+  .el-dialog__footer {
+    padding: 8px 41px 16px 0px;
+
+    .el-button--default {
+      padding-top: 8px;
+      border-radius: 16px;
+      width: 81px;
+      height: 32px;
+      background: #bfc5e2;
+
+      span {
+        font-size: 14px;
+        font-family: Microsoft YaHei;
+        color: #fff;
+      }
+    }
+
+    .el-button--primary {
+      padding-top: 8px;
+      border-radius: 16px;
+      width: 146px;
+      height: 32px;
+      background: #008b8bd9;
+
+      span {
+        font-size: 14px;
+        font-family: Microsoft YaHei;
+        color: #fff;
+      }
+    }
+  }
+}
+
+.aboutForm {
+  .el-form-item__label {
+    font-weight: 700;
+    font-size: 16px;
+  }
+
+  .el-form-item__content {
+    font-size: 16px;
+  }
+}
+</style>
+
+<style lang="scss" scoped>
+.dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.search-select {
+  width: 200px;
+}
+
+.applicationStyle {
+  width: 100%;
+  height: 100%;
+  // background-color: #f0f8f8;
+}
+
+.smallBtn {
+  font-size: calc(100vw / 1920 * 16);
+  padding: 5px 10px;
+  height: auto;
+}
+
+// 表单及表格部分
+.switch-search {
+  width: 100%;
+  background-color: #f9fafa;
+  box-shadow: 0px 0px 10px 0px rgba(105, 179, 175, 0.2);
+  border-radius: 6px;
+  border: solid 1px #c9e0df;
+  box-sizing: border-box;
+
+  // 表单
+  .formRow {
+    height: 5.5vh;
+    width: 98%;
+    display: flex;
+    align-items: center;
+
+    .formSty {
+      display: flex;
+      align-items: center;
+      padding: 0 !important;
+
+      span:nth-child(1) {
+        font-size: calc(100vw / 1920 * 14);
+      }
+
+      .el-input {
+        margin-right: 20px;
+      }
+    }
+  }
+}
+
+.table_class {
+  overflow: scroll;
+  background: #ffffff;
+  // box-shadow: 0px 0px 8px 0px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  height: calc(100% - 0vh);
+}
+</style>
