@@ -4,7 +4,6 @@
     :title="title"
     destroy-on-close
     width="40%"
-    :before-close="handleClose"
   >
     <el-form
       ref="ruleFormRef"

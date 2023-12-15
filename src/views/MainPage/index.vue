@@ -191,6 +191,8 @@ export default defineComponent({
       // if (route.path == "/userManagement") return;
       getTask();
     });
+    const handleOpen = () => {};
+    const handleClose = () => {};
     const nickName = localStorage.getItem("nickName");
     return {
       isCollapse,
@@ -202,6 +204,8 @@ export default defineComponent({
       taskNumber,
       handleClick,
       nickName,
+      handleOpen,
+      handleClose,
     };
   },
 });

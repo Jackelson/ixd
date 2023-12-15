@@ -1,7 +1,7 @@
 <template>
   <!--弹框部分-->
   <el-dialog
-    :title="title"
+    :title="dialogTitle"
     v-model="groupVisible"
     class="editDialog"
     :close-on-click-modal="false"
@@ -65,9 +65,10 @@
             <!-- </el-upload> -->
             <!-- <el-input type="textarea" v-if="item.key == 'noticeContent'" v-model="temp[item.key]" style="width:90%" /> -->
             <el-select
-              v-else-if="item.key == 'app_id'"
+              v-else-if="item.key == 'appId'"
               v-model="temp[item.key]"
               style="width: 90%"
+              :disabled="item.disabled"
             >
               <el-option
                 v-for="item in appList"
@@ -147,20 +148,31 @@ export default {
       createName: "",
       rules: {},
       temp: {
-        noticeType: "",
+        noticeType: "2",
       },
       // file:'',
       listQuery: {
         _page: 0,
         _page_size: 15,
       },
-      dialogTitle: "", // 弹框标题
       fileList: [],
     };
   },
   computed: {
+    dialogTitle: function () {
+      if (this.title == "custom") {
+        if (this.temp?.noticeType == "1") {
+          return "新增通知";
+        } else if (this.temp?.noticeType == "3") {
+          return "新增新闻资讯";
+        } else {
+          return "新增公告";
+        }
+      } else {
+        return this.title;
+      }
+    },
     formNoticeHeader: function () {
-      console.log(this.dialogTitle);
       return [
         { label: "标题", key: "noticeTitle" },
         {
@@ -170,14 +182,14 @@ export default {
         {
           label: "类别",
           key: "noticeType",
-          disabled: this.title == "修改公告",
+          disabled: this.title.indexOf("修改") >= 0,
         },
         { label: "备注", key: "remark" },
         {
           label: "app名称",
-          key: "app_id",
+          key: "appId",
           hidden: this.temp.noticeType == "2" || this.temp.noticeType == "3",
-          disabled: this.title == "修改通知",
+          disabled: this.title.indexOf("修改") >= 0,
         },
         // { label: '开始时间', key: 'dateStart' },
         // { label: '结束时间', key: 'dateEnd' },
@@ -199,7 +211,7 @@ export default {
         this.groupVisible = newValue;
         // if (Object.keys(this.temp1).length > 0) {
         // }
-        this.temp = this.temp1;
+        this.temp = JSON.parse(JSON.stringify(this.temp1));
         if (this.dialogStatus == "create") {
           this.temp = {
             noticeType: "2",
@@ -234,6 +246,8 @@ export default {
         this.groupVisible = false;
         this.resetSelect();
       }
+      debugger;
+      this.temp = {};
     },
     // 清空已选项数组，且置空所有选择
     resetSelect() {
@@ -305,6 +319,7 @@ export default {
             orderBy: data.orderBy,
             remark: data.remark,
             state: data.status == "待发布" ? 0 : data.status == "发布" ? 1 : 2,
+            appId: data.appId,
           };
           this.groupVisible = false;
           api.updateNotice(params).then((res) => {

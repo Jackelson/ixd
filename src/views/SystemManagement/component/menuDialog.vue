@@ -6,6 +6,7 @@
     class="editDialog"
     :close-on-click-modal="false"
     @close="closeGroupVisible"
+    @closed="closedGroupVisible"
   >
     <el-form
       ref="dataform"
@@ -30,6 +31,14 @@
           >
             <el-radio :label="0">是</el-radio>
             <el-radio :label="6">否</el-radio>
+          </el-radio-group>
+          <el-radio-group
+            v-else-if="item.key == 'menuType'"
+            v-model="temp[item.key]"
+          >
+            <el-radio label="M">目录</el-radio>
+            <el-radio label="C">菜单</el-radio>
+            <el-radio label="F">按钮</el-radio>
           </el-radio-group>
           <el-input
             v-else
@@ -115,13 +124,19 @@ export default {
           { min: 1, max: 16, message: "菜单名称长度1-16", trigger: "blur" },
         ],
         orderNum: [
-          { required: true, message: "请输入菜单排序", trigger: "blur" },
-          // {
-          //   required: true,
-          //   pattern: "^[0-9]*$",//eslint-disable-line
-          //   message: "排序只能输入数字",
-          //   trigger: 'blur'
-          // }
+          {
+            required: true,
+            validator: (rule, value, callback) => {
+              if (value == "") {
+                callback(new Error("菜单排序不能为空"));
+              } else if (value < 0) {
+                callback(new Error("排序不能小于0"));
+              } else {
+                callback();
+              }
+            },
+            trigger: "change",
+          },
         ],
         component: [
           { required: true, message: "请输入菜单路径", trigger: "blur" },
@@ -170,6 +185,9 @@ export default {
         this.resetSelect();
       }
     },
+    closedGroupVisible() {
+      this.resetSelect();
+    },
     // 清空已选项数组，且置空所有选择
     resetSelect() {
       // this.selectRows = []
@@ -205,32 +223,45 @@ export default {
           // }
           data.parentId = this.parentId;
           menuApi.insertMenuData(data).then((res) => {
-            this.$parent.getList();
-            console.log(res, "res");
-            this.groupVisible = false;
-            this.$message({
-              message: "更新成功！",
-              type: "success",
-            });
+            if (res.code == 200) {
+              this.$message({
+                message: "创建成功",
+                type: "success",
+              });
+              this.$parent.getList();
+              console.log(res, "res");
+              this.groupVisible = false;
+            } else {
+              this.$message({
+                type: "warning",
+                message: "创建失败",
+              });
+              this.$message.warning(res.msg || "创建失败");
+            }
           });
         }
       });
     },
     // 编辑提交
     updateData() {
+      debugger;
       this.$refs["dataform"].validate((valid) => {
         if (valid) {
           const data = Object.assign({}, this.temp);
           console.log(data, "44444444");
 
           menuApi.updateMenuData(data).then((res) => {
-            this.$parent.getList();
-            console.log(res, "res");
-            this.groupVisible = false;
-            this.$message({
-              message: "更新成功！",
-              type: "success",
-            });
+            if (res.code == 200) {
+              this.$message({
+                message: "更新成功！",
+                type: "success",
+              });
+              this.$parent.getList();
+              console.log(res, "res");
+              this.groupVisible = false;
+            } else {
+              this.$message.warning(res.msg || "更新失败");
+            }
           });
         }
       });

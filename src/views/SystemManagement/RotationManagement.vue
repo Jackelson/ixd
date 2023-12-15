@@ -465,7 +465,7 @@ export default {
           api.updateStatus(params).then((res) => {
             if (res.code == 200) {
               this.getNotice();
-              return this.$message({ type: "success", message: "发布成功" });
+              return this.$message({ type: "success", message: "撤回成功" });
             } else {
               return this.$message({ type: "error", message: res.msg });
             }
@@ -597,7 +597,7 @@ export default {
     },
     handleSelectionChange(val) {
       console.log(val);
-      this.multipleSelection = [val];
+      this.multipleSelection = val;
     },
     handleSelectionChange2(val) {
       this.multipleSelection2 = val;
@@ -656,7 +656,7 @@ export default {
       this.highlight = false;
       // this.temp = {}
       this.resetSelect();
-      this.dialogTitle = "新增公告";
+      this.dialogTitle = "custom";
       this.dialogNoticeStatus = "create";
       this.dialogNotice = true;
     },
@@ -695,7 +695,7 @@ export default {
     //编辑公告
     noticeUpdate() {
       if (this.multipleSelection2.length > 1)
-        return this.$message({ type: "error", message: "只能选一个公告" });
+        return this.$message({ type: "error", message: "只能选择一条数据" });
       if (this.multipleSelection2.length > 0) {
         console.log(this.multipleSelection2);
         debugger;
@@ -817,18 +817,18 @@ export default {
               message: "该图片还未展示，展示状态的照片才可以取消展示",
             });
           }
-          const params = [];
-          this.multipleSelection.forEach((item) => {
-            const obj = {
-              id: item.id,
-              state: status,
-            };
-            params.push(obj);
-          });
-          api.updateState(params).then((res) => {
+          // const params = [];
+          const obj = {
+            id: this.multipleSelection[0].id,
+            state: status,
+          };
+          api.updateState([obj]).then((res) => {
             if (res.code == 200) {
               this.getList();
-              return this.$message({ type: "success", message: "发布成功" });
+              return this.$message({
+                type: "success",
+                message: "状态修改成功",
+              });
             } else {
               return this.$message({ type: "error", message: res.msg });
             }

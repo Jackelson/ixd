@@ -107,6 +107,7 @@ export default {
       default: "",
     },
   },
+
   data() {
     return {
       groupVisible: this.show, // 引入页面弹窗的状态值一定要设置
@@ -130,7 +131,21 @@ export default {
         imageName: [
           { required: true, message: "请输入图片名称", trigger: "blur" },
         ],
-        sort: [{ required: true, message: "请输入序号", trigger: "blur" }],
+        sort: [
+          {
+            required: true,
+            validator: (rule, value, callback) => {
+              if (value == "") {
+                callback(new Error("排序不能为空"));
+              } else if (value < 0) {
+                callback(new Error("排序不能小于0"));
+              } else {
+                callback();
+              }
+            },
+            trigger: "change",
+          },
+        ],
         imageDesc: [
           { required: true, message: "请输入图片介绍", trigger: "blur" },
         ],
@@ -144,7 +159,6 @@ export default {
         _page: 0,
         _page_size: 15,
       },
-      dialogTitle: "", // 弹框标题
       fileList: [],
     };
   },

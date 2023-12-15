@@ -295,6 +295,7 @@ import {
   getSeachRecord,
   addSeachRecord,
   getFilterCon,
+  testUrl,
 } from "@/api/application";
 import moment from "moment";
 export default {
@@ -1188,16 +1189,19 @@ export default {
       this.pageSize = pageSize;
       this.requestData();
     },
-    openShareDialog() {
+    async openShareDialog(row) {
+      const res = await testUrl({ appId: row.appId });
+      if (res.code == 200) {
+        ElMessageBox.alert(res.data, "测试连接", {
+          // if you want to disable its autofocus
+          // autofocus: false,
+          confirmButtonText: "OK",
+          callback: () => {},
+        });
+      }
       // console.log(val, 'ssss');
       // this.tableData = val
       // this.dialogTableVisible = true
-      ElMessageBox.alert("应用访问正常", "测试连接", {
-        // if you want to disable its autofocus
-        // autofocus: false,
-        confirmButtonText: "OK",
-        callback: () => {},
-      });
     },
     closeDialog2() {
       // this.$refs.hostDetailPage.reloadDate()

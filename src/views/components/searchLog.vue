@@ -8,16 +8,17 @@
     reserve-keyword
     allow-create
     placeholder="请输入"
-    :remote-method="() => {}"
     :loading="searchLoading"
     @change="change"
   >
-    <el-option
-      v-for="item in searchRecords"
-      :key="item.selectContentList"
-      :label="item.selectContentList"
-      :value="item.selectContentList"
-    />
+    <template v-if="searchRecords.length > 0">
+      <el-option
+        v-for="item in searchRecords"
+        :key="item.selectContentList"
+        :label="item.selectContentList"
+        :value="item.selectContentList"
+      />
+    </template>
   </el-select>
 </template>
 

@@ -5,18 +5,23 @@
       class="T-menu"
       :collapse="isCollapse"
       @open="handleOpen"
-      @close="handleClose"
     >
+      <!-- @close="handleClose" -->
       <el-sub-menu :index="item.id" v-for="item in menus" :key="item.id">
         <template #title>
           <el-icon><setting /></el-icon>
-            <!-- <svg-icon :icon="item.icon" className="svgIcon"></svg-icon> -->
-            <span>{{item.name}}</span>
+          <!-- <svg-icon :icon="item.icon" className="svgIcon"></svg-icon> -->
+          <span>{{ item.name }}</span>
         </template>
-        <el-menu-item v-for="subItem in item.children" :key="subItem.id" :index="subItem.id">{{ subItem.name }}</el-menu-item>
+        <el-menu-item
+          v-for="subItem in item.children"
+          :key="subItem.id"
+          :index="subItem.id"
+          >{{ subItem.name }}</el-menu-item
+        >
       </el-sub-menu>
     </el-menu>
-    <div class="collapse-icon" @click="handleMenu"> &lt; </div>
+    <div class="collapse-icon" @click="handleMenu">&lt;</div>
   </div>
 </template>
 
@@ -25,29 +30,26 @@ export default {
   data() {
     return {
       isCollapse: false,
-      menus: [
-       
-      ]
-    }
+      menus: [],
+    };
   },
   methods: {
     handleMenu() {
-      this.isCollapse = !this.isCollapse
+      this.isCollapse = !this.isCollapse;
     },
-  }
-}
+  },
+};
 </script>
 
 <style lang="scss" scoped>
-.T-side-container{
+.T-side-container {
   height: 100%;
   background: #fff;
   position: relative;
   overflow: visible;
-  .T-menu{
-    
+  .T-menu {
   }
-  .collapse-icon{
+  .collapse-icon {
     width: 12px;
     height: 102px;
     line-height: 102px;
@@ -60,9 +62,8 @@ export default {
     text-align: center;
     border-top-right-radius: 10px;
     border-bottom-right-radius: 10px;
-    background: linear-gradient(90deg,#f0f2fc,#fff);
+    background: linear-gradient(90deg, #f0f2fc, #fff);
     color: #666;
   }
 }
-
 </style>

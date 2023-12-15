@@ -95,3 +95,8 @@ export async function editFilterCon(params) {
 export async function getFilterCon(params) {
   return await post("/SysUserSelectHabitLog/select", params);
 }
+
+// 测试链接
+export async function testUrl(data) {
+  return await post("/commonInfo/visitApp", data);
+}
