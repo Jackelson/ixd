@@ -20,7 +20,11 @@
         <el-button @click="checkSeach">筛选搜索框</el-button>
       </el-form-item>
     </el-form>
-    <el-button @click="create">创建流程</el-button>
+    <el-space>
+      <el-button @click="create">创建流程</el-button>
+      <el-button @click="handelDownPack">下载流程定义安装包</el-button>
+      <el-button @click="handelTemplate">下载流程绑定模板</el-button>
+    </el-space>
     <el-table :data="tableData" style="width: 100%">
       <el-table-column prop="bpmnName" label="bpmn中文名字" align="center" />
       <el-table-column
@@ -42,6 +46,7 @@
           <el-space>
             <el-button @click="downFile(row)">下载</el-button>
             <el-button @click="configNode(row)">配置节点</el-button>
+            <el-button @click="handelDel(row)">删除</el-button>
           </el-space>
         </template>
       </el-table-column>
@@ -88,11 +93,18 @@
 import { ref } from "vue";
 import createFlow from "./component/createFlow.vue";
 import config from "./component/config.vue";
-import { getFlowList, downFlow } from "@/api/flow";
+import {
+  getFlowList,
+  downFlow,
+  downPack,
+  deleteProcess,
+  downTemplate,
+} from "@/api/flow";
 import searchLog from "@/views/components/searchLog.vue";
 import { useRoute } from "vue-router";
 import pickModel from "@/views/ApplicationManagement/component/pickModel.vue";
 import { getFilterCon } from "@/api/application";
+import { ElMessageBox, ElMessage } from "element-plus";
 const route = useRoute();
 const isCheckString = ref("bpmnName");
 const judgeStatus = (status) => {
@@ -157,16 +169,43 @@ getData();
 // 下载文件
 const downFile = async (record) => {
   const res = await downFlow({ id: record.id });
+  download(res, record.bpmnFileName);
+};
+// 下载安装包;
+const handelDownPack = async () => {
+  const res = await downPack();
+  if (res.fileName) {
+    download(res.response, "流程定义安装包.bpmn");
+  }
+};
+const download = (res, name) => {
   const blob = new Blob([res]);
   const downloadElement = document.createElement("a");
   const href = window.URL.createObjectURL(blob); // 创建下载的链接
   downloadElement.href = href;
-  downloadElement.download = record.bpmnFileName; // 下载后文件名
+  downloadElement.download = name; // 下载后文件名
   document.body.appendChild(downloadElement);
   downloadElement.click(); // 点击下载
   document.body.removeChild(downloadElement); // 下载完成移除元素
   window.URL.revokeObjectURL(href); // 释放掉blob对象
-  console.log(res);
+};
+// 下载模版
+const handelTemplate = async () => {
+  const res = await downTemplate();
+  if (res.fileName) {
+    download(res, "流程绑定模版.bpmn");
+  }
+};
+// 删除文件
+const handelDel = async (row) => {
+  const v = await ElMessageBox.confirm(`确定要删除此条数据吗 ?`);
+  if (v) {
+    const res = await deleteProcess({ id: row.id });
+    if (res.code == 200) {
+      ElMessage.success("删除成功");
+      getData();
+    }
+  }
 };
 
 const configRef = ref();

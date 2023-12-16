@@ -136,6 +136,32 @@ export function get(url, data) {
       });
   });
 }
+// 下载文件get
+export function getDown(url, params) {
+  return new Promise((resolve, reject) => {
+    axios
+      .get(url, { params })
+      .then((response) => {
+        if (response.headers["content-disposition"]) {
+          const disposition =
+            response.headers["content-disposition"].split(";");
+          if (disposition[1].indexOf("filename") !== -1) {
+            const startNum = disposition[1].indexOf("=");
+            const fileName = decodeURI(disposition[1].substring(startNum + 1));
+            resolve({
+              fileName,
+              response,
+            });
+          }
+        } else {
+          resolve(response.data);
+        }
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
+}
 
 export function uploadFile(url, params) {
   const param = new FormData();

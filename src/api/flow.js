@@ -1,4 +1,4 @@
-import { post } from "../utils/request";
+import { post, getDown } from "../utils/request";
 // 获取流程图列表
 export function getFlowList(params) {
   return post("/camunda/selectProcess", params);
@@ -9,7 +9,7 @@ export function createFlow(params) {
 }
 // 下载流程图
 export function downFlow(params) {
-  return post("/camunda/downloadProcess", params);
+  return getDown("/camunda/downloadProcess", params);
 }
 // 查询流程节点;
 export function getFlowNode(params) {
@@ -26,4 +26,16 @@ export function getGroup(params) {
 // 获取用户
 export function getUsers(params) {
   return post("/SysUser/select", params);
+}
+// 下载流程定义安装包
+export function downPack(params) {
+  return getDown("/camunda/downloadCamundaModeler", params);
+}
+// 下载模版
+export function downTemplate() {
+  return getDown("/camunda/downloadBpmn");
+}
+// 删除流程
+export function deleteProcess(params) {
+  return post("/camunda/deleteProcess", params);
 }
