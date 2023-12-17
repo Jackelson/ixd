@@ -41,7 +41,8 @@
         </el-upload>
       </el-form-item>
       <el-form-item prop="appSecretKey" label="密钥:">
-        <el-input v-model="formData.appSecretKey" placeholder="请输入密钥" />
+        <span>秘钥由系统自动生成</span>
+        <!-- <el-input v-model="formData.appSecretKey" placeholder="请输入密钥" /> -->
       </el-form-item>
 
       <el-form-item prop="appAffiliatedCompany" label="所属公司:">
@@ -238,15 +239,15 @@ export default {
         }
       }
     };
-    const judgeZh = (rule, value, callback) => {
-      for (let i = 0; i < value.length; i++) {
-        if (value.charCodeAt(i) > 255) {
-          callback(new Error("密钥不能是中文"));
-          return;
-        }
-      }
-      callback();
-    };
+    // const judgeZh = (rule, value, callback) => {
+    //   for (let i = 0; i < value.length; i++) {
+    //     if (value.charCodeAt(i) > 255) {
+    //       callback(new Error("密钥不能是中文"));
+    //       return;
+    //     }
+    //   }
+    //   callback();
+    // };
     return {
       formData: {
         appFileId: "",
@@ -268,10 +269,10 @@ export default {
         appDescribe: [
           { required: true, message: "请输入app描述", trigger: "blur" },
         ],
-        appSecretKey: [
-          { required: true, message: "请输入密钥", trigger: "blur" },
-          { validator: judgeZh, trigger: "blur" },
-        ],
+        // appSecretKey: [
+        //   { required: true, message: "请输入密钥", trigger: "blur" },
+        //   { validator: judgeZh, trigger: "blur" },
+        // ],
         appAffiliatedCompany: [
           { required: true, message: "请输入所属公司", trigger: "blur" },
         ],

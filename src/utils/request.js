@@ -91,7 +91,12 @@ export function post(url, params) {
         // .post(url, data)
         .post(url, params)
         .then((response) => {
-          resolve(response.data);
+          if (response.data.code == 200) {
+            resolve(response.data);
+          } else {
+            ElMessage.error(response.data.msg);
+            resolve(response.data);
+          }
         })
         .catch((error) => {
           reject(error);
@@ -129,7 +134,12 @@ export function get(url, data) {
     axios
       .get(url, { params })
       .then((response) => {
-        resolve(response.data);
+        if (response.data.code == 200) {
+          resolve(response.data);
+        } else {
+          ElMessage.error(response.data.msg);
+          resolve(response.data.msg);
+        }
       })
       .catch((error) => {
         reject(error);

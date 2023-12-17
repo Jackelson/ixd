@@ -282,9 +282,10 @@ const handleError = () => {
 const imgRef = ref();
 const flowSrc = ref("");
 const viewFlow = (row) => {
-  if (row.taskName == "应用下架审批") {
+  console.log(row);
+  if (row.taskName == "app下架审批") {
     flowSrc.value = require("../../../assets/unline.png");
-  } else if (row.taskName == "应用上架审批") {
+  } else if (row.taskName == "app上架审批") {
     flowSrc.value = require("../../../assets/online.jpg");
   } else {
     flowSrc.value = require("../../../assets/register.jpg");
