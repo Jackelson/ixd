@@ -13,7 +13,10 @@
       v-loading="tableLoading"
       :data="userList"
       height="calc(100% - 7vh)"
-      :header-cell-style="{ background: '#11ac9b !important', color: '#ffffff', }"
+      :header-cell-style="{
+        background: '#11ac9b !important',
+        color: '#ffffff',
+      }"
       :highlight-current-row="highlight"
       style="width: 100%"
       class="roleTableSty"
@@ -35,14 +38,23 @@
         :min-width="item.minWidth"
         :width="item.width"
       >
-        <template v-slot="scope">
+        <template v-if="item.key == 'sex'" v-slot="scope">
+          <span>{{ scope.row[item.key] ? "女" : "男" }}</span>
+        </template>
+        <template v-else v-slot="scope">
           <span>{{ scope.row[item.key] }}</span>
         </template>
       </el-table-column>
     </el-table>
     <!--分页查询-->
     <el-row
-      style="width: 100%; display: flex; justify-content: flex-end;align-items: flex-start;margin-top: 5px"
+      style="
+        width: 100%;
+        display: flex;
+        justify-content: flex-end;
+        align-items: flex-start;
+        margin-top: 5px;
+      "
     >
       <el-pagination
         :current-page="page"
@@ -57,24 +69,24 @@
   </el-dialog>
 </template>
 <script>
-import * as userApi from "@/api/user"
+import * as userApi from "@/api/user";
 
 export default {
-  name: 'TaskList',
+  name: "TaskList",
   props: {
     temp1: {
       require: true,
       type: Object,
-      default: null
+      default: null,
     },
     userParams: {
       require: true,
       type: String,
-      default: null
+      default: null,
     },
     show: {
       type: Boolean,
-      default: false
+      default: false,
     },
   },
   data() {
@@ -86,54 +98,51 @@ export default {
       tableLoading: true,
       userList: [],
       userTableHeader: [
-        { label: '用户名', key: 'userName', minWidth: '80px' },
-        { label: '性别', key: 'sex', minWidth: '80px' },
-        { label: '手机号码', key: 'phonenumber', minWidth: '80px' },
-        { label: '电子邮箱', key: 'email', minWidth: '80px' },
-        { label: '备注', key: 'remark', minWidth: '80px' },
+        { label: "用户名", key: "userName", minWidth: "80px" },
+        { label: "性别", key: "sex", minWidth: "80px" },
+        { label: "手机号码", key: "phonenumber", minWidth: "80px" },
+        { label: "电子邮箱", key: "email", minWidth: "80px" },
+        // { label: '备注', key: 'remark', minWidth: '80px' },
       ],
       dialogUser: false,
-      rules: {
-      },
+      rules: {},
       temp: {},
-    }
+    };
   },
   watch: {
     show: {
       handler(newValue) {
-        this.groupVisible = newValue
-        console.log(newValue, this.userList, 'sdfsdddddd');
+        this.groupVisible = newValue;
+        console.log(newValue, this.userList, "sdfsdddddd");
         if (Object.keys(this.temp1).length > 0) {
-          this.temp = this.temp1
-
+          this.temp = this.temp1;
         }
       },
-      deep: true
+      deep: true,
     },
     userParams: {
       handler() {
-        this.getList()
+        this.getList();
       },
-      deep: true
-    }
+      deep: true,
+    },
   },
-  created() {
-  },
-  mounted() { },
+  created() {},
+  mounted() {},
   methods: {
     getList() {
       let param = {
         roleId: this.userParams,
         pageNum: this.page,
-        pageSize: this.pageSize
-      }
-      this.tableLoading = true
-      userApi.selectUserByRoleId(param).then(res => {
+        pageSize: this.pageSize,
+      };
+      this.tableLoading = true;
+      userApi.selectUserByRoleId(param).then((res) => {
         console.log(res);
-        this.userList = res.data.rows
-        this.total = res.data.total
-        this.tableLoading = false
-      })
+        this.userList = res.data.rows;
+        this.total = res.data.total;
+        this.tableLoading = false;
+      });
     },
     handleCurrentChange(page) {
       this.page = page;
@@ -145,17 +154,17 @@ export default {
       this.getList();
     },
     closeGroupVisible() {
-      this.$emit('update:show', false)
-      this.resetSelect()
-      this.groupVisible = false
+      this.$emit("update:show", false);
+      this.resetSelect();
+      this.groupVisible = false;
     },
     // 清空已选项数组，且置空所有选择
     resetSelect() {
       // this.selectRows = []
-      this.temp = {}
+      this.temp = {};
     },
-  }
-}
+  },
+};
 </script>
 <style lang="scss">
 /*增加，编辑弹窗*/

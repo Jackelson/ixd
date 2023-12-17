@@ -23,6 +23,13 @@
             v-model="temp[item.key]"
             style="width: 90%"
           />
+          <el-input-number
+            v-else-if="item.key === 'roleSort'"
+            style="width: 90%; text-align: left"
+            v-model="temp[item.key]"
+            :min="0"
+            controls-position="right"
+          />
           <el-radio-group
             v-else-if="item.key === 'menuCheckStrictly'"
             v-model="temp[item.key]"
@@ -560,5 +567,8 @@ export default {
       }
     }
   }
+}
+.el-input-number .el-input__inner {
+  text-align: left;
 }
 </style>

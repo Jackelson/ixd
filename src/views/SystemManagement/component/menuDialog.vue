@@ -24,7 +24,13 @@
             style="width: 90%"
             :type="item.type"
           />
-
+          <el-input-number
+            style="width: 90%; text-align: left"
+            v-else-if="item.key == 'orderNum'"
+            v-model="temp[item.key]"
+            :min="0"
+            controls-position="right"
+          />
           <el-radio-group
             v-else-if="item.key == 'isCache' || item.key == 'isFrame'"
             v-model="temp[item.key]"
@@ -280,7 +286,9 @@ export default {
 </script>
 <style lang="scss">
 /*增加，编辑弹窗*/
-
+.el-input-number .el-input__inner {
+  text-align: left;
+}
 .editDialog {
   .el-dialog__body {
     padding: 10px 20px;
