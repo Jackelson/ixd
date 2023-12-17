@@ -112,12 +112,15 @@
                 </div>
                 <!-- <el-input v-model="filterData.roleId" style="width:200px"></el-input> -->
               </el-col>
-              <el-col :span="5">
+              <el-col :span="7">
                 <el-button
                   v-if="isCheckString != ''"
                   style="margin-left: 10px"
                   @click="searchList"
                   >查询</el-button
+                >
+                <el-button style="margin-left: 10px" @click="getAll"
+                  >查询全部</el-button
                 >
                 <el-button style="margin-left: 10px" @click="checkSeach"
                   >选择筛选框</el-button
@@ -425,6 +428,7 @@ export default {
       dialogTitle: "",
       dialogStatus: "create",
       dialogDelRole: false,
+      deptId: "100",
       tableData: {},
       multipleSelection: [],
       highlight: true,
@@ -439,7 +443,7 @@ export default {
       tableHeader: [
         { label: "用户名", key: "userName" },
         { label: "用户角色", key: "roleName" },
-        { label: "单位信息", key: "address" },
+        // { label: "单位信息", key: "address" },
         { label: "手机号码", key: "phonenumber" },
         { label: "电子邮箱", key: "email" },
         { label: "备注", key: "remark" },
@@ -653,9 +657,10 @@ export default {
         roleId: this.filterData.roleId,
         pageNum: this.page,
         pageSize: this.pageSize,
+        deptId: this.deptId,
       };
       // 重置 左侧tree结构
-      this.selectGroupId = null;
+      // this.selectGroupId = null;
       (this.createNodeStatus = true),
         (this.updataNodeStatus = true),
         (this.deleteNodeStatus = true),
@@ -692,6 +697,7 @@ export default {
       });
     },
     selectUserByDeptId(val) {
+      this.deptId = String(val);
       let param = {
         deptId: String(val),
         pageNum: this.page,
@@ -1144,6 +1150,7 @@ export default {
             phonenumber,
             sex,
             status,
+            iscUserId,
           } = data;
           let params = {
             userId,
@@ -1155,6 +1162,7 @@ export default {
             sex,
             status,
             roleId,
+            iscUserId,
           };
           console.log(data, "data");
           api.updateUserData(params).then((res) => {
@@ -1202,6 +1210,12 @@ export default {
           });
         }
       });
+    },
+    // 查询全部用户
+    getAll() {
+      this.selectGroupId = null;
+      this.deptId = "";
+      this.searchList();
     },
   },
 };
