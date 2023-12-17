@@ -31,6 +31,23 @@
           </el-checkbox>
         </el-checkbox-group>
       </div>
+      <div v-if="data.menuId == '/baseBuild'">
+        <el-checkbox-group v-model="checkList">
+          <el-checkbox label="javaName">
+            <div class="label">底层建设信息</div>
+          </el-checkbox>
+          <el-checkbox label="type">
+            <div class="label">类别</div>
+          </el-checkbox>
+        </el-checkbox-group>
+      </div>
+      <div v-if="data.menuId == '/monitor'">
+        <el-checkbox-group v-model="checkList">
+          <el-checkbox label="appId">
+            <div class="label">应用名称</div>
+          </el-checkbox>
+        </el-checkbox-group>
+      </div>
     </template>
     <template #footer>
       <div class="dialog-footer">

@@ -39,12 +39,11 @@
         <el-button @click="handleUpdateStatus(0)">取消展示</el-button>
       </el-col>
     </el-row>
-
     <!-- 表格 -->
     <el-row>
       <el-card class="role-card">
         <el-table
-          ref="multipleTable"
+          ref="multipleTable1"
           :data="tableList"
           height="450px"
           :header-cell-style="{
@@ -53,23 +52,8 @@
           }"
           :highlight-current-row="highlight"
           style="width: 100%"
-          :row-style="rowStyle"
-          @row-click="rowClick"
-          @selection-change="handleSelectionChange"
+          @select="handerChange1"
         >
-          <!-- @select="onTableSelect" -->
-          <!-- <el-table
-          ref="multipleTable"
-          v-loading="tableLoading"
-          :data="tableList"
-          :header-cell-style="{ background: '#11ac9b !important', color: '#ffffff', }"
-          :highlight-current-row="highlight"
-          style="width: 100%;max-height:500px;"
-          :row-style="rowStyle"
-          @row-click="rowClick"
-          @selection-change="handleSelectionChange"
-        > -->
-          <!-- @select="onTableSelect" -->
           <el-table-column type="selection" width="55"></el-table-column>
           <el-table-column
             label="序号"
@@ -115,24 +99,6 @@
         </el-row>
       </el-card>
     </el-row>
-
-    <!-- <el-row>
-      <el-form :model="form">
-        <el-form-item label="公告标题">
-          <el-input v-model="form.noticeTitle"></el-input>
-        </el-form-item>
-        <el-form-item label="公告内容">
-          <el-input type="textarea" v-model="form.noticeContent"></el-input>
-        </el-form-item>
-        <el-form-item label="公告类型">
-          <el-select v-model="form.region">
-            <el-option label="公告" value="1"></el-option>
-            <el-option label="通知" value="2"></el-option>
-          </el-select>
-        </el-form-item>
-      </el-form>      
-    </el-row> -->
-
     <!--弹框部分-->
     <RotationDialog
       :title="dialogTitle"
@@ -200,10 +166,11 @@
       </el-col>
     </el-row>
     <!-- 表格 -->
+    <!-- 公告 -->
     <el-row>
       <el-card class="role-card">
         <el-table
-          ref="multipleTable"
+          ref="multipleTable2"
           :data="noticeList"
           height="450px"
           :header-cell-style="{
@@ -212,10 +179,10 @@
           }"
           :highlight-current-row="highlight"
           style="width: 100%"
-          :row-style="rowStyle"
-          @row-click="rowClick"
-          @selection-change="handleSelectionChange2"
+          @select="handerChange2"
         >
+          <!-- @row-click="rowClick"
+          @selection-change="handleSelectionChange2" -->
           <el-table-column type="selection" width="55"></el-table-column>
           <el-table-column
             label="序号"
@@ -269,7 +236,7 @@
       :title="dialogTitle"
       :dialogStatus="dialogNoticeStatus"
       v-model:show="dialogNotice"
-      :temp1="temp"
+      :temp1="this.cu"
       source="task"
     />
 
@@ -341,12 +308,7 @@ export default {
         createName: "",
         imageDesc: "",
       },
-      tableList: [
-        // { sn: '002', name: '张三', isShow: '1', remark: '' },
-        // { sn: '002', name: '张三', isShow: '1', remark: '' },
-        // { sn: '002', name: '张三', isShow: '1', remark: '' },
-        // { sn: '002', name: '张三', isShow: '1', remark: '' },
-      ],
+      tableList: [],
       noticeList: [],
       noticeHeader: [
         { label: "类别", key: "noticeType" },
@@ -365,6 +327,8 @@ export default {
         { label: "创建时间", key: "createTime" },
         { label: "创建人", key: "createName" },
       ],
+      currrentRow1: {},
+      currrentRow2: {},
       selectRows: [], // 批量操作时选中的所有行数组
       multipleSelection: [],
       multipleSelection2: [],
@@ -393,36 +357,28 @@ export default {
   mounted() {},
   methods: {
     fabuNotice() {
+      if (!this.currrentRow2?.id) {
+        this.$message({ type: "warning", message: "请选择要发布的数据" });
+        return;
+      }
+      if (!this.currrentRow2?.status == "发布") {
+        this.$message({ type: "warning", message: "该条数据已经发布" });
+        return;
+      }
       ElMessageBox.confirm(`是否发布公告?`, "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
       })
         .then(() => {
-          if (this.multipleSelection2.length == 0)
-            return this.$message({ type: "warning", message: "请选择公告" });
-          let flag = false;
-          this.multipleSelection2.forEach((item) => {
-            if (item.status == "发布") {
-              flag = true;
-            }
-          });
-          if (flag)
-            return this.$message({
-              type: "warning",
-              message: "勾选的公告包含已发布的",
-            });
-          const params = [];
-          this.multipleSelection2.forEach((item) => {
-            const obj = {
-              id: item.id,
-              status: 1,
-            };
-            params.push(obj);
-          });
-          api.updateStatus(params).then((res) => {
+          const obj = {
+            id: this.currrentRow2.id,
+            status: 1,
+          };
+          api.updateStatus([obj]).then((res) => {
             if (res.code == 200) {
               this.getNotice();
+              this.currrentRow2 = {};
               return this.$message({ type: "success", message: "发布成功" });
             } else {
               return this.$message({ type: "error", message: res.msg });
@@ -437,32 +393,28 @@ export default {
         });
     },
     chNotice() {
+      if (!this.currrentRow2.id) {
+        this.$message.warning("请选择要撤回的数据");
+        return;
+      }
+      if (
+        this.currrentRow2.status == "撤回" ||
+        this.currrentRow2.status == "待发布"
+      ) {
+        this.$message.warning("待发布或者已撤回不能撤回");
+        return;
+      }
       ElMessageBox.confirm(`是否撤回公告?`, "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
       })
         .then(() => {
-          if (this.multipleSelection2.length == 0)
-            return this.$message({ type: "warning", message: "请选择公告" });
-          let flag = false;
-          this.multipleSelection2.forEach((item) => {
-            if (item.status == "撤回" || item.status == "待发布") flag = true;
-          });
-          if (flag)
-            return this.$message({
-              type: "warning",
-              message: "勾选的公告中包含待发布或者已撤回",
-            });
-          const params = [];
-          this.multipleSelection2.forEach((item) => {
-            const obj = {
-              id: item.id,
-              status: 2,
-            };
-            params.push(obj);
-          });
-          api.updateStatus(params).then((res) => {
+          const obj = {
+            id: this.currrentRow2.id,
+            status: 2,
+          };
+          api.updateStatus([obj]).then((res) => {
             if (res.code == 200) {
               this.getNotice();
               return this.$message({ type: "success", message: "撤回成功" });
@@ -478,7 +430,6 @@ export default {
           });
         });
     },
-    release() {},
     openImage(row) {
       this.dialogShow = true;
       this.imgSrc = "data:image/png;base64," + row.base64Image;
@@ -492,13 +443,6 @@ export default {
         return (val = "展示");
       }
     },
-    // openImage(row){
-    //   debugger
-    //   console.log(row)
-    //     this.$alert(`<img src="data:image/jpg;base64,${row.base64Image}">`, 'HTML 片段', {
-    //       dangerouslyUseHTMLString: true
-    //     });
-    // },
     changeNoticeVal(val) {
       if (val == "0") {
         return (val = "待发布");
@@ -508,6 +452,26 @@ export default {
         return (val = "撤回");
       } else {
         return (val = "删除");
+      }
+    },
+    handerChange1(v, r) {
+      if (r.id == this.currrentRow2?.id) {
+        this.$refs.multipleTable1.toggleRowSelection(r, false);
+        this.currrentRow1 = {};
+      } else {
+        this.$refs.multipleTable1.toggleRowSelection(this.currrentRow1, false);
+        this.$refs.multipleTable1.toggleRowSelection(r, true);
+        this.currrentRow1 = r;
+      }
+    },
+    handerChange2(v, r) {
+      if (r.id == this.currrentRow2?.id) {
+        this.$refs.multipleTable2.toggleRowSelection(r, false);
+        this.currrentRow2 = {};
+      } else {
+        this.$refs.multipleTable2.toggleRowSelection(this.currrentRow2, false);
+        this.$refs.multipleTable2.toggleRowSelection(r, true);
+        this.currrentRow2 = r;
       }
     },
     //查询公告
@@ -530,7 +494,6 @@ export default {
         this.noticeLoading = false;
       });
     },
-
     // 查询表单
     getList(type) {
       let params = {
@@ -555,7 +518,7 @@ export default {
         this.tableLoading = false;
       });
     },
-    //删除
+    //删除公告数据
     stopData() {
       let params = this.multipleSelection.map((item) => item.id);
       console.log(params, "params");
@@ -571,14 +534,14 @@ export default {
     },
     //删除公告
     stopNotice() {
-      let params = this.multipleSelection2.map((item) => item.id);
-      api.deleteNotice(params).then((res) => {
+      api.deleteNotice([this.currrentRow2.id]).then((res) => {
         this.dialogDel = false;
         if (res.code == 200) {
           this.$message({
             message: "删除成功！",
             type: "success",
           });
+          this.currrentRow2 = {};
           this.getNotice();
         } else {
           return this.$message({ type: "error", message: res.msg });
@@ -588,7 +551,6 @@ export default {
     // 分页查询
     handleCurrentChange(page) {
       this.page = page;
-      console.log(page);
       this.getList();
     },
     handleCurrentChange2(page) {
@@ -596,7 +558,7 @@ export default {
       this.getNotice();
     },
     handleSelectionChange(val) {
-      console.log(val);
+      this.$refs.multipleTable.toggleRowSelection(val[0], false);
       this.multipleSelection = val;
     },
     handleSelectionChange2(val) {
@@ -622,35 +584,11 @@ export default {
     resetSelect() {
       this.selectRows = [];
       this.temp = {};
-      this.$refs.multipleTable.clearSelection();
+      this.currrentRow2 = {};
+      this.currrentRow1 = {};
+      this.$refs.multipleTable1.clearSelection();
+      this.$refs.multipleTable2.clearSelection();
     },
-    // 选中某行
-    rowClick(row) {
-      debugger;
-      this.highlight = true;
-      this.temp = Object.assign({}, row);
-      console.log(this.temp);
-    },
-    // 行选中
-    // onTableSelect(rows, row) {
-    //   this.selected = rows.length && rows.indexOf(row) !== -1
-    //   var ele = document.getElementsByClassName('el-table__row')
-    //   var domes = Array.prototype.slice.call(ele)
-    //   var index = this.list.indexOf(row)
-    //   // 如果是选中
-    //   if (this.selected === true) {
-    //     this.selectRows = rows
-    //     setTimeout(() => {
-    //       domes[index].classList.add('isactive')
-    //     }, 100)
-    //   } else {
-    //     // 如果是取消
-    //     this.selectRows = rows
-    //     setTimeout(() => {
-    //       domes[index].classList.remove('isactive')
-    //     }, 100)
-    //   }
-    // },
     //新增通告
     addNoticeDialog() {
       this.highlight = false;
@@ -694,29 +632,20 @@ export default {
     },
     //编辑公告
     noticeUpdate() {
-      if (this.multipleSelection2.length > 1)
-        return this.$message({ type: "error", message: "只能选择一条数据" });
-      if (this.multipleSelection2.length > 0) {
-        console.log(this.multipleSelection2);
-        debugger;
-        for (let i = 0; i < this.multipleSelection2.length; i++) {
-          if (this.multipleSelection2[i].status == "发布") {
-            this.$message.warning("请先撤回,再进行编辑");
-            return;
-          }
+      if (this.currrentRow2?.id) {
+        if (this.currrentRow2.status == "发布") {
+          this.$message.warning("请先撤回,再进行编辑");
+          return;
         }
         this.dialogTitle = "修改";
-        if (this.multipleSelection2[0].noticeType == "3") {
+        if (this.currrentRow2.noticeType == "3") {
           this.dialogTitle += "新闻资讯";
-        } else if (this.multipleSelection2[0].noticeType == "2") {
+        } else if (this.currrentRow2.noticeType == "2") {
           this.dialogTitle += "公告";
         } else {
           this.dialogTitle += "通知";
         }
         this.dialogNoticeStatus = "update";
-        console.log(this.multipleSelection2[0], "this.multipleSelection2[0]");
-        this.temp = this.multipleSelection2[0];
-        console.log(this.temp, "pppppppppppp");
         this.dialogNotice = true;
       } else {
         this.$message({
@@ -725,30 +654,16 @@ export default {
         });
       }
     },
-    // 删除角色
+    // 删除轮播图
     handleStop(status) {
-      // if (this.selectRows.length === 0) {
-      //   this.$message({
-      //     message: '请勾选要删除的数据！',
-      //     type: 'warning'
-      //   })
-      // } else if (this.selectRows.length === 1) {
-      //   this.deleteTxt = '是否删除该数据？'
-      //   this.dialogDel = true
-      // } else if (this.selectRows.length > 1) {
-      //   // 勾选多条数据
-      //   this.deleteTxt = '是否删除多条数据？'
-      //   this.dialogDel = true
-      // }
-      // if (Object.keys(this.multipleSelection).length > 0) {
-      //   this.deleteTxt = '是否删除用户'
-      //   this.dialogDel = true
-      // } else {
-      //   this.$message({
-      //     message: '请勾选要删除的用户！',
-      //     type: 'warning'
-      //   })
-      // }
+      if (!this.currrentRow1?.id) {
+        this.$message.warning("请选择要删除的轮播图");
+        return;
+      }
+      if (this.currrentRow1?.state == "展示") {
+        this.$message.warning("请先取消展示");
+        return;
+      }
       ElMessageBox.confirm(
         `是否${status == 1 ? "发布" : "删除"}轮播图?`,
         "提示",
@@ -759,13 +674,7 @@ export default {
         }
       )
         .then(() => {
-          if (this.multipleSelection.length == 0)
-            return this.$message({ type: "warning", message: "请选择轮播图" });
-          const params = [];
-          this.multipleSelection.forEach((item) => {
-            params.push(item.id);
-          });
-          api.deleteData(params).then((res) => {
+          api.deleteData([this.currrentRow1.id]).then((res) => {
             if (res.code == 200) {
               this.getList();
               return this.$message({ type: "success", message: "删除成功" });
@@ -782,6 +691,22 @@ export default {
         });
     },
     handleUpdateStatus(status) {
+      if (!this.currrentRow1?.id) {
+        this.$message.warning("请选择轮播图");
+        return;
+      }
+      if (status == 1) {
+        if (this.currrentRow1?.state == "展示") {
+          this.$message.warning("轮播图已展示");
+          return;
+        }
+      } else {
+        if (this.currrentRow1?.state == "待展示") {
+          this.$message.warning("轮播图已是待展示状态");
+          return;
+        }
+      }
+
       ElMessageBox.confirm(
         `是否${status == 1 ? "展示" : "取消展示"}轮播图?`,
         "提示",
@@ -792,34 +717,9 @@ export default {
         }
       )
         .then(() => {
-          if (this.multipleSelection.length == 0)
-            return this.$message({ type: "warning", message: "请选择轮播图" });
-          let flag = 0;
-          if (status) {
-            this.multipleSelection.forEach((item) => {
-              console.log(item, "itemmm");
-              if (item.state == "展示") flag = 1;
-            });
-          } else {
-            this.multipleSelection.forEach((item) => {
-              console.log(item, "itemmm");
-              if (item.state == "待展示") flag = 2;
-            });
-          }
-          if (flag == 1) {
-            return this.$message({
-              type: "warning",
-              message: "勾选的轮播图中包含已展示的",
-            });
-          } else if (flag == 2) {
-            return this.$message({
-              type: "warning",
-              message: "该图片还未展示，展示状态的照片才可以取消展示",
-            });
-          }
           // const params = [];
           const obj = {
-            id: this.multipleSelection[0].id,
+            id: this.currrentRow1.id,
             state: status,
           };
           api.updateState([obj]).then((res) => {
@@ -843,18 +743,14 @@ export default {
     },
     //删除公告
     deleteNo() {
-      console.log(this.multipleSelection2);
-      for (let i = 0; i < this.multipleSelection2.length; i++) {
-        if (this.multipleSelection2[i].status == "发布") {
-          debugger;
-          this.$message({
-            message: "请先撤回，再进行删除",
-            type: "warning",
-          });
-          return;
-        }
+      if (this.currrentRow2.status == "发布") {
+        this.$message({
+          message: "请先撤回，再进行删除",
+          type: "warning",
+        });
+        return;
       }
-      if (Object.keys(this.multipleSelection2).length > 0) {
+      if (Object.keys(this.currrentRow2).length > 0) {
         this.deleteTxt = "是否删除公告";
         this.dialogDel = true;
       } else {

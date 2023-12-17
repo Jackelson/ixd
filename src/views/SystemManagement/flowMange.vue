@@ -41,12 +41,14 @@
       </el-table-column>
       <el-table-column prop="createName" label="创建人" align="center" />
       <el-table-column prop="createTime" label="创建时间" align="center" />
-      <el-table-column prop="" label="操作" align="center">
+      <el-table-column prop="" label="操作" align="center" width="200">
         <template #default="{ row }">
           <el-space>
-            <el-button @click="downFile(row)">下载</el-button>
-            <el-button @click="configNode(row)">配置节点</el-button>
-            <el-button @click="handelDel(row)">删除</el-button>
+            <el-button size="small" @click="downFile(row)">下载</el-button>
+            <el-button size="small" @click="configNode(row)"
+              >配置节点</el-button
+            >
+            <el-button size="small" @click="handelDel(row)">删除</el-button>
           </el-space>
         </template>
       </el-table-column>

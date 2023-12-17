@@ -70,6 +70,30 @@ const routes = [
         component: () => import("@/views/Approved/index.vue"),
         meta: { title: "应用待办管理" },
       },
+      {
+        path: "/baseBuild",
+        name: "baseBuild",
+        component: () => import("@/views/SystemManagement/baseBuild.vue"),
+        meta: { title: "底层建设管理" },
+      },
+      {
+        path: "/monitor",
+        name: "monitor",
+        component: () => import("@/views/SystemManagement/monitor.vue"),
+        meta: { title: "请求监控管理" },
+      },
+      {
+        path: "/logMange",
+        name: "logMange",
+        component: () => import("@/views/SystemManagement/logMange.vue"),
+        meta: { title: "日志管理" },
+      },
+      {
+        path: "/elseInfo",
+        name: "elseInfo",
+        component: () => import("@/views/SystemManagement/elseInfo.vue"),
+        meta: { title: "其他信息管理" },
+      },
     ],
   },
   {

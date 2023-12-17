@@ -58,6 +58,30 @@ export const menuList = [
         path: "/flowMange",
       },
       {
+        id: "115",
+        name: "日志管理",
+        icon: "日志管理",
+        path: "/logMange",
+      },
+      {
+        id: "110",
+        name: "底层建设管理",
+        icon: "底层建设管理",
+        path: "/baseBuild",
+      },
+      {
+        id: "111",
+        name: "请求监控管理",
+        icon: "请求监控管理",
+        path: "/monitor",
+      },
+      {
+        id: "117",
+        name: "其他信息管理",
+        icon: "其他信息管理",
+        path: "/elseInfo",
+      },
+      {
         id: "103",
         name: "轮播图公告管理",
         icon: "轮播图管理",

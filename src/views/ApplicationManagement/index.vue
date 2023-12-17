@@ -1190,7 +1190,8 @@ export default {
       this.requestData();
     },
     async openShareDialog(row) {
-      const res = await testUrl({ appId: row.appId });
+      console.log(row, "测试链接的地址");
+      const res = await testUrl({ appId: row.id });
       if (res.code == 200) {
         ElMessageBox.alert(res.data, "测试连接", {
           // if you want to disable its autofocus

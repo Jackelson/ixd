@@ -171,6 +171,12 @@ export default {
       },
       deep: true,
     },
+    temp1: {
+      handler(newValue) {
+        this.temp = newValue;
+      },
+      deep: true,
+    },
   },
   created() {},
   mounted() {},
@@ -204,6 +210,7 @@ export default {
     },
     // 新增提交
     createData() {
+      console.log(this.$parent);
       this.$refs["dataform"].validate((valid) => {
         if (valid) {
           const data = Object.assign({}, this.temp);
@@ -228,6 +235,7 @@ export default {
                 message: "创建成功",
                 type: "success",
               });
+              this.$parent.parentId = 0;
               this.$parent.getList();
               console.log(res, "res");
               this.groupVisible = false;
@@ -252,11 +260,9 @@ export default {
 
           menuApi.updateMenuData(data).then((res) => {
             if (res.code == 200) {
-              this.$message({
-                message: "更新成功！",
-                type: "success",
-              });
+              this.$message.success("更新成功！");
               this.$parent.getList();
+
               console.log(res, "res");
               this.groupVisible = false;
             } else {

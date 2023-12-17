@@ -27,7 +27,6 @@
           }"
           :highlight-current-row="highlight"
           style="width: 100%"
-          :row-style="rowStyle"
           row-key="menuId"
           @select="handerChange"
         >
@@ -156,6 +155,7 @@ export default {
   mounted() {},
   methods: {
     handerChange(row, select) {
+      this.select = 0;
       if (select.parentId == 0) {
         if (this.parentId == select.menuId) {
           this.$refs.multipleTable.toggleRowSelection(select, false);
@@ -215,7 +215,7 @@ export default {
     deleteData(val) {
       this.dialogDelRole = true;
       this.menuId = val.menuId;
-      ElMessageBox.confirm(`确定删除${val.menuName}吗?`, "Warning", {
+      ElMessageBox.confirm(`确定删除${val.menuName}吗?`, "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
@@ -240,7 +240,6 @@ export default {
       // }
       // console.log(menuId, 'params');
       menuApi.deleteMenuData(params).then((res) => {
-        console.log(res, "deleteData");
         if (res.code == 200) {
           this.dialogDelRole = false;
           this.getList();
@@ -274,6 +273,7 @@ export default {
 
     // 清空已选项数组，且置空所有选择
     resetSelect() {
+      this.parentId = 0;
       this.selectRows = [];
       this.temp = {};
       this.$refs.multipleTable.clearSelection();

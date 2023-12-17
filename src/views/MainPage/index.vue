@@ -374,6 +374,7 @@ export default defineComponent({
 
           .T-menu {
             background: #0d8678;
+            overflow: auto !important;
           }
 
           .collapse-icon {
