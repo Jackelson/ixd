@@ -84,8 +84,12 @@
           <div class="row">
             <div class="label">单个日志文件大小:</div>
             <div class="value">
-              {{ n.maxHistory }}
+              {{ n.maxFileSize }}
             </div>
+          </div>
+          <div class="row">
+            <div class="label">最大保存时间:</div>
+            <div class="value">{{ n.maxHistory }}天</div>
           </div>
           <div class="row">
             <div class="label">日志输出格式:</div>
