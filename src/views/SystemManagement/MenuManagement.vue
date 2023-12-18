@@ -35,7 +35,6 @@
             label="序号"
             align="center"
             type="index"
-            :index="recordFormat"
             width="80px"
             min-width="80px"
           />
@@ -50,13 +49,13 @@
           >
             <template v-slot="scope">
               <span v-if="item.key === 'operate'">
-                <el-button type="text" @click="openShareDialog(scope.row)">
+                <el-button @click="openShareDialog(scope.row)">
                   <el-icon>
                     <Edit />
                   </el-icon>
                   <span>修改</span>
                 </el-button>
-                <el-button type="text" @click="deleteData(scope.row)">
+                <el-button @click="deleteData(scope.row)">
                   <el-icon>
                     <Tools />
                   </el-icon>
@@ -192,6 +191,7 @@ export default {
       menuApi.selectAllMenu(params).then((res) => {
         // this.list = res.data.rows;
         this.list = [];
+        console.log(res);
         res.data.rows.forEach((item) => {
           if (item.parentId == 0) {
             this.list.push(item);
@@ -203,6 +203,9 @@ export default {
             }
           }
         });
+        if (this.list.length == 0) {
+          this.list = res.data.rows;
+        }
         this.menuId = res.data.rows.menuId;
         this.serviceTotal = res.data.total;
       });
@@ -210,11 +213,13 @@ export default {
     queryMenu() {
       this.getList();
     },
-
     //删除
     deleteData(val) {
       this.dialogDelRole = true;
       this.menuId = val.menuId;
+      this.$refs.multipleTable.clearSelection();
+      this.temp = {};
+      this.parentId = 0;
       ElMessageBox.confirm(`确定删除${val.menuName}吗?`, "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
@@ -259,11 +264,6 @@ export default {
     handleCurrentChange(val) {
       console.log(val);
       this.getList();
-    },
-    recordFormat(index) {
-      const page = this.page;
-      const pagesize = this.pageSize;
-      return (page - 1) * pagesize + index + 1;
     },
     handleSizeChange(pageSize) {
       this.page = 1;

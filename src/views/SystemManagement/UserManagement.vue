@@ -119,7 +119,7 @@
                   @click="searchList"
                   >查询</el-button
                 >
-                <el-button style="margin-left: 10px" @click="getAll"
+                <el-button link style="margin-left: 10px" @click="getAll"
                   >查询全部</el-button
                 >
                 <el-button style="margin-left: 10px" @click="checkSeach"
@@ -164,7 +164,6 @@
                   label="序号"
                   align="center"
                   type="index"
-                  :index="recordFormat"
                   width="80px"
                   min-width="80px"
                 />
@@ -272,7 +271,7 @@
       :close-on-click-modal="false"
     >
       <el-row type="flex" justify="center">
-        <div class="img-tip" />
+        <div class="img-tip"></div>
       </el-row>
       <el-row type="flex" justify="center" style="margin: 20px 0">
         <span class="message">是否删除所选部门</span>
@@ -391,7 +390,7 @@
       :close-on-click-modal="false"
     >
       <el-row type="flex" justify="center">
-        <div class="img-tip" />
+        <div class="img-tip"></div>
       </el-row>
       <el-row type="flex" justify="center" style="margin: 20px 0">
         <span class="message">是否删除所选用户</span>
@@ -490,7 +489,22 @@ export default {
       ],
       rulesForm: {
         userName: [
-          { required: true, message: "请输入用户名", trigger: "blur" },
+          {
+            required: true,
+            validator: (rule, value, callBack) => {
+              if (!value) {
+                callBack(new Error("请输入账号"));
+              } else {
+                for (var i = 0; i < value.length; i++) {
+                  if (value.charCodeAt(i) >= 255) {
+                    callBack(new Error("账号不能是中文"));
+                  }
+                }
+              }
+              callBack();
+            },
+            trigger: "change",
+          },
         ],
         iscUserId: [{ required: true, message: "ISC用户id", trigger: "blur" }],
         nickName: [
@@ -1003,7 +1017,7 @@ export default {
     handleSelectionChange(val) {
       this.multipleSelection = val;
       this.temp = Object.assign({}, this.multipleSelection[0]);
-      this.temp.roleId = this.temp.roles ? this.temp.roles[0]?.roleId : null;
+      this.temp.roleId = this.temp.roles ? this.temp.roles[0].roleId : null;
       console.log(this.multipleSelection, this.temp, "val");
     },
     // 选中某行
@@ -1013,11 +1027,6 @@ export default {
       // this.temp = Object.assign({}, row)
       // this.temp.roleId = this.temp.roles[0] ? this.temp.roles[0].roleId : null
       // console.log(this.temp, 'sssss');
-    },
-    recordFormat(index) {
-      const page = this.page;
-      const pagesize = this.pageSize;
-      return (page - 1) * pagesize + index + 1;
     },
     handleCurrentChange(page) {
       this.page = page;

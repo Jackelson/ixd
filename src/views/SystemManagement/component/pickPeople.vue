@@ -627,18 +627,13 @@ export default {
     handleSelectionChange(val) {
       this.multipleSelection = val;
       this.temp = Object.assign({}, this.multipleSelection[0]);
-      this.temp.roleId = this.temp.roles ? this.temp.roles[0]?.roleId : null;
+      this.temp.roleId = this.temp.roles ? this.temp.roles[0].roleId : null;
       console.log(this.multipleSelection, this.temp, "val");
     },
     // 选中某行
     rowClick(row) {
       this.$emit("picked", row);
       this.dialogVisible = false;
-    },
-    recordFormat(index) {
-      const page = this.page;
-      const pagesize = this.pageSize;
-      return (page - 1) * pagesize + index + 1;
     },
     handleCurrentChange(page) {
       this.page = page;

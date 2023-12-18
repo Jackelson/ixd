@@ -115,9 +115,8 @@
             background: '#11ac9b !important',
             color: '#ffffff',
           }"
-          :row-class-name="tableRowClassName"
           style="width: 100%"
-          size="mini"
+          size="small"
           ref="table"
           class="appTableSty"
           @selection-change="handleSelectionChange"
@@ -129,7 +128,6 @@
             label="序号"
             align="center"
             type="index"
-            :index="recordFormat"
             width="80px"
             min-width="80px"
           />
@@ -145,13 +143,13 @@
           >
             <template v-slot="scope">
               <span v-if="item.key === 'operate'">
-                <el-button type="text" @click="openShareDialog(scope.row)">
+                <el-button @click="openShareDialog(scope.row)">
                   <el-icon>
                     <Share />
                   </el-icon>
                   <span>测试链接</span>
                 </el-button>
-                <el-button @click="getUserConfiguration(scope.row)" type="text">
+                <el-button @click="getUserConfiguration(scope.row)">
                   <el-icon>
                     <Tools />
                   </el-icon>
@@ -618,12 +616,19 @@ export default {
         fileId: this.multipleSelection[0].securityTestingFileId,
       };
       downloadFile(params).then((res) => {
-        const fileName = "安全测试报告. pdf";
-        const blob = new Blob([res]);
+        let fileName = "";
+        let data = "";
+        if (res.fileName) {
+          fileName = res.fileName;
+        } else {
+          fileName = "安全测试报告. pdf";
+          data = res.response;
+        }
+        const blob = new Blob([data]);
         let dom = document.createElement("a");
         let url = window.URL.createObjectURL(blob);
         dom.href = url;
-        dom.download = decodeURI(fileName);
+        dom.download = fileName;
         dom.style.display = "none";
         document.body.appendChild(dom);
         dom.click();
@@ -646,23 +651,19 @@ export default {
         fileId: this.multipleSelection[0].frontFileId,
       };
       downloadFile(params).then((res) => {
-        const fileName =
-          this.multipleSelection[0].appIndexUrl.substring(
-            0,
-            this.multipleSelection[0].appIndexUrl.indexOf("/")
-          ) + ".zip";
-        console.log(
-          this.multipleSelection[0].appIndexUrl.substring(
-            0,
-            this.multipleSelection[0].appIndexUrl.indexOf("/")
-          ),
-          "123123"
-        );
-        const blob = new Blob([res]);
+        let fileName = "";
+        let data = "";
+        if (res.fileName) {
+          fileName = res.fileName;
+        } else {
+          fileName = "安全测试报告. pdf";
+          data = res.response;
+        }
+        const blob = new Blob([data]);
         let dom = document.createElement("a");
         let url = window.URL.createObjectURL(blob);
         dom.href = url;
-        dom.download = decodeURI(fileName);
+        dom.download = fileName;
         dom.style.display = "none";
         document.body.appendChild(dom);
         dom.click();
@@ -1164,6 +1165,10 @@ export default {
         // "dateEnd": "2023-02-16 02:17:44"
         pageNum: this.page,
         pageSize: this.pageSize,
+        createId:
+          localStorage.getItem("createById") == 1
+            ? ""
+            : localStorage.getItem("createById"),
       };
       this.tableLoading = true;
       api.getAppInfo(params).then((res) => {

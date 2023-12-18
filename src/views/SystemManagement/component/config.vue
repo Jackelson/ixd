@@ -43,18 +43,23 @@ const dialogVisible = ref(false);
 const list = ref([]);
 const currentRow = ref({});
 const emits = defineEmits(["success"]);
+const id = ref();
 const open = async (record) => {
   console.log(record);
   const res = await getFlowNode({
-    processDefinitionId: record.businessKey + ":" + record.bpmnId,
+    // id: record.id,record.businessKey + ":" +
+    // processDefinitionId: record.bpmnId,
+    processDefinitionId: record.businessKey,
   });
   currentRow.value = record;
   if (res.data.rows.length <= 0) {
     ElMessage.warning("当前流程数据错误");
     return;
   }
-  const flowsObj = JSON.parse(res.data.rows[0]?.taskUserJson || "{}");
+  id.value = res.data.rows[0].id || "";
+  const flowsObj = JSON.parse(res.data.rows[0].taskUserJson || "{}");
   Object.keys(flowsObj).forEach((key) => {
+    console.log(key);
     list.value.push({
       key,
       label: flowsObj[key],
@@ -97,7 +102,7 @@ const submit = async () => {
     peopleObj[listArray[i].key] = listArray[i].label;
   }
   const params = {
-    id: currentRow.value.id,
+    id: id.value,
     taskUserJson: JSON.stringify(peopleObj),
   };
   const res = await configuration(params);

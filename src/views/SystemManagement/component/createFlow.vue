@@ -14,19 +14,24 @@
       size="default"
       status-icon
     >
-      <el-form-item label="bpmn中文名称" prop="bpmnName">
+      <el-form-item label="流程中文名称" prop="bpmnName">
         <el-input clearable v-model="formState.bpmnName" />
       </el-form-item>
-      <el-form-item label="bpmn英文名称" prop="bpmnEnglishName">
+      <el-form-item label="流程英文名称" prop="bpmnEnglishName">
         <el-input clearable v-model="formState.bpmnEnglishName" />
       </el-form-item>
-      <el-form-item label="bpmn附件" prop="file">
+      <el-form-item label="创建人" prop="createName">
+        <el-input clearable v-model="formState.createName" />
+      </el-form-item>
+      <el-form-item label="流程附件" prop="file">
         <el-upload
           accept=".bpmn"
           ref="uploadRef"
           class="upload-demo"
           :auto-upload="false"
           :on-change="change"
+          :limit="1"
+          :on-remove="remove"
         >
           <template #trigger>
             <el-button type="primary">选择文件</el-button>
@@ -68,10 +73,11 @@ const change = (file) => {
   formState.value.file = file.raw;
 };
 const rules = ref({
-  bpmnName: [{ required: true, message: "bpmn中文名称", trigger: "change" }],
+  bpmnName: [{ required: true, message: "流程中文名称", trigger: "change" }],
   bpmnEnglishName: [
-    { required: true, message: "bpmn英文名称", trigger: "change" },
+    { required: true, message: "流程英文名称", trigger: "change" },
   ],
+  createName: [{ required: true, message: "请输入创建人", trigger: "change" }],
   file: [{ required: true, message: "请上传bpmn附件", trigger: "change" }],
 });
 const ruleFormRef = ref();
@@ -82,6 +88,7 @@ const submit = () => {
       const formData = new FormData();
       formData.append("file", formState.value.file);
       formData.append("bpmnName", formState.value.bpmnName);
+      formData.append("createName", formState.value.createName);
       formData.append("bpmnEnglishName", formState.value.bpmnEnglishName);
       formData.append("bpmnFileName", formState.value.bpmnFileName);
       formData.append("createId", createId);
@@ -95,6 +102,10 @@ const submit = () => {
       }
     }
   });
+};
+const remove = () => {
+  formState.value.bpmnFileName = "";
+  formState.value.file = "";
 };
 const open = () => {
   dialogVisible.value = true;

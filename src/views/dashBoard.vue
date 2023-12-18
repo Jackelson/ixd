@@ -111,16 +111,14 @@
           color: '#ffffff',
         }"
         :cell-style="{ padding: 5 + 'px' }"
-        :row-class-name="tableRowClassName"
         style="width: 100%"
-        size="mini"
+        size="small"
         ref="table"
       >
         <el-table-column
           label="序号"
           align="center"
           type="index"
-          :index="recordFormat"
           width="80px"
           min-width="80px"
         />
@@ -251,6 +249,10 @@ export default {
       let params = {
         pageNum: this.page,
         pageSize: this.pageSize,
+        createId:
+          localStorage.getItem("createById") == 1
+            ? ""
+            : localStorage.getItem("createById"),
         // "appName": "测试11",
         // "appDescribe": "1111",
         // "appSecretKey": "123123",

@@ -35,7 +35,6 @@
         }"
         :highlight-current-row="highlight"
         style="width: 100%"
-        :row-style="rowStyle"
         @row-click="rowClick"
         @selection-change="handleSelectionChange"
       >
@@ -145,7 +144,6 @@
         }"
         :highlight-current-row="highlight"
         style="width: 100%"
-        :row-style="rowStyle"
         @row-click="rowClick"
         @selection-change="handleSelectionChange2"
       >

@@ -4,3 +4,8 @@ import { post } from "../utils/request";
 export const getBottomBuildLog = (params) => {
   return post("/BottomBuildLog/select", params);
 };
+
+// 配置信息查询
+export const getCInfo = (params) => {
+  return post("/commonInfo/selectConfigInfo", params);
+};

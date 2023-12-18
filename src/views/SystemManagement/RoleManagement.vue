@@ -78,7 +78,6 @@
                 :highlight-current-row="highlight"
                 style="width: 100%"
                 class="roleTableSty"
-                :row-style="rowStyle"
                 @row-click="rowClick"
                 @selection-change="handleSelectionChange"
                 @select="onTableSelect"
@@ -211,7 +210,7 @@
       :close-on-click-modal="false"
     >
       <el-row type="flex" justify="center">
-        <div class="img-tip" />
+        <div class="img-tip"></div>
       </el-row>
       <el-row type="flex" justify="center" style="margin: 20px 0">
         <span class="message">是否删除所选部门</span>
@@ -229,7 +228,7 @@
       :close-on-click-modal="false"
     >
       <el-row type="flex" justify="center">
-        <div class="img-tip" />
+        <div class="img-tip"></div>
       </el-row>
       <el-row type="flex" justify="center" style="margin: 20px 0">
         <span class="message">是否删除所选角色</span>

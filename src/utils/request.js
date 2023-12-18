@@ -187,7 +187,20 @@ export function uploadFile(url, params) {
     axios
       .post(url, param, config)
       .then((response) => {
-        resolve(response.data);
+        if (response.headers["content-disposition"]) {
+          const disposition =
+            response.headers["content-disposition"].split(";");
+          if (disposition[1].indexOf("filename") !== -1) {
+            const startNum = disposition[1].indexOf("=");
+            const fileName = decodeURI(disposition[1].substring(startNum + 1));
+            resolve({
+              fileName,
+              response,
+            });
+          }
+        } else {
+          resolve(response.data);
+        }
       })
       .catch((error) => {
         reject(error);

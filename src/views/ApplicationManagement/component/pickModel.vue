@@ -27,7 +27,7 @@
       <div v-if="data.menuId == '/flowMange'">
         <el-checkbox-group v-model="checkList">
           <el-checkbox label="bpmnName">
-            <div class="label">bpmn中文名称</div>
+            <div class="label">流程中文名称</div>
           </el-checkbox>
         </el-checkbox-group>
       </div>

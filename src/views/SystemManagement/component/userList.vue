@@ -1,7 +1,7 @@
 <template>
   <!--弹框部分-->
   <el-dialog
-    :title="title"
+    title="用户列表"
     width="80%"
     v-model="groupVisible"
     class="editDialog"
@@ -17,7 +17,6 @@
         background: '#11ac9b !important',
         color: '#ffffff',
       }"
-      :highlight-current-row="highlight"
       style="width: 100%"
       class="roleTableSty"
     >
@@ -25,7 +24,6 @@
         label="序号"
         align="center"
         type="index"
-        :index="recordFormat"
         width="80px"
         min-width="80px"
       />
@@ -81,7 +79,6 @@ export default {
     },
     userParams: {
       require: true,
-      type: String,
       default: null,
     },
     show: {

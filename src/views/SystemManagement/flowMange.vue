@@ -2,7 +2,7 @@
   <el-card>
     <el-form :inline="true">
       <el-form-item
-        label="bpmn中文名称"
+        label="流程中文名称"
         v-if="isCheckString.indexOf('bpmnName') >= 0"
       >
         <searchLog
@@ -26,10 +26,10 @@
       <el-button @click="handelTemplate">下载流程绑定模板</el-button>
     </el-space>
     <el-table :data="tableData" style="width: 100%">
-      <el-table-column prop="bpmnName" label="bpmn中文名字" align="center" />
+      <el-table-column prop="bpmnName" label="流程中文名字" align="center" />
       <el-table-column
         prop="bpmnFileName"
-        label="bpmn附件名字"
+        label="流程附件名字"
         align="center"
       />
       <el-table-column prop="status" label="状态" align="center">
@@ -61,8 +61,8 @@
       small="small"
       layout="total, sizes, prev, pager, next, jumper"
       :total="total"
-      @size-change="getData"
-      @current-change="getData"
+      @size-change="changeSize"
+      @current-change="changePage"
     />
     <createFlow
       ref="flowRef"
@@ -154,6 +154,14 @@ const tableData = ref([]);
 
 const searchLogRef = ref();
 
+const changePage = (page) => {
+  searchForm.value.pageNum = page;
+  getData();
+};
+const changeSize = (size) => {
+  searchForm.value.pageSize = size;
+  getData();
+};
 const getData = async (params) => {
   if (params) {
     searchForm.value.pageNum = params.pageNum;
@@ -171,13 +179,13 @@ getData();
 // 下载文件
 const downFile = async (record) => {
   const res = await downFlow({ id: record.id });
-  download(res, record.bpmnFileName);
+  download(res, res.fileName);
 };
 // 下载安装包;
 const handelDownPack = async () => {
   const res = await downPack();
   if (res.fileName) {
-    download(res.response, "流程定义安装包.bpmn");
+    download(res.response, res.fileName);
   }
 };
 const download = (res, name) => {
@@ -195,7 +203,7 @@ const download = (res, name) => {
 const handelTemplate = async () => {
   const res = await downTemplate();
   if (res.fileName) {
-    download(res, "流程绑定模版.bpmn");
+    download(res, res.fileName);
   }
 };
 // 删除文件

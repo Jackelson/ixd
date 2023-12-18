@@ -74,7 +74,7 @@
           >
             <template v-slot="scope">
               <span v-if="item.key === 'operate'">
-                <el-button type="text" @click="openImage(scope.row)">
+                <el-button @click="openImage(scope.row)">
                   <span>查看</span>
                 </el-button>
               </span>
@@ -116,7 +116,7 @@
       :close-on-click-modal="false"
     >
       <el-row type="flex" justify="center">
-        <div class="img-tip" />
+        <div class="img-tip"></div>
       </el-row>
       <el-row type="flex" justify="center" style="margin: 20px 0">
         <span class="message">{{ deleteTxt }}</span>
@@ -236,7 +236,7 @@
       :title="dialogTitle"
       :dialogStatus="dialogNoticeStatus"
       v-model:show="dialogNotice"
-      :temp1="this.cu"
+      :temp1="temp"
       source="task"
     />
 
@@ -248,7 +248,7 @@
       :close-on-click-modal="false"
     >
       <el-row type="flex" justify="center">
-        <div class="img-tip" />
+        <div class="img-tip"></div>
       </el-row>
       <el-row type="flex" justify="center" style="margin: 20px 0">
         <span class="message">{{ deleteTxt }}</span>

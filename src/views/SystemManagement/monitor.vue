@@ -47,7 +47,7 @@
           </el-tooltip>
         </template>
       </el-table-column>
-      <el-table-column prop="requestParam" label="方法参数" align="center" />
+      <!-- <el-table-column prop="requestParam" label="方法参数" align="center" /> -->
 
       <el-table-column prop="requestType" label="请求方式" align="center">
         <template #default="{ row }">
@@ -57,7 +57,7 @@
         </template>
       </el-table-column>
       <el-table-column prop="requestTime" label="请求日期" align="center" />
-      <el-table-column prop="requestId" label="请求id" align="center" />
+      <!-- <el-table-column prop="requestId" label="请求id" align="center" /> -->
 
       <el-table-column prop="action" label="类型" align="center">
         <template #default="{ row }">

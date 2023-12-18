@@ -25,7 +25,6 @@
             v-model="loginForm.userName"
             placeholder="请输入"
             name="userName"
-            type="text"
             tabindex="1"
             autocomplete="on"
           />

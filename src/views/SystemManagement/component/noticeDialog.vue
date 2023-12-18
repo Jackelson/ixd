@@ -161,9 +161,9 @@ export default {
   computed: {
     dialogTitle: function () {
       if (this.title == "custom") {
-        if (this.temp?.noticeType == "1") {
+        if (this.temp.noticeType == "1") {
           return "新增通知";
-        } else if (this.temp?.noticeType == "3") {
+        } else if (this.temp.noticeType == "3") {
           return "新增新闻资讯";
         } else {
           return "新增公告";
