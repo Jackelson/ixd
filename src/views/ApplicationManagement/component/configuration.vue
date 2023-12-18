@@ -306,11 +306,6 @@ export default {
             type: "success",
             message: "更新成功",
           });
-        } else {
-          return this.$message({
-            type: "error",
-            message: res.msg,
-          });
         }
       });
       // this.$refs['dataform'].validate((valid) => {

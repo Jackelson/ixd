@@ -287,11 +287,6 @@ export default {
                 message: "更新成功！",
                 type: "success",
               });
-            } else {
-              this.$message({
-                message: res.msg,
-                type: "error",
-              });
             }
           });
         }
@@ -329,8 +324,6 @@ export default {
                 message: "更改成功！",
                 type: "success",
               });
-            } else {
-              return this.$message({ type: "error", message: res.msg });
             }
           });
         }

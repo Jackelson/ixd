@@ -245,12 +245,6 @@ export default {
               this.$parent.getList();
               console.log(res, "res");
               this.groupVisible = false;
-            } else {
-              this.$message({
-                type: "warning",
-                message: "创建失败",
-              });
-              this.$message.warning(res.msg || "创建失败");
             }
           });
         }

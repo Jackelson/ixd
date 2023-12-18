@@ -458,11 +458,6 @@ export default {
           });
           this.total = res.data.total;
           this.tableLoading = false;
-        } else {
-          this.$message({
-            message: res.msg,
-            type: "warning",
-          });
         }
       });
     },
@@ -484,11 +479,6 @@ export default {
           });
           this.total = res.data.total;
           this.tableLoading = false;
-        } else {
-          this.$message({
-            message: res.msg,
-            type: "warning",
-          });
         }
       });
     },
@@ -515,11 +505,6 @@ export default {
           this.groupChildren = groupsData.children
             ? groupsData.children.length
             : 0;
-        } else {
-          this.$message({
-            message: res.msg,
-            type: "warning",
-          });
         }
       });
     },
@@ -612,11 +597,6 @@ export default {
         if (res.code === 200) {
           res.data.rows.forEach((ele) => {
             this.userTypeList.push({ label: ele.roleName, key: ele.roleId });
-          });
-        } else {
-          this.$message({
-            message: res.msg,
-            type: "warning",
           });
         }
       });

@@ -252,11 +252,6 @@ export default {
             message: "删除成功！",
             type: "success",
           });
-        } else {
-          this.$message({
-            message: res.msg,
-            type: "error",
-          });
         }
       });
     },

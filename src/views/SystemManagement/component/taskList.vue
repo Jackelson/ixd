@@ -443,35 +443,23 @@ export default {
           // data.dataScope = '1'
           data.createBy = localStorage.getItem("createById");
           console.log(data, "data");
-          roleApi
-            .insertRoleData(data)
-            .then((res) => {
-              if (res.code === 200) {
-                this.$parent.getList();
-                console.log(res, "res");
-                this.form = {
-                  treeData: [],
-                  treeId: [],
-                };
-                this.groupVisible = false;
-                this.$message({
-                  message: "更新成功！",
-                  type: "success",
-                });
-              } else {
-                this.groupVisible = false;
-                this.$message({
-                  message: res.msg,
-                  type: "",
-                });
-              }
-            })
-            .catch((err) => {
+          roleApi.insertRoleData(data).then((res) => {
+            if (res.code === 200) {
+              this.$parent.getList();
+              console.log(res, "res");
+              this.form = {
+                treeData: [],
+                treeId: [],
+              };
+              this.groupVisible = false;
               this.$message({
-                message: err,
-                // type: 'success'
+                message: "更新成功！",
+                type: "success",
               });
-            });
+            } else {
+              this.groupVisible = false;
+            }
+          });
         }
       });
     },

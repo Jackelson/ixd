@@ -380,8 +380,6 @@ export default {
               this.getNotice();
               this.currrentRow2 = {};
               return this.$message({ type: "success", message: "发布成功" });
-            } else {
-              return this.$message({ type: "error", message: res.msg });
             }
           });
         })
@@ -418,8 +416,6 @@ export default {
             if (res.code == 200) {
               this.getNotice();
               return this.$message({ type: "success", message: "撤回成功" });
-            } else {
-              return this.$message({ type: "error", message: res.msg });
             }
           });
         })
@@ -543,8 +539,6 @@ export default {
           });
           this.currrentRow2 = {};
           this.getNotice();
-        } else {
-          return this.$message({ type: "error", message: res.msg });
         }
       });
     },
@@ -678,8 +672,6 @@ export default {
             if (res.code == 200) {
               this.getList();
               return this.$message({ type: "success", message: "删除成功" });
-            } else {
-              return this.$message({ type: "error", message: res.msg });
             }
           });
         })
@@ -729,8 +721,6 @@ export default {
                 type: "success",
                 message: "状态修改成功",
               });
-            } else {
-              return this.$message({ type: "error", message: res.msg });
             }
           });
         })

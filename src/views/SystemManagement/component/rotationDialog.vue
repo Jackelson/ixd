@@ -289,11 +289,6 @@ export default {
                 message: "更新成功！",
                 type: "success",
               });
-            } else {
-              this.$message({
-                message: res.msg,
-                type: "error",
-              });
             }
           });
         }

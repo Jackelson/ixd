@@ -158,6 +158,7 @@ export function getDown(url, params) {
           if (disposition[1].indexOf("filename") !== -1) {
             const startNum = disposition[1].indexOf("=");
             const fileName = decodeURI(disposition[1].substring(startNum + 1));
+            console.log(fileName);
             resolve({
               fileName,
               response,
