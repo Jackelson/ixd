@@ -119,7 +119,7 @@
                   @click="searchList"
                   >查询</el-button
                 >
-                <el-button link style="margin-left: 10px" @click="getAll"
+                <el-button style="margin-left: 10px" @click="getAll"
                   >查询全部</el-button
                 >
                 <el-button style="margin-left: 10px" @click="checkSeach"
@@ -643,6 +643,7 @@ export default {
     this.getGroup();
     this.getList();
     this.getRoleList();
+    this.getFilterNum();
   },
   methods: {
     filterNode() {},
@@ -833,6 +834,13 @@ export default {
       console.log(this.dialogVisible);
     },
     handleUpdateNode() {
+      if (this.selectGroupId == 100) {
+        this.$message({
+          message: "顶级部门不能修改",
+          type: "warning",
+        });
+        return;
+      }
       if (this.selectGroupId === null) {
         this.$message({
           message: "请选择要编辑的部门！",
@@ -870,6 +878,13 @@ export default {
       }
     },
     handleDeleteNode() {
+      if (this.selectGroupId == 100) {
+        this.$message({
+          type: "warning",
+          message: "最顶级部门不能删除",
+        });
+        return;
+      }
       if (this.selectGroupId === null) {
         this.$message({
           type: "warning",
@@ -1074,8 +1089,16 @@ export default {
     // 删除角色
     handleStop() {
       if (Object.keys(this.multipleSelection).length > 0) {
+        if (this.multipleSelection[0].userId == 1) {
+          this.$message({
+            message: "管理员不能删除",
+            type: "warning",
+          });
+          return;
+        }
         // this.changeTxt = '是否删除用户'
         this.dialogDelRole = true;
+        console.log(this.multipleSelection, "用户id");
       } else {
         this.$message({
           message: "请勾选要删除的用户！",

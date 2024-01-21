@@ -143,13 +143,16 @@
           >
             <template v-slot="scope">
               <span v-if="item.key === 'operate'">
-                <el-button @click="openShareDialog(scope.row)">
+                <el-button size="small" @click="openShareDialog(scope.row)">
                   <el-icon>
                     <Share />
                   </el-icon>
                   <span>测试链接</span>
                 </el-button>
-                <el-button @click="getUserConfiguration(scope.row)">
+                <el-button
+                  size="small"
+                  @click="getUserConfiguration(scope.row)"
+                >
                   <el-icon>
                     <Tools />
                   </el-icon>
@@ -617,14 +620,12 @@ export default {
       };
       downloadFile(params).then((res) => {
         let fileName = "";
-        let data = "";
         if (res.fileName) {
           fileName = res.fileName;
         } else {
           fileName = "安全测试报告. pdf";
-          data = res.response;
         }
-        const blob = new Blob([data]);
+        const blob = new Blob([res.response], { type: "application/pdf" });
         let dom = document.createElement("a");
         let url = window.URL.createObjectURL(blob);
         dom.href = url;
@@ -652,14 +653,12 @@ export default {
       };
       downloadFile(params).then((res) => {
         let fileName = "";
-        let data = "";
         if (res.fileName) {
           fileName = res.fileName;
         } else {
           fileName = "安全测试报告. pdf";
-          data = res.response;
         }
-        const blob = new Blob([data]);
+        const blob = new Blob([res.response]);
         let dom = document.createElement("a");
         let url = window.URL.createObjectURL(blob);
         dom.href = url;
@@ -679,6 +678,7 @@ export default {
         0,
         this.multipleSelection[0].appIndexUrl.indexOf("/")
       );
+      console.log(fileType);
       console.log(appUrl, "appurl");
       if (fileType != "zip") {
         return this.$message.warning("请上传zip文件");

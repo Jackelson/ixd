@@ -9,8 +9,8 @@
         <div class="user-info-container">
           <div class="user-action">
             <div>
-              <svg-icon icon="电力公司" class="user-logo"></svg-icon
-              >国网无锡电力
+              <svg-icon icon="电力公司" class="user-logo"></svg-icon>
+              {{ deptName }}
             </div>
             <div>
               <svg-icon icon="江苏电力公司" class="user-logo"></svg-icon
@@ -102,6 +102,8 @@ export default defineComponent({
     const handleMenu = () => {
       isCollapse.value = !isCollapse.value;
     };
+    const deptName = localStorage.getItem("deptName") || "";
+
     const taskNumber = ref(0);
     const router = useRouter();
     const route = useRoute();
@@ -206,6 +208,7 @@ export default defineComponent({
       nickName,
       handleOpen,
       handleClose,
+      deptName,
     };
   },
 });

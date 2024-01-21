@@ -174,8 +174,9 @@ export default {
               localStorage.setItem("menus", res.data.permissions);
               localStorage.setItem("userName", res.data.sysUser.userName);
               localStorage.setItem("nickName", res.data.sysUser.nickName);
-              localStorage.setItem("token", res.data.toekn);
-              this.$store.commit("setUserDetail", res.data);
+              localStorage.setItem("token", res.data.sysUser.toekn);
+              localStorage.setItem("deptName", res.data.sysUser.dept.deptName);
+              this.$store.commit("setUserDetail", res.data.sysUser);
               this.$router.push({
                 path: this.redirect || "/",
               });

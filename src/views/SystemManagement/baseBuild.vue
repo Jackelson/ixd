@@ -30,7 +30,6 @@
         <el-button @click="checkSeach">筛选搜索框</el-button>
       </el-form-item>
     </el-form>
-    <el-button @click="getConfigInfo">微服务应用配置信息查询</el-button>
     <el-table :data="tableData" style="width: 100%">
       <el-table-column prop="sort" label="序号" align="center" width="80">
         <template #default="{ $index }">
@@ -43,18 +42,12 @@
       <el-table-column prop="type" label="类别" align="center">
         <template #default="{ row }">
           <span>
-            {{ judgeStatus(row.state) }}
+            {{ judgeStatus(row.type) }}
           </span>
         </template>
       </el-table-column>
     </el-table>
-    <el-dialog v-model="showConfig" title="配置信息详情">
-      <div class="wape_list">
-        <div v-for="(n, index) in info" :key="index">
-          {{ n }}
-        </div>
-      </div>
-    </el-dialog>
+
     <pickModel
       ref="pickSearchRef"
       :data="searchData"
@@ -67,7 +60,7 @@
 <script setup>
 import { ref } from "vue";
 
-import { getBottomBuildLog, getCInfo } from "@/api/baseSet";
+import { getBottomBuildLog } from "@/api/baseSet";
 import searchLog from "@/views/components/searchLog.vue";
 import { useRoute } from "vue-router";
 import pickModel from "@/views/ApplicationManagement/component/pickModel.vue";
@@ -110,6 +103,7 @@ const getFilterNum = async () => {
     });
   }
 };
+getFilterNum();
 const pickSearchRef = ref();
 function checkSeach() {
   pickSearchRef.value.open();
@@ -132,28 +126,13 @@ const getData = async () => {
 };
 getData();
 
-const showConfig = ref(false);
-const info = ref([]);
-const getConfigInfo = async () => {
-  const res = await getCInfo();
-  if (res.code == 200) {
-    showConfig.value = true;
-    // console.log(res.data.split("\n"));
-    info.value = res.data.split("\n");
-  }
-};
-
 const resetData = () => {
+  searchLogRef.value.clear();
   searchForm.value = {
-    type: 1,
+    type: "1",
   };
   getData();
 };
 </script>
 
-<style lang="scss" scoped>
-.wape_list {
-  max-height: 500px;
-  overflow: auto !important;
-}
-</style>
+<style lang="scss" scoped></style>

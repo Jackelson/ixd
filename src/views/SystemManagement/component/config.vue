@@ -14,7 +14,7 @@
           :timestamp="n.key"
           placement="top"
         >
-          <el-card v-if="n.key != '开始-Start' && n.key != '结束-End'">
+          <el-card v-if="n.id != 'Start' && n.id != 'End'">
             <el-button size="small" @click="pick(n.key)">
               选择审批人
             </el-button>
@@ -59,12 +59,14 @@ const open = async (record) => {
   id.value = res.data.rows[0].id || "";
   const flowsObj = JSON.parse(res.data.rows[0].taskUserJson || "{}");
   Object.keys(flowsObj).forEach((key) => {
-    console.log(key);
+    const keysArray = key.split("-");
     list.value.push({
-      key,
+      key: keysArray[0],
       label: flowsObj[key],
+      id: keysArray[1],
     });
   });
+  console.log(list.value);
   dialogVisible.value = true;
 };
 const handleClose = () => {
@@ -93,13 +95,15 @@ const submit = async () => {
   const listArray = list.value;
   let peopleObj = {};
   for (let i = 0; i < listArray.length; i++) {
-    if (listArray[i].key != "开始-Start" && listArray[i].key != "结束-End") {
+    const tocase = listArray[i].id.toLowerCase();
+    console.log(tocase);
+    if (tocase != "start" && tocase != "end") {
       if (listArray[i].label == "") {
         ElMessage.warning("请补全审批人再提交");
         return;
       }
     }
-    peopleObj[listArray[i].key] = listArray[i].label;
+    peopleObj[`${listArray[i].key}-${listArray[i].id}`] = listArray[i].label;
   }
   const params = {
     id: id.value,

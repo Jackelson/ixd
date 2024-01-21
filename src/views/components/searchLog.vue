@@ -1,5 +1,6 @@
 <template>
   <el-select
+    ref="sref"
     style="width: 200px"
     v-model="name"
     filterable
@@ -41,6 +42,7 @@ const emits = defineEmits(["update:modelValue"]);
 const searchLoading = ref(false);
 const searchRecords = ref([]);
 const name = ref("");
+const sref = ref();
 //  搜索记录
 const remoteMethod = async () => {
   searchLoading.value = true;
@@ -72,8 +74,11 @@ const addRecord = async () => {
     searchRecords.value = res.data;
   }
 };
+const clear = () => {
+  name.value = "";
+};
 console.log(addRecord);
-defineExpose({ remoteMethod, addRecord });
+defineExpose({ remoteMethod, addRecord, clear });
 </script>
 
 <style lang="scss" scoped></style>

@@ -85,6 +85,7 @@ const submit = () => {
   ruleFormRef.value.validate(async (v) => {
     if (v) {
       const createId = localStorage.getItem("createById");
+      debugger;
       const formData = new FormData();
       formData.append("file", formState.value.file);
       formData.append("bpmnName", formState.value.bpmnName);
@@ -108,6 +109,13 @@ const remove = () => {
   formState.value.file = "";
 };
 const open = () => {
+  formState.value = {
+    bpmnName: "",
+    bpmnEnglishName: "",
+    bpmnFileName: "",
+    createId: "",
+    file: "",
+  };
   dialogVisible.value = true;
 };
 defineExpose({ open });

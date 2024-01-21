@@ -152,20 +152,15 @@ export function getDown(url, params) {
     axios
       .get(url, { params })
       .then((response) => {
-        if (response.headers["content-disposition"]) {
-          const disposition =
-            response.headers["content-disposition"].split(";");
-          if (disposition[1].indexOf("filename") !== -1) {
-            const startNum = disposition[1].indexOf("=");
-            const fileName = decodeURI(disposition[1].substring(startNum + 1));
-            console.log(fileName);
-            resolve({
-              fileName,
-              response,
-            });
-          }
-        } else {
-          resolve(response.data);
+        const disposition = response.headers["content-disposition"].split(";");
+        if (disposition[1].indexOf("filename") !== -1) {
+          const startNum = disposition[1].indexOf("=");
+          const fileName = decodeURI(disposition[1].substring(startNum + 1));
+          console.log(response);
+          resolve({
+            fileName,
+            response: response.data,
+          });
         }
       })
       .catch((error) => {
@@ -209,12 +204,21 @@ export function uploadFile(url, params) {
   });
 }
 
-export function uploadFileHttp(url, params) {
+export function uploadFileHttp(url, params, type) {
+  const rType = type || {};
   return new Promise((resolve, reject) => {
     axios
-      .post(url, params, { responseType: "blob" })
+      .post(url, params, rType)
       .then((response) => {
-        resolve(response.data);
+        const disposition = response.headers["content-disposition"].split(";");
+        if (disposition[1].indexOf("filename") !== -1) {
+          const startNum = disposition[1].indexOf("=");
+          const fileName = decodeURI(disposition[1].substring(startNum + 1));
+          resolve({
+            fileName,
+            response: response.data,
+          });
+        }
       })
       .catch((error) => {
         reject(error);

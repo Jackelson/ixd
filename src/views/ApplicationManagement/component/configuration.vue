@@ -283,7 +283,7 @@ export default {
     createData() {
       this.groupVisible = false;
       const menus = this.$refs.tree[0].getCheckedKeys();
-      const params = [];
+      let params = [];
       this.menuList.forEach((item) => {
         if (item.userNames && item.userNames.length > 0) {
           item.userNames.forEach((v) => {
@@ -298,6 +298,11 @@ export default {
           });
         }
       });
+      if (params.length == 0) {
+        params.push({
+          appId: this.temp.id,
+        });
+      }
       console.log(params, "paramsparams");
       roleApi.updateUserRole(params).then((res) => {
         console.log(res, "res");

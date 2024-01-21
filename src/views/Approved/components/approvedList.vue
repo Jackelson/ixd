@@ -136,7 +136,8 @@ const handleClick = (row) => {
         fileId: formData.value.appFileId,
       };
       downloadFile(params).then((res) => {
-        filetoBase64(res);
+        console.log(res);
+        filetoBase64(res.response);
       });
     }
   });
@@ -283,9 +284,9 @@ const imgRef = ref();
 const flowSrc = ref("");
 const viewFlow = (row) => {
   console.log(row);
-  if (row.taskName == "app下架审批") {
+  if (row.taskName == "app下架审批" || row.taskName == "应用下架审批") {
     flowSrc.value = require("../../../assets/unline.png");
-  } else if (row.taskName == "app上架审批") {
+  } else if (row.taskName == "app上架审批" || row.taskName == "应用上架审批") {
     flowSrc.value = require("../../../assets/online.jpg");
   } else {
     flowSrc.value = require("../../../assets/register.jpg");

@@ -89,7 +89,7 @@
         </template>
       </el-table-column>
     </el-table>
-    <!-- <el-pagination
+    <el-pagination
       style="margin-top: 20px; float: right; margin-bottom: 10px"
       v-model:current-page="searchForm.pageNum"
       v-model:page-size="searchForm.pageSize"
@@ -97,9 +97,9 @@
       small="small"
       layout="total, sizes, prev, pager, next, jumper"
       :total="total"
-      @size-change="getData"
-      @current-change="getData"
-    /> -->
+      @size-change="sizeChange"
+      @current-change="pageChange"
+    />
     <pickModel
       ref="pickSearchRef"
       :data="searchData"
@@ -120,7 +120,7 @@ const isCheckString = ref("appId");
 // const judgeStatus = (type) => {
 //   return options.value.filter((o) => o.value == type)[0].label;
 // };
-
+const total = ref(0);
 // 获取选择框内容
 const getSelects = async () => {
   const res = await getSelAppList();
@@ -170,12 +170,12 @@ const getFilterNum = async () => {
     });
   }
 };
+getFilterNum();
 const pickSearchRef = ref();
 function checkSeach() {
   pickSearchRef.value.open();
 }
 
-const total = ref(0);
 const searchForm = ref({
   pageNum: 1,
   pageSize: 10,
@@ -189,8 +189,8 @@ const getData = async (params) => {
   }
   const res = await getList(searchForm.value);
   if (res.code == 200) {
-    tableData.value = res.data;
     total.value = res.data.total;
+    tableData.value = res.data.rows;
   }
 };
 getSelects();
@@ -200,6 +200,14 @@ const resetData = () => {
     pageNum: 1,
     pageSize: 10,
   };
+  getData();
+};
+const sizeChange = (size) => {
+  searchForm.value.pageSize = size;
+  getData();
+};
+const pageChange = (page) => {
+  searchForm.value.pageNum = page;
   getData();
 };
 </script>

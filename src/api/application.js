@@ -59,7 +59,9 @@ export async function deleteTask(params) {
 
 //下载文件
 export async function downloadFile(params) {
-  return await uploadFileHttp("file/downLoadFile", params);
+  return await uploadFileHttp("file/downLoadFile", params, {
+    responseType: "blob",
+  });
 }
 
 //更新app

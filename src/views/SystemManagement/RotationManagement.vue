@@ -236,7 +236,7 @@
       :title="dialogTitle"
       :dialogStatus="dialogNoticeStatus"
       v-model:show="dialogNotice"
-      :temp1="temp"
+      :temp1="currrentRow2"
       source="task"
     />
 
@@ -357,11 +357,11 @@ export default {
   mounted() {},
   methods: {
     fabuNotice() {
-      if (!this.currrentRow2?.id) {
+      if (!this.currrentRow2.id) {
         this.$message({ type: "warning", message: "请选择要发布的数据" });
         return;
       }
-      if (!this.currrentRow2?.status == "发布") {
+      if (!this.currrentRow2.status == "发布") {
         this.$message({ type: "warning", message: "该条数据已经发布" });
         return;
       }
@@ -451,7 +451,7 @@ export default {
       }
     },
     handerChange1(v, r) {
-      if (r.id == this.currrentRow2?.id) {
+      if (r.id == this.currrentRow2.id) {
         this.$refs.multipleTable1.toggleRowSelection(r, false);
         this.currrentRow1 = {};
       } else {
@@ -461,7 +461,7 @@ export default {
       }
     },
     handerChange2(v, r) {
-      if (r.id == this.currrentRow2?.id) {
+      if (r.id == this.currrentRow2.id) {
         this.$refs.multipleTable2.toggleRowSelection(r, false);
         this.currrentRow2 = {};
       } else {
@@ -626,7 +626,7 @@ export default {
     },
     //编辑公告
     noticeUpdate() {
-      if (this.currrentRow2?.id) {
+      if (this.currrentRow2.id) {
         if (this.currrentRow2.status == "发布") {
           this.$message.warning("请先撤回,再进行编辑");
           return;
@@ -650,11 +650,11 @@ export default {
     },
     // 删除轮播图
     handleStop(status) {
-      if (!this.currrentRow1?.id) {
+      if (!this.currrentRow1.id) {
         this.$message.warning("请选择要删除的轮播图");
         return;
       }
-      if (this.currrentRow1?.state == "展示") {
+      if (this.currrentRow1.state == "展示") {
         this.$message.warning("请先取消展示");
         return;
       }
@@ -683,17 +683,17 @@ export default {
         });
     },
     handleUpdateStatus(status) {
-      if (!this.currrentRow1?.id) {
+      if (!this.currrentRow1.id) {
         this.$message.warning("请选择轮播图");
         return;
       }
       if (status == 1) {
-        if (this.currrentRow1?.state == "展示") {
+        if (this.currrentRow1.state == "展示") {
           this.$message.warning("轮播图已展示");
           return;
         }
       } else {
-        if (this.currrentRow1?.state == "待展示") {
+        if (this.currrentRow1.state == "待展示") {
           this.$message.warning("轮播图已是待展示状态");
           return;
         }

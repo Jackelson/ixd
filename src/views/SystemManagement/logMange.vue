@@ -64,11 +64,14 @@
           <div class="row">
             <div class="label">日志保存策略:</div>
             <div class="value">
-              <!-- <p>{{ n.logSaveStrategy }}</p>
+              <p>
+                {{ n.logSaveStrategy }}
+                <!-- <p>{{ n.logSaveStrategy }}</p>
               <el-tooltip placement="top">
                 <template #content>{{ n.logSaveStrategy }}</template>
                 <el-icon><QuestionFilled /></el-icon>
               </el-tooltip> -->
+              </p>
             </div>
           </div>
           <div class="row">
@@ -112,7 +115,7 @@
     ></pickModel> -->
     <el-dialog title="日志备份明细" v-model="dialog">
       <el-empty v-if="logDetail.length <= 0" description="内容为空" />
-      <el-table :data="logDetail">
+      <el-table v-else :data="logDetail">
         <el-table-column prop="fileName" label="文件名称" align="center" />
         <el-table-column prop="fileSize" label="文件大小" align="center" />
         <el-table-column prop="createTime" label="创建时间" align="center" />

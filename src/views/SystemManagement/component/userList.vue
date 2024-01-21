@@ -37,7 +37,7 @@
         :width="item.width"
       >
         <template v-if="item.key == 'sex'" v-slot="scope">
-          <span>{{ scope.row[item.key] ? "女" : "男" }}</span>
+          <span>{{ scope.row[item.key] == "1" ? "女" : "男" }}</span>
         </template>
         <template v-else v-slot="scope">
           <span>{{ scope.row[item.key] }}</span>

@@ -319,7 +319,7 @@ export default {
           this.groupVisible = false;
           api.updateNotice(params).then((res) => {
             if (res.code == 200) {
-              this.$parent.getList();
+              this.$parent.getNotice();
               this.$message({
                 message: "更改成功！",
                 type: "success",

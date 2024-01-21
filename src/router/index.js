@@ -94,6 +94,12 @@ const routes = [
         component: () => import("@/views/SystemManagement/elseInfo.vue"),
         meta: { title: "其他信息管理" },
       },
+      {
+        path: "/projectMan",
+        name: "projectMan",
+        component: () => import("@/views/SystemManagement/projectMan.vue"),
+        meta: { title: "项目管理" },
+      },
     ],
   },
   {

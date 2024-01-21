@@ -32,13 +32,13 @@
         label="流程附件名字"
         align="center"
       />
-      <el-table-column prop="status" label="状态" align="center">
+      <!-- <el-table-column prop="status" label="状态" align="center">
         <template #default="{ row }">
           <span>
             {{ judgeStatus(row.state) }}
           </span>
         </template>
-      </el-table-column>
+      </el-table-column> -->
       <el-table-column prop="createName" label="创建人" align="center" />
       <el-table-column prop="createTime" label="创建时间" align="center" />
       <el-table-column prop="" label="操作" align="center" width="200">
@@ -109,18 +109,18 @@ import { getFilterCon } from "@/api/application";
 import { ElMessageBox, ElMessage } from "element-plus";
 const route = useRoute();
 const isCheckString = ref("bpmnName");
-const judgeStatus = (status) => {
-  switch (status) {
-    case -1:
-      return "删除";
-    case 0:
-      return "未配置";
-    case 1:
-      return "已配置";
-    default:
-      break;
-  }
-};
+// const judgeStatus = (status) => {
+//   switch (status) {
+//     case -1:
+//       return "删除";
+//     case 0:
+//       return "未配置";
+//     case 1:
+//       return "已配置";
+//     default:
+//       break;
+//   }
+// };
 
 const searchData = ref({
   userId: localStorage.getItem("createById"),
@@ -137,6 +137,7 @@ const getFilterNum = async () => {
     });
   }
 };
+getFilterNum();
 const pickSearchRef = ref();
 function checkSeach() {
   pickSearchRef.value.open();
@@ -179,16 +180,25 @@ getData();
 // 下载文件
 const downFile = async (record) => {
   const res = await downFlow({ id: record.id });
-  download(res, res.fileName);
+  console.log(res, "下载文件");
+  download(res.response, res.fileName);
 };
 // 下载安装包;
-const handelDownPack = async () => {
-  const res = await downPack();
-  if (res.fileName) {
-    download(res.response, res.fileName);
-  }
+const handelDownPack = () => {
+  window.open("http://20.47.91.28:18091/ixdpc/camunda/downloadCamundaModeler");
+  // async
+  // if (process.env.NODE_ENV == "production") {
+  //   window.open("http://20.47.91.28:18091/ixdpc/camunda/downloadProcess");
+  // } else {
+  //   window.open("http://20.47.91.28:18091/ixdpc/camunda/downloadProcess");
+  // }
+  console.log(downPack);
+  // if (res.fileName) {
+  //   download(res.response, res.fileName);
+  // }
 };
 const download = (res, name) => {
+  console.log(res);
   const blob = new Blob([res]);
   const downloadElement = document.createElement("a");
   const href = window.URL.createObjectURL(blob); // 创建下载的链接
@@ -203,7 +213,7 @@ const download = (res, name) => {
 const handelTemplate = async () => {
   const res = await downTemplate();
   if (res.fileName) {
-    download(res, res.fileName);
+    download(res.response, res.fileName);
   }
 };
 // 删除文件
@@ -224,6 +234,8 @@ const configNode = (record) => {
 };
 
 const resetData = () => {
+  searchLogRef.value.clear();
+  console.log(configRef.value.name);
   searchForm.value = {
     pageNum: 1,
     pageSize: 10,
