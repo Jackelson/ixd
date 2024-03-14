@@ -100,6 +100,12 @@ const routes = [
         component: () => import("@/views/SystemManagement/projectMan.vue"),
         meta: { title: "项目管理" },
       },
+      {
+        path: "/areaShow",
+        name: "areaShow",
+        component: () => import("@/views/SystemManagement/areaShow.vue"),
+        meta: { title: "监控展示" },
+      },
     ],
   },
   {

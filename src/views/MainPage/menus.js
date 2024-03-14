@@ -93,6 +93,12 @@ export const menuList = [
         icon: "项目管理",
         path: "/projectMan",
       },
+      {
+        id: "1092",
+        name: "监控展示",
+        icon: "监控展示",
+        path: "/areaShow",
+      },
     ],
   },
 ];
