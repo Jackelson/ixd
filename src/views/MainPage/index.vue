@@ -222,7 +222,7 @@ export default defineComponent({
 }
 
 .T-aSide {
-  overflow-y: scroll !important;
+  // overflow-y: scroll !important;
 }
 .T-container {
   display: flex;
@@ -379,8 +379,9 @@ export default defineComponent({
           overflow: visible;
 
           .T-menu {
+            height: 100%;
             background: #0d8678;
-            overflow: auto !important;
+            overflow-y: scroll !important;
           }
 
           .collapse-icon {
@@ -391,7 +392,7 @@ export default defineComponent({
             z-index: 9;
             top: 50%;
             transform: translateY(-25px);
-            right: -12px;
+            right: -3px;
             cursor: pointer;
             text-align: center;
             border-top-right-radius: 10px;
