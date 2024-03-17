@@ -43,10 +43,12 @@ export default {
 
 <style lang="scss" scoped>
 .T-side-container {
-  height: 100%;
+  // height: 100%;
+  max-height: 100vh !important;
+  overflow: scroll !important;
   background: #fff;
   position: relative;
-  overflow: visible;
+  // overflow: visible;
   .T-menu {
   }
   .collapse-icon {

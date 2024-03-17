@@ -221,6 +221,9 @@ export default defineComponent({
   }
 }
 
+.T-aSide {
+  overflow-y: scroll !important;
+}
 .T-container {
   display: flex;
   box-sizing: border-box;
