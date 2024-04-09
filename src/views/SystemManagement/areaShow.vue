@@ -1,22 +1,28 @@
 <template>
   <el-card>
     <el-form :inline="true">
-      <el-form-item label="选择应用" v-if="isCheckString.indexOf('appId') >= 0">
-        <el-select v-model="searchForm.appId">
-          <el-option
-            v-for="item in options"
-            :key="item.id"
-            :label="item.appName"
-            :value="item.id"
-          />
+      <!-- v-if="isCheckString.indexOf('appId') >= 0" -->
+      <el-form-item label="状态">
+        <el-select v-model="searchForm.scanResult">
+          <el-option label="正常" :value="true" />
+          <el-option label="异常" :value="false" />
         </el-select>
       </el-form-item>
+      <el-form-item label="创建时间">
+        <el-date-picker
+          v-model="searchForm.createTime"
+          type="datetime"
+          placeholder="请选择时间"
+          value-format="YYYY-MM-DD HH:mm:ss"
+        />
+      </el-form-item>
       <el-form-item label="">
-        <el-button v-if="isCheckString != ''" @click="getData">查询</el-button>
-        <el-button v-if="isCheckString != ''" @click="resetData"
-          >清空</el-button
-        >
-        <el-button @click="checkSeach">筛选搜索框</el-button>
+        <el-button @click="getData">查询</el-button>
+        <el-button @click="resetData">清空</el-button>
+        <!--  v-if="isCheckString != ''"   
+        v-if="isCheckString != ''"
+        -->
+        <!-- <el-button @click="checkSeach">筛选搜索框</el-button> -->
       </el-form-item>
     </el-form>
     <el-table :data="tableData" style="width: 100%">
@@ -28,64 +34,20 @@
         </template>
       </el-table-column>
       <el-table-column
-        prop="appId"
+        prop="appName"
         label="app名称"
         align="center"
         width="140"
       />
-      <el-table-column prop="requestMethodName" label="方法名称" align="center">
-        <template #default="{ row }">
-          <el-tooltip
-            class="box-item"
-            effect="dark"
-            :content="row.requestMethodName"
-            placement="top-start"
-          >
-            <p class="request_post" style="width: 300px">
-              {{ row.requestMethodName }}
-            </p>
-          </el-tooltip>
-        </template>
+      <el-table-column prop="appId" label="appId" align="center">
       </el-table-column>
-      <!-- <el-table-column prop="requestParam" label="方法参数" align="center" /> -->
-
-      <el-table-column prop="requestType" label="请求方式" align="center">
+      <el-table-column prop="createTime" label="创建日期" align="center" />
+      <el-table-column prop="scanResult" label="状态" align="center" width="80">
         <template #default="{ row }">
-          <span>
-            {{ judgeType(row.requestType) }}
-          </span>
-        </template>
-      </el-table-column>
-      <el-table-column prop="requestTime" label="请求日期" align="center" />
-      <!-- <el-table-column prop="requestId" label="请求id" align="center" /> -->
-
-      <el-table-column prop="action" label="类型" align="center">
-        <template #default="{ row }">
-          <span>
-            {{ row.action == 2 ? "文件" : "普通请求" }}
-          </span>
-        </template>
-      </el-table-column>
-      <el-table-column
-        prop="errMessage"
-        label="错误信息"
-        align="center"
-        width="400"
-      >
-        <template #default="{ row }">
-          <el-tooltip placement="left">
-            <template #content>
-              <p
-                class="tip"
-                style="max-width: 400px; max-height: 400px; overflow: auto"
-              >
-                {{ row.errMessage }}
-              </p>
-            </template>
-            <div class="request_post">
-              {{ row.errMessage }}
-            </div>
-          </el-tooltip>
+          <div class="status">
+            <span v-if="row.scanResult" class="green"></span>
+            <span v-else class="red"></span>
+          </div>
         </template>
       </el-table-column>
     </el-table>
@@ -100,26 +62,15 @@
       @size-change="sizeChange"
       @current-change="pageChange"
     />
-    <pickModel
-      ref="pickSearchRef"
-      :data="searchData"
-      :isCheck="isCheckString"
-      @reload="getFilterNum"
-    ></pickModel>
   </el-card>
 </template>
 
 <script setup>
 import { ref } from "vue";
-import { getSelAppList, getList } from "@/api/monitor";
-import { useRoute } from "vue-router";
-import pickModel from "@/views/ApplicationManagement/component/pickModel.vue";
-import { getFilterCon } from "@/api/application";
-const route = useRoute();
-const isCheckString = ref("appId");
-// const judgeStatus = (type) => {
-//   return options.value.filter((o) => o.value == type)[0].label;
-// };
+// getList
+import { getSelAppList } from "@/api/monitor";
+import { getAppScanInfo } from "@/api/system";
+
 const total = ref(0);
 // 获取选择框内容
 const getSelects = async () => {
@@ -128,53 +79,8 @@ const getSelects = async () => {
     options.value = res.data;
   }
 };
-const judgeType = (type) => {
-  const file = typeList.value.filter((o) => o.value == type);
-  if (file.length > 0) {
-    return file[0].label;
-  } else {
-    return "";
-  }
-};
-const options = ref([]);
-const typeList = ref([
-  {
-    label: "get",
-    value: 1,
-  },
-  {
-    label: "post",
-    value: 2,
-  },
-  {
-    label: "put",
-    value: 3,
-  },
-  {
-    label: "delete",
-    value: 4,
-  },
-]);
-const searchData = ref({
-  userId: localStorage.getItem("createById"),
-  menuId: route.path,
-});
 
-const getFilterNum = async () => {
-  const res = await getFilterCon(searchData.value);
-  if (res.code == 200) {
-    res.data.forEach((item) => {
-      if (item.menuId == searchData.value.menuId) {
-        isCheckString.value = item.paramslist;
-      }
-    });
-  }
-};
-getFilterNum();
-const pickSearchRef = ref();
-function checkSeach() {
-  pickSearchRef.value.open();
-}
+const options = ref([]);
 
 const searchForm = ref({
   pageNum: 1,
@@ -187,7 +93,7 @@ const getData = async (params) => {
     searchForm.value.pageNum = params.pageNum;
     searchForm.value.pageSize = params.pageSize;
   }
-  const res = await getList(searchForm.value);
+  const res = await getAppScanInfo(searchForm.value);
   if (res.code == 200) {
     total.value = res.data.total;
     tableData.value = res.data.rows;
@@ -213,11 +119,19 @@ const pageChange = (page) => {
 </script>
 
 <style lang="scss" scoped>
-.request_post {
-  width: 500px;
-  white-space: nowrap; /* 给文本设置不换行在一行中显示 */
-  overflow: hidden; /* 文本超出的部分隐藏 */
-  text-overflow: ellipsis;
+.status {
+  span {
+    display: inline-block;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    &.green {
+      background: green;
+    }
+    &.red {
+      background: red;
+    }
+  }
 }
 .el-table {
   overflow-x: scroll;

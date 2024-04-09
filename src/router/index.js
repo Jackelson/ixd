@@ -106,6 +106,24 @@ const routes = [
         component: () => import("@/views/SystemManagement/areaShow.vue"),
         meta: { title: "监控展示" },
       },
+      {
+        path: "/serverStatus",
+        name: "serverStatus",
+        component: () => import("@/views/SystemManagement/ServerStatus.vue"),
+        meta: { title: "资源监控" },
+      },
+      {
+        path: "/fileShow",
+        name: "fileShow",
+        component: () => import("@/views/SystemManagement/fileShow.vue"),
+        meta: { title: "文件监控" },
+      },
+      {
+        path: "/updateList",
+        name: "updateList",
+        component: () => import("@/views/SystemManagement/upDate.vue"),
+        meta: { title: "版本更新" },
+      },
     ],
   },
   {

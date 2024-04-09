@@ -99,6 +99,24 @@ export const menuList = [
         icon: "监控展示",
         path: "/areaShow",
       },
+      {
+        id: "1099",
+        name: "资源监控",
+        icon: "资源监控",
+        path: "/serverStatus",
+      },
+      {
+        id: "1090",
+        name: "文件监控",
+        icon: "文件监控",
+        path: "/fileShow",
+      },
+      {
+        id: "1091",
+        name: "版本更新",
+        icon: "版本更新",
+        path: "/updateList",
+      },
     ],
   },
 ];

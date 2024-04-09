@@ -169,6 +169,29 @@ export function getDown(url, params) {
   });
 }
 
+// 下载文件get
+export function postDown(url, params) {
+  return new Promise((resolve, reject) => {
+    axios
+      .post(url, { data: params })
+      .then((response) => {
+        const disposition = response.headers["content-disposition"].split(";");
+        if (disposition[1].indexOf("filename") !== -1) {
+          const startNum = disposition[1].indexOf("=");
+          const fileName = decodeURI(disposition[1].substring(startNum + 1));
+          console.log(response);
+          resolve({
+            fileName,
+            response: response.data,
+          });
+        }
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
+}
+
 export function uploadFile(url, params) {
   const param = new FormData();
   Object.keys(params)
