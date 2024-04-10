@@ -70,8 +70,8 @@
       />
       <el-table-column prop="applicant" label="申请单位" align="center" />
       <el-table-column prop="contacts" label="联系人" align="center" />
-      <el-table-column prop="minCreateTime" label="开始时间" align="center" />
-      <el-table-column prop="maxCreateTime" label="结束时间" align="center" />
+      <!-- <el-table-column prop="minCreateTime" label="开始时间" align="center" />
+      <el-table-column prop="maxCreateTime" label="结束时间" align="center" /> -->
       <el-table-column prop="state" label="状态" align="center" width="80">
         <template #default="{ row }">
           <div class="status">
