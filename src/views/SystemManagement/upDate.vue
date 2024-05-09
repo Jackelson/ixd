@@ -143,7 +143,7 @@
           <el-form-item label="申请包Id" prop="programPackageId">
             <el-input v-model="ruleForm.programPackageId" />
           </el-form-item>
-          <el-form-item label="状态" prop="state">
+          <!-- <el-form-item label="状态" prop="state">
              <el-select v-model="ruleForm.state" style="width: 100%">
                  <el-option
               v-for="item in status"
@@ -152,7 +152,7 @@
               :value="item.value"
             />
             </el-select>
-          </el-form-item>
+          </el-form-item> -->
           <el-form-item label="发布时间" prop="releaseDate">
                  <el-date-picker
                  style="width: 100%"
@@ -368,7 +368,7 @@ const submitAdd =async () => {
     res = await editUpdate(data).catch(() => loading.value = false);
     await upDateEffect({map:{id: ruleForm.value.id}, ...effectData.value }).catch(() => loading.value = false);
   } else {
-    res = await addUpdate(data).catch(() => loading.value = false);
+    res = await addUpdate(data, {...data, status: 1 }).catch(() => loading.value = false);
     await upDateEffect({map:{id: ruleForm.value.id}, ...effectData.value }).catch(() => loading.value = false);
   }
   loading.value = false;
@@ -384,6 +384,10 @@ const submitAdd =async () => {
 
 // 修改部分
 const handelEdit = (row) => {
+  if(row.state == 2 || row.state == 3 || row.state == 4) {
+    ElMessage.warning('状态为提交、通过、驳回的数据不能修改');
+    return
+  }
   ruleForm.value.state = row.state || '';
   ruleForm.value.appId = row.appId || '';
   ruleForm.value.programPackageId = row.programPackageId || '';
