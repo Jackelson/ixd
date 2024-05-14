@@ -15,7 +15,7 @@
       <el-form-item label="申请单位">
         <el-input v-model="searchForm.applicant"></el-input>
       </el-form-item>
-        <el-form-item label="联系人">
+        <el-form-item label="联系方式">
         <el-input v-model="searchForm.contacts" placeholder="请填写联系人手机号"></el-input>
       </el-form-item>
       <el-form-item label="时间">
@@ -49,8 +49,8 @@
     </el-form>
     <el-space>
       <el-button @click="handelAdd">新增</el-button>
-      <el-button @click="handelEditStatus">修改状态</el-button>
-      <el-button type="danger" @click="handelDelete">删除</el-button>
+      <el-button @click="handelEditStatus">提交</el-button>
+      <!-- <el-button type="danger" @click="handelDelete">删除</el-button> -->
     </el-space>
     <el-table  v-loading="loading" ref="tableRef" :data="tableData" style="width: 100%"  @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" />
@@ -84,6 +84,7 @@
           <el-button size="small" type="primary" @click="handelEdit(row)">
             修改
           </el-button>
+          <el-button type="danger" @click="deleteRaio(row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -171,7 +172,7 @@
             保存
           </el-button>
           <el-button :loading="loading" v-else type="primary" @click="submitAdd">
-            新增
+            {{ title == '修改' ?  '修改' : '保存' }} 
           </el-button>
         </div>
       </template>
@@ -202,10 +203,10 @@ const getSelects = async () => {
 };
 
 const status = ref([
-  {
-    label: '删除',
-    value: -1,
-  },
+  // {
+  //   label: '删除',
+  //   value: -1,
+  // },
   {
     label: '保存',
     value: 1,
@@ -272,13 +273,23 @@ const clearSelect = () => {
   tableRef.value.clearSelection();
 };
 // 修改状态
-const handelEditStatus = () => {
+const handelEditStatus =async () => {
   if(selects.value.length === 0) {
     ElMessage.warning("请勾选要修改的数据");
     return;
   }
-  title.value = '修改状态'
-  showDialog.value = true;
+  const data = selects.value.map(item => {
+    return {state: 2, id: item.id}
+  });
+  const res = await editState(data);
+  if(res.code == 200) {
+    ElMessage.success('状态修改成功');
+    showDialog.value = false;
+    getData();
+    clearSelect();
+  } 
+  // title.value = '修改状态'
+  // showDialog.value = true;
 };
 const saveStatus = async () => {
   const v =  await ruleFormRef.value.validate();
@@ -401,14 +412,38 @@ const handelEdit = (row) => {
   clearSelect();
 };
 // 删除部分
-const handelDelete = async () => {
-  if(selects.value.length == 0) {
-    ElMessage.warning('请选择要删除的数据');
-    return
+// const handelDelete = async () => {
+//   if(selects.value.length == 0) {
+//     ElMessage.warning('请选择要删除的数据');
+//     return
+//   }
+//   for(let i = 0; i < selects.value.length ; i++ ) {
+//     if(selects.value[i].state != 1) {
+//       ElMessage.warning('只有保存状态的数据可以删除');
+//       return;
+//     }
+//   }
+//   const data = selects.value.map(i => i.id);
+//   loading.value = true;
+//    const res = await deleteUpdate(data);
+//   loading.value = false;
+//   if(res.code == 200) {
+//     ElMessage.success('删除成功');
+//     getData();
+//     clearSelect();
+//   } else {
+//     ElMessage.warning(res.msg);
+//   }
+// }
+
+// 删除部分
+const deleteRaio = async (row) => {
+  if(row.state != 1) {
+    ElMessage.warning('只有保存状态的数据可以删除');
+    return;
   }
-  const data = selects.value.map(i => i.id);
   loading.value = true;
-   const res = await deleteUpdate(data);
+   const res = await deleteUpdate([row.id]);
   loading.value = false;
   if(res.code == 200) {
     ElMessage.success('删除成功');
