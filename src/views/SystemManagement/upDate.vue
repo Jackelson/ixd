@@ -49,7 +49,7 @@
     </el-form>
     <el-space>
       <el-button @click="handelAdd">新增</el-button>
-      <el-button @click="handelEditStatus">提交</el-button>
+      <!-- <el-button @click="handelEditStatus">提交</el-button> -->
       <!-- <el-button type="danger" @click="handelDelete">删除</el-button> -->
     </el-space>
     <el-table  v-loading="loading" ref="tableRef" :data="tableData" style="width: 100%"  @selection-change="handleSelectionChange">
@@ -79,12 +79,15 @@
           </div>
         </template>
       </el-table-column>
-      <el-table-column prop="" label="操作" align="center" width="80">
+      <el-table-column prop="" fixed="right" label="操作" align="center" width="230">
         <template #default="{ row }">
+          <el-button  size="small" type="primary" @click="handelEditStatus(row)">
+            提交
+          </el-button>
           <el-button size="small" type="primary" @click="handelEdit(row)">
             修改
           </el-button>
-          <el-button type="danger" @click="deleteRaio(row)">删除</el-button>
+          <el-button size="small" type="danger" @click="deleteRaio(row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -272,24 +275,24 @@ const tableRef = ref();
 const clearSelect = () => {
   tableRef.value.clearSelection();
 };
-// 修改状态
-const handelEditStatus =async () => {
-  if(selects.value.length === 0) {
-    ElMessage.warning("请勾选要修改的数据");
+// 提交启动流程
+const handelEditStatus =async (row) => {
+  if(row.state != 1) {
+    ElMessage.warning('该条数据已经提交');
     return;
   }
-  const data = selects.value.map(item => {
-    return {state: 2, id: item.id}
+  loading.value = true;
+  await upDateEffect({map:{id: row.id}, ...effectData.value }).catch(() => {
+    loading.value = false;
+    ElMessage.warning('流程启动失败');
+    return;
   });
-  const res = await editState(data);
+  const res = await editState([{state: 2, id: row.id}]);
   if(res.code == 200) {
     ElMessage.success('状态修改成功');
-    showDialog.value = false;
+    loading.value = false;
     getData();
-    clearSelect();
   } 
-  // title.value = '修改状态'
-  // showDialog.value = true;
 };
 const saveStatus = async () => {
   const v =  await ruleFormRef.value.validate();
@@ -349,7 +352,7 @@ const rules = ref({
     {required: true, message: '请填写应用id', trigger: 'blur'}
   ],
   programPackageId: [
-    {required: true, message: '请选择状态', trigger: 'blur'}
+    {required: true, message: '请输入申请包Id', trigger: 'blur'}
   ],
   contacts: [
     {required: true, message: '请填写联系方式' , trigger: 'blur'},
@@ -377,10 +380,9 @@ const submitAdd =async () => {
   const data = {...ruleForm.value, createId: localStorage.getItem("createById")};
   if(title.value == '修改') {
     res = await editUpdate(data).catch(() => loading.value = false);
-    await upDateEffect({map:{id: ruleForm.value.id}, ...effectData.value }).catch(() => loading.value = false);
+    // await upDateEffect({map:{id: ruleForm.value.id}, ...effectData.value }).catch(() => loading.value = false);
   } else {
     res = await addUpdate(data, {...data, status: 1 }).catch(() => loading.value = false);
-    await upDateEffect({map:{id: ruleForm.value.id}, ...effectData.value }).catch(() => loading.value = false);
   }
   loading.value = false;
   if(res.code == 200) {
