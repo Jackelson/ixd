@@ -138,7 +138,7 @@
           <el-form-item label="申请单位" prop="applicant">
             <el-input v-model="ruleForm.applicant" />
           </el-form-item>
-          <el-form-item label="联系人" prop="contacts">
+          <el-form-item label="联系方式" prop="contacts">
             <el-input v-model="ruleForm.contacts" />
           </el-form-item>
           <el-form-item label="申请包Id" prop="programPackageId">
@@ -321,7 +321,7 @@ const ruleForm = ref({
 
 const isMobilePhone = (rule, value, callback) => {
       if (!value) {
-        return new Error("请填写联系人手机号");
+        return new Error("请填写联系方式");
       } else {
         const reg = /^1[3|4|5|7|8][0-9]\d{8}$/;
         const isPhone = reg.test(value);
@@ -331,12 +331,12 @@ const isMobilePhone = (rule, value, callback) => {
           value = value.toString(); //转换成字符串
           if (value.length < 0 || value.length > 12 || !isPhone) {
             //判断是否为11位手机号
-            callback(new Error("手机号码格式错误"));
+            callback(new Error("联系方式格式错误"));
           } else {
             callback();
           }
         } else {
-          callback(new Error("请输入电话号码"));
+          callback(new Error("请输入联系方式"));
         }
       }
 };
@@ -352,7 +352,7 @@ const rules = ref({
     {required: true, message: '请选择状态', trigger: 'blur'}
   ],
   contacts: [
-    {required: true, message: '请填写联系人手机号' , trigger: 'blur'},
+    {required: true, message: '请填写联系方式' , trigger: 'blur'},
     { validator: isMobilePhone, trigger: "blur" },
   ],
   applicant: [
