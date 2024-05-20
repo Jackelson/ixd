@@ -391,7 +391,6 @@ const submitAdd =async () => {
     getData();
   } else {
     loading.value = false;
-     ElMessage.success(res.msg || '新增失败');
   }
 }
 

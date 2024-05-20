@@ -40,7 +40,7 @@
 
     <el-dialog v-model="dialogTable" title="审批" width="50%">
       <div class="approved">
-        <el-form :disabled="true" label-width="150px">
+        <el-form v-if="!isDefect" :disabled="true" label-width="150px">
           <el-form-item label="发起人">
             <el-input v-model="formData.createName" />
           </el-form-item>
@@ -73,6 +73,43 @@
             <el-input v-model="formData.contactEmail" />
           </el-form-item>
         </el-form>
+        <el-form
+        v-if="isDefect"
+            label-width="150px"
+            :disabled="true"
+          >
+          <el-form-item label="应用ID" prop="appId">
+          <el-select v-model="formData.appId" style="width: 100%">
+            <el-option
+              v-for="item in options"
+              :key="item.id"
+              :label="item.appName"
+              :value="item.id"
+            />
+          </el-select>
+          </el-form-item>
+          <el-form-item label="缺陷描述" prop="defectDescription">
+            <el-input type="textarea" v-model="formData.defectDescription" />
+          </el-form-item>
+          <el-form-item label="申请单位" prop="applicant">
+            <el-input v-model="formData.applicant" />
+          </el-form-item>
+          <el-form-item label="联系方式" prop="contacts">
+            <el-input v-model="formData.contacts" />
+          </el-form-item>
+          <el-form-item label="申请包Id" prop="programPackageId">
+            <el-input v-model="formData.programPackageId" />
+          </el-form-item>
+          <el-form-item label="发布时间" prop="releaseDate">
+                 <el-date-picker
+                 style="width: 100%"
+                  v-model="formData.releaseDate"
+                  type="datetime"
+                  placeholder="请选择时间"
+                  value-format="YYYY-MM-DD HH:mm:ss"
+                />
+          </el-form-item>
+      </el-form>
         <div class="btn">
           <el-button type="primary" @click="handleSuccess">通过</el-button>
           <el-button
@@ -85,6 +122,9 @@
         </div>
       </div>
     </el-dialog>
+
+
+
     <showImg ref="imgRef" :src="flowSrc" />
   </div>
 </template>
@@ -98,6 +138,7 @@ import {
   updateState,
   downloadFile,
 } from "@/api/application";
+import {  getUpdateList, editState } from "@/api/system";
 import { ElMessage, ElMessageBox } from "element-plus";
 
 const props = defineProps({
@@ -121,26 +162,32 @@ const rejectMessage = ref("");
 
 const base64Image = ref("");
 
-const handleClick = (row) => {
+const isDefect = ref(false);
+const handleClick =async (row) => {
   propData.value = row;
   const params = {
     pageNum: 1,
     pageSize: 10,
     id: row.businessId,
   };
-  getDetail(params).then((res) => {
-    if (res.code == 200) {
-      formData.value = res.data.rows[0];
-      dialogTable.value = true;
-      const params = {
-        fileId: formData.value.appFileId,
-      };
-      downloadFile(params).then((res) => {
-        console.log(res);
-        filetoBase64(res.response);
-      });
-    }
-  });
+  let res = null;
+  if(row.businessId.includes('APPDEFECT')) {
+    isDefect.value = true;
+    res =  await getUpdateList(params);
+  } else {
+    isDefect.value = false;
+    res = await getDetail(params);
+  }
+  if (res.code == 200 && res.data.rows.length != 0) {
+    formData.value = res.data.rows[0];
+    dialogTable.value = true;
+    const params = {
+      fileId: formData.value.appFileId,
+    };
+    downloadFile(params).then((res) => {
+      filetoBase64(res.response);
+    });
+  }
 };
 
 const filetoBase64 = (file) => {
@@ -224,9 +271,16 @@ const changeState = () => {
   if (approvdText.value == "驳回") {
     params[0].reasonRejection = rejectMessage.value;
   }
-  updateState(params).then((res) => {
-    console.log(res);
-  });
+  if(isDefect.value) {
+    editState([{state: approvdText.value == '驳回' ?  4 : 3, id: formData.value.id}]).then(res => {
+          console.log(res);
+    });
+   } else {
+    updateState(params).then((res) => {
+      console.log(res);
+     });
+   }
+
 };
 
 const handleError = () => {
